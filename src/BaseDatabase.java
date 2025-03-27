@@ -1,77 +1,124 @@
 import java.io.*;
+import java.util.ArrayList;
 
+
+/** 
+ * BaseDatabase Class. A base class to read/write to databases using arrays.
+ * 
+ * @author Karma Luitel, lab L24
+ * @version 3/27/25
+*/
 public class BaseDatabase implements Database {
 
     private String filename;
+    private ArrayList<String> headers;
 
-    public BaseDatabase(String filename) {
+
+    /* Planned format (headers) for databases:
+     * 
+     * User:
+     * username,password,balance,rating
+     * 
+     * Listing:
+     * id,seller,name,value,image,sold
+     * 
+     * Message:
+     * sender,reciever,message,timestamp
+     */
+
+    //Initialize a database with headers
+    public BaseDatabase(String filename, ArrayList<String> headers) {
         this.filename = filename;
+        this.headers = headers;
     }
 
-    private boolean stringContains(String main, String check) {
-        if (main.indexOf(check) != -1) {
-            return true;
+    private ArrayList<String> parseLineToArray(String line) {
+        String element = "";
+        ArrayList<String> parsed = new ArrayList<>();
+        for (int i = 0; i < line.length()-1; i++) {
+            if (line.charAt(i) == '"' && line.charAt(i+1) == '"') {
+                element += '"';
+                i++;
+            } else if (line.charAt(i) == '"' && line.charAt(i+1) == ',') {
+                parsed.add(element);
+                element = "";
+                i++;
+            } else if (line.charAt(i) != '"') {
+                element += line.charAt(i);
+            }
         }
-        return false;
+        parsed.add(element);
+        return parsed;
     }
 
-    //Written text cannot be empty or contain \n or [] characters.
-    //Example format for users:
-    //username:karma,password:12345,listings:[a,b,c,d,e],balance:192.21,rating:5
-    //Example format for listings:
-    //id:id1,seller:karma,name:apple,price:1,image:none,sold:true
-
-    //Writes (appends) a line to file. Returns true if sucessful. Make sure it is formatted beforhand.
-    public boolean write(String text) {
+    //Writes (appends) an array of string values to file.
+    public void write(ArrayList<String> values) throws DatabaseNotFoundException {
         try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), true))) {
-            pwr.println(text);
+            String toWrite = "\"";
+            for (int i = 0; i < values.size(); i++) {
+                String line = values.get(i);
+                for (int j = 0; j < line.length(); j++) {
+                    if (line.charAt(j) == '"') {
+                        toWrite += "\"\"";
+                    } else {
+                        toWrite += line.charAt(j);
+                    }
+                }
+                if (i != values.size() - 1) {
+                    toWrite += "\",\"";
+                }
+            }
+            toWrite += '\"';
+            pwr.println(toWrite);
         } catch (IOException e) {
-            return false;
+            throw new DatabaseNotFoundException("Invalid database");
         }
-        return true;
     }
 
-    //Returns an empty line if no string is found.
-    public String find(String key, String value) {
+    //Finds lines with a specific key-value pair and returns in array form. Returns an empty array if no string is found.
+    public ArrayList<ArrayList<String>> get(String header, String value) throws DatabaseNotFoundException {
+        ArrayList<ArrayList<String>> values = new ArrayList<>();
         try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
             String line = bfr.readLine();
-            String check = key + ":" + value;
             while(line != null) {
-                if (stringContains(line, check)) {
-                    return line;
+                ArrayList<String> parsed = parseLineToArray(line);
+                int checkIndex = headers.indexOf(header);
+                if (checkIndex != -1) {
+                    if (parsed.get(checkIndex).equals(value)) {
+                        values.add(parsed);
+                    }
                 }
                 line = bfr.readLine();
             }
         } catch (IOException e) {
-            return "";
+            throw new DatabaseNotFoundException("Invalid database");
         }
-        return "";
+        return values;
     }
 
-    //Deletes a line containing a given key value pair. Returns true if sucessful.
-    public boolean delete(String key, String value) {
+    //Deletes all lines containing a given key value pair.
+    public void delete(String header, String value) throws DatabaseNotFoundException {
         String file = "";
         try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
             String line = bfr.readLine();
-            String check = key + ":" + value;
             while (line != null) {
-                if (!stringContains(line, check)) {
-                    file += line + '\n';
+                ArrayList<String> parsed = parseLineToArray(line);
+                int checkIndex = headers.indexOf(header);
+                if (checkIndex != -1) {
+                    if (!parsed.get(checkIndex).equals(value)) {
+                        file += line + '\n';
+                    }
                 }
                 line = bfr.readLine();
             }
         } catch (IOException e) {
-            return false;
+            throw new DatabaseNotFoundException("Invalid database");
         }
-        if (file.length() > 0) {
-            try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
-                pwr.print(file);
-            } catch (IOException e) {
-                return false;
-            }
-            return true;
+        try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
+            pwr.print(file);
+        } catch (IOException e) {
+            throw new DatabaseNotFoundException("Invalid database");
         }
-        return false;
     }
 
     public String getFilename() {
@@ -81,4 +128,13 @@ public class BaseDatabase implements Database {
     public void setFilename(String filename) {
         this.filename = filename;
     }
+
+    public ArrayList<String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(ArrayList<String> headers) {
+        this.headers = headers;
+    }
+
 }

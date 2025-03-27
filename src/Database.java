@@ -1,7 +1,9 @@
+import java.util.ArrayList;
+
 interface Database {
-    boolean write(String text);
-    String find(String key, String value);
-    boolean delete(String key, String value);
+    void write(ArrayList<String> values) throws DatabaseNotFoundException;
+    ArrayList<ArrayList<String>> get(String header, String value) throws DatabaseNotFoundException;
+    void delete(String header, String value) throws DatabaseNotFoundException;
     String getFilename();
     void setFilename(String filename);
 }
