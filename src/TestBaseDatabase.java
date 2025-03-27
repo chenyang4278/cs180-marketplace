@@ -1,19 +1,20 @@
-import org.junit.*;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestBaseDatabase {
 
     @Test
-    public void testWrite() throws DatabaseNotFoundException{
+    public void testA() throws DatabaseNotFoundException{
 
         String[] headers = {"username", "password", "balance", "rating"};
-        BaseDatabase user_db = new BaseDatabase("user_db.txt", headers);
+        Database user_db = new Database("user_db.txt", headers);
 
        
         String[] user1 = {"karma", "pass2word123", "821.21", "12"};
@@ -36,10 +37,10 @@ public class TestBaseDatabase {
     }
 
     @Test
-    public void testRead() throws DatabaseNotFoundException {  
+    public void testB() throws DatabaseNotFoundException {  
 
         String[] headers = {"username", "password", "balance", "rating"};
-        BaseDatabase user_db = new BaseDatabase("user_db.txt", headers);
+        Database user_db = new Database("user_db.txt", headers);
 
         assertArrayEquals(new String[] {"ka\"2\"rma\",\"", "password123", "821.21", "12"}, user_db.get("username", "ka\"2\"rma\",\"").get(0));
         assertArrayEquals(new String[] {"ka\"2\"rma\",\"", "passw2ord123", "7821.21", "12"}, user_db.get("username", "ka\"2\"rma\",\"").get(1));
@@ -47,10 +48,23 @@ public class TestBaseDatabase {
     }
 
     @Test
-    public void testDelete() throws DatabaseNotFoundException {  
+    public void testC() throws DatabaseNotFoundException {  
 
         String[] headers = {"username", "password", "balance", "rating"};
-        BaseDatabase user_db = new BaseDatabase("user_db.txt", headers);
+        Database user_db = new Database("user_db.txt", headers);
+
+        user_db.update("username", "ka\"2\"rma\",\"", "balance", "122");
+        user_db.update("username", "kar3ma", "password", "12212");
+        assertEquals("122",user_db.get("balance", "122").get(0)[2]);
+        assertEquals("12212",user_db.get("password", "12212").get(0)[1]);
+        user_db.update("username", "ka\"2\"rma\",\"", "balance", "12");
+    }
+
+    @Test
+    public void testD() throws DatabaseNotFoundException {  
+
+        String[] headers = {"username", "password", "balance", "rating"};
+        Database user_db = new Database("user_db.txt", headers);
 
         user_db.delete("username", "ka\"2\"rma\",\"");
         user_db.delete("password", "pass2word123");
