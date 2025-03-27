@@ -4,7 +4,7 @@
 - Handles reading/writing to/from files
 ### Extended Database
 - Implements specific operations, such as getting a user
-### User
-- Implements User-specific functionality
+### IUser
+- Implements IUser-specific functionality
 ### Listing
 - Implements Listing-specific functionality
