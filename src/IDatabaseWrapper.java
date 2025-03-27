@@ -1,4 +1,4 @@
-public interface ExtendedDatabase {
+public interface IDatabaseWrapper {
     public User createUser(String username, String password, int balance);
     public User getUser(int id);
     public User getUser(String username);
