@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class BaseDatabase implements Database {
 
     private String filename;
-    private ArrayList<String> headers;
+    private String[] headers;
 
 
     /* Planned format (headers) for databases:
@@ -27,36 +27,47 @@ public class BaseDatabase implements Database {
      */
 
     //Initialize a database with headers
-    public BaseDatabase(String filename, ArrayList<String> headers) {
+    public BaseDatabase(String filename, String[] headers) {
         this.filename = filename;
         this.headers = headers;
     }
 
-    private ArrayList<String> parseLineToArray(String line) {
+    private int headerIndexOf(String value) {
+        for (int i = 0; i < headers.length; i++) {
+            if (headers[i].equals(value)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private String[] parseLineToArray(String line) {
         String element = "";
-        ArrayList<String> parsed = new ArrayList<>();
+        String[] parsed = new String[headers.length];
+        int parseIdx = 0;
         for (int i = 0; i < line.length()-1; i++) {
             if (line.charAt(i) == '"' && line.charAt(i+1) == '"') {
                 element += '"';
                 i++;
             } else if (line.charAt(i) == '"' && line.charAt(i+1) == ',') {
-                parsed.add(element);
+                parsed[parseIdx] = element;
                 element = "";
+                parseIdx++;
                 i++;
             } else if (line.charAt(i) != '"') {
                 element += line.charAt(i);
             }
         }
-        parsed.add(element);
+        parsed[parseIdx] = element;
         return parsed;
     }
 
     //Writes (appends) an array of string values to file.
-    public void write(ArrayList<String> values) throws DatabaseNotFoundException {
+    public void write(String[] values) throws DatabaseNotFoundException {
         try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), true))) {
             String toWrite = "\"";
-            for (int i = 0; i < values.size(); i++) {
-                String line = values.get(i);
+            for (int i = 0; i < values.length; i++) {
+                String line = values[i];
                 for (int j = 0; j < line.length(); j++) {
                     if (line.charAt(j) == '"') {
                         toWrite += "\"\"";
@@ -64,7 +75,7 @@ public class BaseDatabase implements Database {
                         toWrite += line.charAt(j);
                     }
                 }
-                if (i != values.size() - 1) {
+                if (i != values.length - 1) {
                     toWrite += "\",\"";
                 }
             }
@@ -76,15 +87,15 @@ public class BaseDatabase implements Database {
     }
 
     //Finds lines with a specific key-value pair and returns in array form. Returns an empty array if no string is found.
-    public ArrayList<ArrayList<String>> get(String header, String value) throws DatabaseNotFoundException {
-        ArrayList<ArrayList<String>> values = new ArrayList<>();
+    public ArrayList<String[]> get(String header, String value) throws DatabaseNotFoundException {
+        ArrayList<String[]> values = new ArrayList<>();
         try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
             String line = bfr.readLine();
             while(line != null) {
-                ArrayList<String> parsed = parseLineToArray(line);
-                int checkIndex = headers.indexOf(header);
+                String[] parsed = parseLineToArray(line);
+                int checkIndex = headerIndexOf(header);
                 if (checkIndex != -1) {
-                    if (parsed.get(checkIndex).equals(value)) {
+                    if (parsed[checkIndex].equals(value)) {
                         values.add(parsed);
                     }
                 }
@@ -102,10 +113,10 @@ public class BaseDatabase implements Database {
         try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
             String line = bfr.readLine();
             while (line != null) {
-                ArrayList<String> parsed = parseLineToArray(line);
-                int checkIndex = headers.indexOf(header);
+                String[] parsed = parseLineToArray(line);
+                int checkIndex = headerIndexOf(header);
                 if (checkIndex != -1) {
-                    if (!parsed.get(checkIndex).equals(value)) {
+                    if (!parsed[checkIndex].equals(value)) {
                         file += line + '\n';
                     }
                 }
@@ -129,11 +140,11 @@ public class BaseDatabase implements Database {
         this.filename = filename;
     }
 
-    public ArrayList<String> getHeaders() {
+    public String[] getHeaders() {
         return headers;
     }
 
-    public void setHeaders(ArrayList<String> headers) {
+    public void setHeaders(String[] headers) {
         this.headers = headers;
     }
 
