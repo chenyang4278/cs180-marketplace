@@ -35,7 +35,7 @@ public class User extends Serializable implements IUser {
         this.password = password;
         balance = 0.0;
         rating = 0.0;
-        id = 0;
+        //id = 0;
         listings = new ArrayList<>();
         inbox = new ArrayList<>();
 
@@ -135,17 +135,17 @@ public class User extends Serializable implements IUser {
         inbox.clear();
     }
 
-    public void saveToDatabase() throws DatabaseWriteException{
-        if(this.getId() == 0){
-            try{
+    public void saveToDatabase() throws DatabaseWriteException {
+        if (this.getId() == 0) {
+            try {
                 User existingUser = DatabaseWrapper.get().getById(User.class, this.getId());
                 this.setId(existingUser.getId());
-            }catch(RowNotFoundException e){
+            } catch (RowNotFoundException e) {
                 this.setId(1);
             }
         }
+        // Now, save the user to the database
         DatabaseWrapper.get().save(this);
-
     }
 
     public static User getById(int userId) throws RowNotFoundException {
@@ -153,7 +153,7 @@ public class User extends Serializable implements IUser {
     }
 
     public static ArrayList<User> getUsersByColumn(String column, String value) throws RowNotFoundException {
-        return (ArrayList<User>) DatabaseWrapper.get().filterByColumn(User.class, column, value);
+        return new ArrayList<>(DatabaseWrapper.get().filterByColumn(User.class, column, value));
     }
 
     public String[] asRow() {
