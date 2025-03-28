@@ -119,6 +119,33 @@ public class Database implements IDatabase {
         }
     }
 
+    //Updates an line in the database.
+    public void update(String header, String value, String[] newrow) throws DatabaseNotFoundException {
+        String file = "";
+        try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
+            String line = bfr.readLine();
+            int checkIndex = headerIndexOf(header);
+            while (line != null) {
+                String[] parsed = dataLineToArray(line);
+                if (checkIndex != -1) {
+                    if (!parsed[checkIndex].equals(value)) {
+                        file += line + '\n';
+                    } else {
+                        file += arrayToDataLine(newrow) + '\n';
+                    }
+                }
+                line = bfr.readLine();
+            }
+        } catch (IOException e) {
+            throw new DatabaseNotFoundException("Invalid database");
+        }
+        try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
+            pwr.print(file);
+        } catch (IOException e) {
+            throw new DatabaseNotFoundException("Invalid database");
+        }
+    }
+
     //Finds lines with a specific key-value pair and returns in array form. Returns an empty array if no string is found.
     public ArrayList<String[]> get(String header, String value) throws DatabaseNotFoundException {
         ArrayList<String[]> values = new ArrayList<>();
