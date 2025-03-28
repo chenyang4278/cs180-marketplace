@@ -153,7 +153,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
             }
 
             // update entire row here (method doesn't exist yet)
-            // db.updateRow("id", String.valueOf(obj.getId()), obj.asRow());
+            db.update("id", String.valueOf(obj.getId()), obj.asRow());
         } catch (DatabaseNotFoundException e) {
             throw new DatabaseWriteException("Failed to save");
         }
