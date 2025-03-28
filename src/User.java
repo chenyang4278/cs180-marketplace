@@ -3,16 +3,19 @@ import java.util.ArrayList;
 public class User extends Serializable implements IUser {
 
     //this is user info
-    @SerializableField(field = "username", index = 0)
+    @SerializableField(field = "id", index = 0)
+    private int id;
+
+    @SerializableField(field = "username", index = 1)
     private String username;
 
-    @SerializableField(field = "password", index = 1)
+    @SerializableField(field = "password", index = 2)
     private String password;
 
-    @SerializableField(field = "balance", index = 2)
+    @SerializableField(field = "balance", index = 3)
     private double balance;
 
-    @SerializableField(field = "rating", index = 3)
+    @SerializableField(field = "rating", index = 4)
     private double rating;
 
     private ArrayList<String> listings;
@@ -23,6 +26,7 @@ public class User extends Serializable implements IUser {
         this.password = password;
         balance = 0.0;
         rating = 0.0;
+        id = 0;
         listings = new ArrayList<>();
         inbox = new ArrayList<>();
 
@@ -30,6 +34,13 @@ public class User extends Serializable implements IUser {
 
     //getters and settrs
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getUsername() {
 
@@ -70,9 +81,16 @@ public class User extends Serializable implements IUser {
         return listings;
     }
 
+    public void setListings(ArrayList<String> listings){
+        this.listings = listings;
+    }
+
     public ArrayList<String> getInbox() {
 
         return inbox;
+    }
+    public void setInbox(ArrayList<String> inbox) {
+        this.inbox = inbox;
     }
 
 
@@ -85,9 +103,6 @@ public class User extends Serializable implements IUser {
     }
 
     public void sendMessage(String message) {
-        inbox.add(message);
-    }
-    public void addMessage(String message){
         inbox.add(message);
     }
 
@@ -111,19 +126,25 @@ public class User extends Serializable implements IUser {
         inbox.clear();
     }
 
-    public void saveToDatabase() throws DatabaseWriteException {
-        if (this.getId() == 0) {
-            this.setId(DatabaseWrapper.get().getNextId(User.class));
+    public void saveToDatabase() throws DatabaseWriteException{
+        if(this.getId() == 0){
+            try{
+                User existingUser = DatabaseWrapper.get().getById(User.class, this.getId());
+                this.setId(existingUser.getId());
+            }catch(RowNotFoundException e){
+                this.setId(1);
+            }
         }
         DatabaseWrapper.get().save(this);
+
     }
 
     public static User getById(int userId) throws RowNotFoundException {
         return DatabaseWrapper.get().getById(User.class, userId);
     }
 
-    public static ArrayList<User> getUsersByColumn(String column, String value) {
-        return DatabaseWrapper.get().filterByColumn(User.class, column, value);
+    public static ArrayList<User> getUsersByColumn(String column, String value) throws RowNotFoundException {
+        return (ArrayList<User>) DatabaseWrapper.get().filterByColumn(User.class, column, value);
     }
 
     public String[] asRow() {
