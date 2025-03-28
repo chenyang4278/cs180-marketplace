@@ -1,16 +1,20 @@
 import java.util.ArrayList;
-import java.io.*;
 
-public class User extends Serializable, implements Serializable, IUser {
+public class User extends Serializable implements IUser {
 
     //this is user info
+    @SerializableField(field = "username", index = 0)
     private String username;
-    private String password;
-    private double balance;
-    private double rating;
-    private int id;
 
-    //for listing and messages idk how it's stored in database yet
+    @SerializableField(field = "password", index = 1)
+    private String password;
+
+    @SerializableField(field = "balance", index = 2)
+    private double balance;
+
+    @SerializableField(field = "rating", index = 3)
+    private double rating;
+
     private ArrayList<String> listings;
     private ArrayList<String> inbox;
 
@@ -19,7 +23,6 @@ public class User extends Serializable, implements Serializable, IUser {
         this.password = password;
         balance = 0.0;
         rating = 0.0;
-        id = 0;
         listings = new ArrayList<>();
         inbox = new ArrayList<>();
 
@@ -27,16 +30,14 @@ public class User extends Serializable, implements Serializable, IUser {
 
     //getters and settrs
 
-    public int getId(){
-        return id;
-    }
 
-    public void setId(int id){
-        this.id = id;
-    }
     public String getUsername() {
 
         return username;
+    }
+
+    public void setUsername(String username){
+        this.username = username;
     }
 
     public String getPassword() {
@@ -44,16 +45,26 @@ public class User extends Serializable, implements Serializable, IUser {
         return password;
     }
 
+    public void setPassword(String password){
+        this.password = password;
+    }
+
     public double getBalance() {
 
         return balance;
     }
+    public void setBalance(double balance) {
 
+        this.balance = balance;
+    }
     public double getRating() {
 
         return rating;
     }
+    public void setRating(double rating) {
 
+        this.rating = rating;
+    }
     public ArrayList<String> getListings() {
 
         return listings;
@@ -64,37 +75,33 @@ public class User extends Serializable, implements Serializable, IUser {
         return inbox;
     }
 
-    public void setPassword(String password) {
 
-        this.password = password;
-    }
-
-    public void setBalance(double balance) {
-
-        this.balance = balance;
-    }
-
-    public void setRating(double rating) {
-
-        this.rating = rating;
-    }
-
-    //add item to listings
     public void addListing(String item) {
         listings.add(item);
     }
 
-    //take out item from listing
     public void removeListing(String item) {
         listings.remove(item);
     }
 
-    //add message to inbox
     public void sendMessage(String message) {
         inbox.add(message);
     }
+    public void addMessage(String message){
+        inbox.add(message);
+    }
 
-    //delete/reset account but tbh idk if I should write it like this lol idk how implemented in database
+    public void removeMessage(String message){
+        inbox.remove(message);
+    }
+
+    public void updateBalance(double amount){
+        this.balance +=amount;
+    }
+
+    public void updateRating(double rating){
+        this.rating = rating;
+    }
     public void deleteAccount() {
         username = null;
         password = null;
@@ -104,20 +111,23 @@ public class User extends Serializable, implements Serializable, IUser {
         inbox.clear();
     }
 
-    public void saveToDatabase() throws DatabaseWriteException{
-        if (this.id == 0){
-            this.id = DatabaseWrapper.get().getNextID(User.class);
+    public void saveToDatabase() throws DatabaseWriteException {
+        if (this.getId() == 0) {
+            this.setId(DatabaseWrapper.get().getNextId(User.class));
         }
         DatabaseWrapper.get().save(this);
     }
 
-    public static User getById(int userId) throws RowNotFoundException{
+    public static User getById(int userId) throws RowNotFoundException {
         return DatabaseWrapper.get().getById(User.class, userId);
     }
 
-    public static ArrayList<User> getUsersByColumn(String column, String value){
+    public static ArrayList<User> getUsersByColumn(String column, String value) {
         return DatabaseWrapper.get().filterByColumn(User.class, column, value);
     }
 
+    public String[] asRow() {
+        return new String[]{username, password, String.valueOf(balance), String.valueOf(rating)};
+    }
 
 }
