@@ -1,0 +1,53 @@
+public class Message extends Serializable implements IMessage {
+    @SerializableField( field = "sender_id", index = 1 )
+    private int senderId;
+
+    @SerializableField( field = "receiver_id", index = 2 )
+    private int receiverId;
+
+    @SerializableField( field = "message", index = 3 )
+    private String message;
+
+    @SerializableField( field = "timestamp", index = 4 )
+    private long timestamp;
+
+    @Override
+    public int getSenderId() {
+        return senderId;
+    }
+
+    @Override
+    public void setSenderId(int senderId) {
+        this.senderId = senderId;
+    }
+
+    @Override
+    public int getReceiverId() {
+        return receiverId;
+    }
+
+    @Override
+    public void setReceiverId(int receiverId) {
+        this.receiverId = receiverId;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    @Override
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    @Override
+    public void setTimestamp(int timestamp) {
+        this.timestamp = timestamp;
+    }
+}

@@ -1,12 +1,8 @@
+import java.util.List;
+
 public interface IDatabaseWrapper {
-    public User createUser(String username, String password, int balance);
-    public User getUser(int id);
-    public User getUser(String username);
-    public User[] searchUsers(String query);
-    public Listing createListing(int sellerId, String title, String category, int price);
-    public Listing getListing(int id);
-    public void deleteListing(int id);
-    public void markListingBought(int id, int buyerId);
-    public Listing[] searchListings(String query);
-    public Listing[] getSoldItems(int sellerId);
+    <T extends Serializable> T getByColumn(Class<T> cls, String column, String value) throws RowNotFoundException;
+    <T extends Serializable> List<T> filterByColumn(Class<T> cls, String column, String value) throws RowNotFoundException;
+    <T extends Serializable> T getById(Class<T> cls, int id) throws RowNotFoundException;
+    <T extends Serializable> void save(T obj) throws DatabaseWriteException;
 }
