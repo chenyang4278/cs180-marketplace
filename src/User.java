@@ -149,7 +149,6 @@ public class User extends Serializable implements IUser {
                 this.setId(1);
             }
         }
-        // Now, save the user to the database
         DatabaseWrapper.get().save(this);
     }
 
