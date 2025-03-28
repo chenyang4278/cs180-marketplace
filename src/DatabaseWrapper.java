@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseWrapper implements IDatabaseWrapper {
+    // TODO: implement thread-safety
     static private IDatabaseWrapper instance;
 
     private final IDatabase idDb;
