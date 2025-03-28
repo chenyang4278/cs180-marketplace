@@ -1,13 +1,12 @@
 import java.util.ArrayList;
+
 /**
  * User
- *
+ * <p>
  * represents a user, encapsulates user info and provides methods to manage user details
  *
  * @author Chen Yang, section 24
- *
  * @version 3/28/25
- *
  */
 public class User extends Serializable implements IUser {
 
@@ -56,7 +55,7 @@ public class User extends Serializable implements IUser {
         return username;
     }
 
-    public void setUsername(String username){
+    public void setUsername(String username) {
         this.username = username;
     }
 
@@ -65,7 +64,7 @@ public class User extends Serializable implements IUser {
         return password;
     }
 
-    public void setPassword(String password){
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -73,24 +72,28 @@ public class User extends Serializable implements IUser {
 
         return balance;
     }
+
     public void setBalance(double balance) {
 
         this.balance = balance;
     }
+
     public double getRating() {
 
         return rating;
     }
+
     public void setRating(double rating) {
 
         this.rating = rating;
     }
+
     public ArrayList<String> getListings() {
 
         return listings;
     }
 
-    public void setListings(ArrayList<String> listings){
+    public void setListings(ArrayList<String> listings) {
         this.listings = listings;
     }
 
@@ -98,6 +101,7 @@ public class User extends Serializable implements IUser {
 
         return inbox;
     }
+
     public void setInbox(ArrayList<String> inbox) {
         this.inbox = inbox;
     }
@@ -115,17 +119,18 @@ public class User extends Serializable implements IUser {
         inbox.add(message);
     }
 
-    public void removeMessage(String message){
+    public void removeMessage(String message) {
         inbox.remove(message);
     }
 
-    public void updateBalance(double amount){
-        this.balance +=amount;
+    public void updateBalance(double amount) {
+        this.balance += amount;
     }
 
-    public void updateRating(double rating){
+    public void updateRating(double rating) {
         this.rating = rating;
     }
+
     public void deleteAccount() {
         username = null;
         password = null;
