@@ -14,6 +14,10 @@ public class Serializable implements ISerializable {
         this.id = id;
     }
 
+    protected Serializable() {
+        id = 0;
+    }
+
     static private Object parseFieldValue(Field field, String value) {
         if (field.getType().equals(String.class)) {
             return value;
