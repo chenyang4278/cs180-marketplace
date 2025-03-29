@@ -10,8 +10,8 @@ public interface IUser {
     void setPassword(String password);
     void setBalance(double balance);
     void setRating(double rating);
-    void addListing(String item);
-    void removeListing(String item);
-    void sendMessage(String message);
+    void addListing(Listing item);
+    void removeListing(Listing item);
+    void sendMessage(Message message);
     void deleteAccount();
 }

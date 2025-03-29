@@ -32,7 +32,6 @@ public class User extends Serializable implements IUser {
         this.password = password;
         balance = 0.0;
         rating = 0.0;
-        //id = 0;
         listings = new ArrayList<>();
         inbox = new ArrayList<>();
 
@@ -106,9 +105,9 @@ public class User extends Serializable implements IUser {
 
 
     public void addListing(Listing item) {
-        Listing listing = new Listing(this.getId(), item);
+        Listing listing = new Listing(this.getId(), item.getName());
         DatabaseWrapper.get().save(listing);
-        listings.add(item);
+        listings.add(listing);
     }
 
     public void removeListing(Listing item) {
@@ -116,7 +115,7 @@ public class User extends Serializable implements IUser {
     }
 
     public void sendMessage(Message message) {
-        Message msg = new Message(this.getId(), message);
+        Message msg = new Message(message.getSenderId(), message.getReceiverId(), message.getMessage());
         DatabaseWrapper.get().save(msg);
         inbox.add(message);
     }
