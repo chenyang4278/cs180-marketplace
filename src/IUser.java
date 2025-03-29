@@ -4,8 +4,8 @@ public interface IUser {
     String getPassword();
     double getBalance();
     double getRating();
-    ArrayList<String> getListings();
-    ArrayList<String> getInbox();
+    ArrayList<Listing> getListings();
+    ArrayList<Message> getInbox();
 
     void setPassword(String password);
     void setBalance(double balance);

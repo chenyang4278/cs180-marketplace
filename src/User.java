@@ -11,8 +11,6 @@ import java.util.ArrayList;
 public class User extends Serializable implements IUser {
 
     //this is user info
-    @SerializableField(field = "id", index = 0)
-    private int id;
 
     @SerializableField(field = "username", index = 1)
     private String username;
@@ -26,8 +24,8 @@ public class User extends Serializable implements IUser {
     @SerializableField(field = "rating", index = 4)
     private double rating;
 
-    private ArrayList<String> listings;
-    private ArrayList<String> inbox;
+    private ArrayList<Listing> listings;
+    private ArrayList<Message> inbox;
 
     public User(String username, String password) {
         this.username = username;
@@ -41,15 +39,6 @@ public class User extends Serializable implements IUser {
     }
 
     //getters and settrs
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getUsername() {
 
         return username;
@@ -88,38 +77,51 @@ public class User extends Serializable implements IUser {
         this.rating = rating;
     }
 
-    public ArrayList<String> getListings() {
-
+    public ArrayList<Listing> getListings() {
+        if (listings == null) {
+            try {
+                listings = (ArrayList<Listing>) DatabaseWrapper.get().filterByColumn(Listing.class, "seller_id", String.valueOf(this.getId()));
+            } catch (RowNotFoundException e) {
+                listings = new ArrayList<>();
+            }
+        }
         return listings;
     }
 
-    public void setListings(ArrayList<String> listings) {
-        this.listings = listings;
-    }
 
-    public ArrayList<String> getInbox() {
-
+    public ArrayList<Message> getInbox() {
+        if (inbox == null) {
+            try {
+                inbox = (ArrayList<Message>) DatabaseWrapper.get().filterByColumn(Message.class, "receiver_id", String.valueOf(this.getId()));
+            } catch (RowNotFoundException e) {
+                inbox = new ArrayList<>();
+            }
+        }
         return inbox;
     }
 
-    public void setInbox(ArrayList<String> inbox) {
+    public void setInbox(ArrayList<Message> inbox) {
         this.inbox = inbox;
     }
 
 
-    public void addListing(String item) {
+    public void addListing(Listing item) {
+        Listing listing = new Listing(this.getId(), item);
+        DatabaseWrapper.get().save(listing);
         listings.add(item);
     }
 
-    public void removeListing(String item) {
+    public void removeListing(Listing item) {
         listings.remove(item);
     }
 
-    public void sendMessage(String message) {
+    public void sendMessage(Message message) {
+        Message msg = new Message(this.getId(), message);
+        DatabaseWrapper.get().save(msg);
         inbox.add(message);
     }
 
-    public void removeMessage(String message) {
+    public void removeMessage(Message message) {
         inbox.remove(message);
     }
 
@@ -140,17 +142,7 @@ public class User extends Serializable implements IUser {
         inbox.clear();
     }
 
-    public void saveToDatabase() throws DatabaseWriteException {
-        if (this.getId() == 0) {
-            try {
-                User existingUser = DatabaseWrapper.get().getById(User.class, this.getId());
-                this.setId(existingUser.getId());
-            } catch (RowNotFoundException e) {
-                this.setId(1);
-            }
-        }
-        DatabaseWrapper.get().save(this);
-    }
+
 
     public static User getById(int userId) throws RowNotFoundException {
         return DatabaseWrapper.get().getById(User.class, userId);
@@ -160,8 +152,5 @@ public class User extends Serializable implements IUser {
         return new ArrayList<>(DatabaseWrapper.get().filterByColumn(User.class, column, value));
     }
 
-    public String[] asRow() {
-        return new String[]{username, password, String.valueOf(balance), String.valueOf(rating)};
-    }
 
 }
