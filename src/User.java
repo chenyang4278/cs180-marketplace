@@ -8,6 +8,7 @@ import java.util.ArrayList;
  * @author Chen Yang, section 24
  * @version 3/28/25
  */
+
 public class User extends Serializable implements IUser {
 
     //this is user info
