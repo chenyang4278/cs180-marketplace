@@ -73,8 +73,10 @@ public class Serializable implements ISerializable {
             }
 
             return (T) obj;
-        } catch (Exception e) { // shouldn't occur
-            System.out.println("Failed to create " + cls.getName() + " from row");
+        } catch (Exception e) { // will occur if there's no empty constructor
+            System.out.println(
+                "Failed to create " + cls.getName() + " from row. Make sure the class has an empty constructor."
+            );
             throw new RuntimeException(e);
         }
     }

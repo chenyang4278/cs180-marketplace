@@ -11,6 +11,9 @@ public class Message extends Serializable implements IMessage {
     @SerializableField( field = "timestamp", index = 4 )
     private long timestamp;
 
+    // Required for Serializable
+    public Message() {}
+
     public Message(int senderId, int receiverId, String message) {
         this.senderId = senderId;
         this.receiverId = receiverId;
