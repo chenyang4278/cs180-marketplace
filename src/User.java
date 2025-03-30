@@ -123,7 +123,7 @@ public class User extends Serializable implements IUser {
     public void sendMessage(String messageContent, int receiverId) {
         try{
             Message message = new Message(this.getId(), receiverId, messageContent);
-            DatabaseWrapper.get().save(message);
+            message.save();
             inbox.add(message);
         } catch(DatabaseWriteException e){
             System.out.println("Error sending message: " + e.getMessage());
