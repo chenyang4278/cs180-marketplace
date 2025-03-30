@@ -4,14 +4,14 @@ public interface IUser {
     String getPassword();
     double getBalance();
     double getRating();
-    ArrayList<String> getListings();
-    ArrayList<String> getInbox();
+    ArrayList<Listing> getListings();
+    ArrayList<Message> getInbox();
 
     void setPassword(String password);
     void setBalance(double balance);
     void setRating(double rating);
-    void addListing(String item);
-    void removeListing(String item);
-    void sendMessage(String message);
+    void createListing(Listing item);
+    void removeListing(Listing item);
+    void sendMessage(String messageContent, int receiverId)
     void deleteAccount();
 }
