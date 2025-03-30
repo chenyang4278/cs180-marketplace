@@ -106,11 +106,10 @@ public class User extends Serializable implements IUser {
 
 
     //waiting on listing class
-    public void addListing(Listing item) {
+    public void createListing(Listing item) {
         try{
-            Listing listing = new Listing(this.getId(), item.getName());
-            DatabaseWrapper.get().save(listing);
-            listings.add(listing);
+            DatabaseWrapper.get().save(item);
+            listings.add(item);
         } catch(DatabaseWriteException e){
             System.out.println("Error addingn listing: " + e.getMessage());
         }
@@ -121,13 +120,15 @@ public class User extends Serializable implements IUser {
         listings.remove(item);
     }
 
-    public void sendMessage(Message message) {
-        try {
+    public void sendMessage(String messageContent, int receiverId) {
+        try{
+            Message message = new Message(this.getId(), receiverId, messageContent);
             DatabaseWrapper.get().save(message);
             inbox.add(message);
-        } catch (DatabaseWriteException e) {
+        } catch(DatabaseWriteException e){
             System.out.println("Error sending message: " + e.getMessage());
         }
+
     }
 
     public void removeMessage(Message message) {
