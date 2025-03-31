@@ -2,6 +2,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+// abstract because this class should always be extended, never used directly
 public abstract class Serializable implements ISerializable {
     @SerializableField( field = "id", index = 0 )
     private int id;
