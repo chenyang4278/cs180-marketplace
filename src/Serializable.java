@@ -2,6 +2,17 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+/**
+ * Serializable
+ * <p>
+ * A class to be extended by classes of objects that are intended to be stored in the database.
+ * Fields that are to be serialized and stored should be denoted by using the
+ * SerializableField annotation and specifying the field name and index.
+ * Index specification should start at 1 (id is index 0) and go up for each field.
+ *
+ * @author Ayden Cline
+ * @version 3/31/25
+ */
 // abstract because this class should always be extended, never used directly
 public abstract class Serializable implements ISerializable {
     @SerializableField( field = "id", index = 0 )
@@ -48,12 +59,27 @@ public abstract class Serializable implements ISerializable {
             });
     }
 
+    /**
+     * Get the column names of a class that extends Serializable
+     *
+     * @param cls class for which to get column names
+     * @return array of column names
+     * @param <T> class that extends Serializable
+     */
     static public <T extends Serializable> String[] getColumns(Class<T> cls) {
         return getFields(cls)
             .map(f -> f.getAnnotation(SerializableField.class).field())
             .toArray(String[]::new);
     }
 
+    /**
+     * Creates an object from serialized values
+     *
+     * @param cls Class to create an object of
+     * @param row List of serialized values
+     * @return a new object with attributes set to the unserialized values
+     * @param <T> class that extends Serializable and matches cls argument
+     */
     static public <T extends Serializable> T fromRow(Class<T> cls, String[] row) {
         Field[] fields = getFields(cls).toArray(Field[]::new);
 
@@ -78,6 +104,9 @@ public abstract class Serializable implements ISerializable {
         }
     }
 
+    /**
+     * @return serialized values of this object
+     */
     public String[] asRow() {
         try {
             return getFields(this.getClass())
@@ -99,6 +128,12 @@ public abstract class Serializable implements ISerializable {
         }
     }
 
+    /**
+     * Saves the object to the database
+     * Call this method after making any changes to attributes.
+     *
+     * @throws DatabaseWriteException
+     */
     public void save() throws DatabaseWriteException {
         DatabaseWrapper.get().save(this);
     }
