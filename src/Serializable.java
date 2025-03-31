@@ -2,7 +2,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-public class Serializable implements ISerializable {
+public abstract class Serializable implements ISerializable {
     @SerializableField( field = "id", index = 0 )
     private int id;
 
@@ -12,10 +12,6 @@ public class Serializable implements ISerializable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    protected Serializable() {
-        id = 0;
     }
 
     static private Object parseFieldValue(Field field, String value) {
