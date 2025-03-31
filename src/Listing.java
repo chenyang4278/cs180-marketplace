@@ -30,7 +30,8 @@ public class Listing extends Serializable implements IListing {
   
   @SerializableField(field = "sold", index = 7)
   private boolean sold;
-    
+
+  // Required for Serializable
   public Listing() {}
     
   public Listing(int sellerId, String sellerName, String title, String description, 

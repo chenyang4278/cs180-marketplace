@@ -28,6 +28,9 @@ public class User extends Serializable implements IUser {
     private ArrayList<Listing> listings;
     private ArrayList<Message> inbox;
 
+    // Required for Serializable
+    public User() {}
+
     public User(String username, String password) {
         this.username = username;
         this.password = password;
