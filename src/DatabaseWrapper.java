@@ -1,6 +1,15 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DatabaseWrapper
+ * <p>
+ * Wraps the Database class with functions that make it easier
+ * to interact with the database and not worry about thread-safety.
+ *
+ * @author Ayden Cline
+ * @version 3/31/25
+ */
 public class DatabaseWrapper implements IDatabaseWrapper {
     static private IDatabaseWrapper instance;
     static private final Object staticLock = new Object();
@@ -18,16 +27,6 @@ public class DatabaseWrapper implements IDatabaseWrapper {
     private DatabaseWrapper() {
         idDb = new Database("id.csv", idColumns);
         databases = new ArrayList<IDatabase>();
-    }
-
-    private int getIndex(String[] columns, String key) {
-        for (int i = 0; i < columns.length; i++) {
-            if (columns[i].equals(key)) {
-                return i;
-            }
-        }
-
-        return -1;
     }
 
     private ArrayList<String[]> getRows(IDatabase db, String column, String value) {

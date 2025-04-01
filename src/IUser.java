@@ -12,6 +12,6 @@ public interface IUser {
     void setRating(double rating);
     void createListing(Listing item);
     void removeListing(Listing item);
-    void sendMessage(String messageContent, int receiverId)
+    void sendMessage(String messageContent, int receiverId);
     void deleteAccount();
 }
