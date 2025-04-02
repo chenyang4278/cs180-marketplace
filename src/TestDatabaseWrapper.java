@@ -139,4 +139,14 @@ public class TestDatabaseWrapper {
             assert table.getCount() == 0;
         }
     }
+
+    @Test
+    public void testDelete() throws DatabaseWriteException {
+        TestTable table = getTables()[0];
+        table.delete();
+        try {
+            DatabaseWrapper.get().getById(TestTable.class, table.getId());
+            assert false;
+        } catch (RowNotFoundException e) {}
+    }
 }

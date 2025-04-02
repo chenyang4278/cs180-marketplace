@@ -157,7 +157,24 @@ public class DatabaseWrapper implements IDatabaseWrapper {
         } catch (DatabaseNotFoundException e) {
             throw new DatabaseWriteException("Failed to save");
         }
+    }
 
+    /**
+     * Delete an object
+     *
+     * @param obj the object to delete
+     * @param <T> type that extends Serializable
+     * @throws DatabaseWriteException thrown when failing to delete for whatever reason
+     */
+    public <T extends Serializable> void delete(T obj) throws DatabaseWriteException {
+        Class<? extends Serializable> cls = obj.getClass();
+        IDatabase db = getDbFor(cls);
+
+        try {
+            db.delete("id", String.valueOf(obj.getId()));
+        } catch (DatabaseNotFoundException e) {
+            throw new DatabaseWriteException("Failed to delete");
+        }
     }
 
     /**
