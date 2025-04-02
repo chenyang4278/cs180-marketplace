@@ -12,6 +12,7 @@ public class Database implements IDatabase {
 
     private String filename;
     private String[] headers;
+    private static Object gate = new Object();
 
 
     /* Planned format (headers) for databases:
@@ -84,7 +85,9 @@ public class Database implements IDatabase {
     //Writes (appends) an array of string values to file.
     public void write(String[] values) throws DatabaseNotFoundException {
         try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), true))) {
-            pwr.println(arrayToDataLine(values));
+            synchronized (gate) {
+                pwr.println(arrayToDataLine(values));
+            }
         } catch (IOException e) {
             throw new DatabaseNotFoundException("Invalid database");
         }
@@ -113,7 +116,9 @@ public class Database implements IDatabase {
             throw new DatabaseNotFoundException("Invalid database");
         }
         try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
-            pwr.print(file);
+            synchronized (gate) {
+                pwr.print(file);
+            }
         } catch (IOException e) {
             throw new DatabaseNotFoundException("Invalid database");
         }
@@ -140,7 +145,9 @@ public class Database implements IDatabase {
             throw new DatabaseNotFoundException("Invalid database");
         }
         try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
-            pwr.print(file);
+            synchronized (gate) {
+                pwr.print(file);
+            }
         } catch (IOException e) {
             throw new DatabaseNotFoundException("Invalid database");
         }
@@ -186,7 +193,9 @@ public class Database implements IDatabase {
             throw new DatabaseNotFoundException("Invalid database");
         }
         try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
-            pwr.print(file);
+            synchronized (gate) {
+                pwr.print(file);
+            }
         } catch (IOException e) {
             throw new DatabaseNotFoundException("Invalid database");
         }
