@@ -145,12 +145,28 @@ public class User extends Serializable implements IUser {
     }
 
     public void deleteAccount() {
-        username = null;
-        password = null;
-        balance = 0.0;
-        rating = 0.0;
-        listings.clear();
-        inbox.clear();
+
+        try {
+            DatabaseWrapper.get().delete(this);
+
+            for (Listing listing : this.getListings()) {
+                DatabaseWrapper.get().delete(listing);
+            }
+
+            for (Message message : this.getInbox()) {
+                DatabaseWrapper.get().delete(message);
+            }
+
+            username = null;
+            password = null;
+            balance = 0.0;
+            rating = 0.0;
+            listings.clear();
+            inbox.clear();
+        }
+        catch (DatabaseWriteException e) {
+            System.out.println("Error deleting account: " + e.getMessage());
+        }
     }
 
 

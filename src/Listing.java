@@ -126,8 +126,8 @@ public class Listing extends Serializable implements IListing {
   }
     
   public String toString() {
-    return "Listing [id=" + getId() + ", sellerId=" + sellerId + ", sellerName=" + sellerName
-            + ", title=" + title + ", description=" + description + ", price=" + price 
-            + ", image=" + image + ", sold=" + sold + "]";
+    return "Listing: id = " + getId() + ", sellerId = " + sellerId + ", sellerName = " + sellerName
+            + ", title = " + title + ", description = " + description + ", price = " + price 
+            + ", image = " + image + ", sold = " + sold + ".";
   }
 }
