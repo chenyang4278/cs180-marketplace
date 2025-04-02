@@ -86,6 +86,8 @@ public class UserTest {
     @Test
     public void testDeleteAccount() {
         User user = new User("lucy", "lucypassword");
+        user.createListing(new Listing(user.getId(), "Lucy", "Book", "A good book", 10.00, "jpg", false));
+        user.sendMessage("This is a test message", 2);
         user.deleteAccount();
         assertNull(user.getUsername());
         assertNull(user.getPassword());
