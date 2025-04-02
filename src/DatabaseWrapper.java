@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * DatabaseWrapper
@@ -61,7 +62,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
             return 1;
         }
 
-        int nextId = Integer.parseInt(ids.getFirst()[1]) + 1;
+        int nextId = Integer.parseInt(ids.get(0)[1]) + 1;
 
         try {
             idDb.update("cls", clsName, "id", String.valueOf(nextId));
@@ -98,7 +99,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
     public <T extends Serializable> T getByColumn(Class<T> cls, String column, String value) throws RowNotFoundException {
         IDatabase db = getDbFor(cls);
         ArrayList<String[]> rows = requireRows(db, column, value, cls.getSimpleName() + " not found");
-        String[] row = rows.getFirst();
+        String[] row = rows.get(0);
         return Serializable.fromRow(cls, row);
     }
 
@@ -114,7 +115,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
     public <T extends Serializable> List<T> filterByColumn(Class<T> cls, String column, String value) {
         IDatabase db = getDbFor(cls);
         ArrayList<String[]> rows = getRows(db, column, value);
-        return rows.stream().map(row -> Serializable.fromRow(cls, row)).toList();
+        return rows.stream().map(row -> Serializable.fromRow(cls, row)).collect(Collectors.toList());
     }
 
     /**

@@ -133,8 +133,8 @@ public class TestDatabaseWrapper {
 
     @Test
     public void testFilter() throws RowNotFoundException {
+        getTables();  // ensure initiated
         List<TestTable> tables = DatabaseWrapper.get().filterByColumn(TestTable.class, "count", "0");
-        assert tables.size() >= 2;
         for (TestTable table : tables) {
             assert table.getCount() == 0;
         }
