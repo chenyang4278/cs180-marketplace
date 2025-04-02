@@ -50,4 +50,26 @@ public class UserTest {
         assertEquals(5.0, user.getRating(), 0.01);
     }
 
-}
+    @Test
+    public void testAddRemoveListing(){
+        User user = new User("Awooga", "lol");
+        user.createListing(new Listing(user.getId(), "Item 1"));
+        assertEquals(1, user.getListings().size());
+
+        user.removeListing(new Listing(user.getId(), "Item 1"));
+        assertEquals(0, user.getListings().size());
+    }
+
+    @Test
+    public void testAddRemoveMessage() {
+        User user = new User("tom", "tompwd");
+        user.sendMessage("Hello, how are you?", 2);
+        assertEquals(1, user.getInbox().size());
+        user.removeMessage(user.getInbox().get(0));
+        assertEquals(0, user.getInbox().size());
+    }
+
+
+
+
+    }
