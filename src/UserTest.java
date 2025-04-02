@@ -1,20 +1,30 @@
 import org.junit.Test;
+
 import static org.junit.Assert.*;
+
+/**
+ * UserTest
+ * <p>
+ * Junit tests for user class
+ *
+ * @author Chen Yang, section 24
+ * @version 4/1/25
+ */
 
 public class UserTest {
 
     @Test
-    public void testUserCreation(){
-        User user  = new User("chen_yang","passwordabc");
+    public void testUserCreation() {
+        User user = new User("chen_yang", "passwordabc");
         assertNotNull(user);
-        assertEquals("chen_yang",user.getUsername());
+        assertEquals("chen_yang", user.getUsername());
         assertEquals("passwordabc", user.getPassword());
         assertEquals(0.0, user.getBalance(), 0.01);
         assertEquals(0.0, user.getRating(), 0.01);
     }
 
     @Test
-    public void testSettersAndGetters(){
+    public void testSettersAndGetters() {
         User user = new User("dawn_xin", "mypassword");
 
         user.setUsername("new_username");
@@ -51,7 +61,7 @@ public class UserTest {
     }
 
     @Test
-    public void testAddRemoveListing(){
+    public void testAddRemoveListing() {
         User user = new User("Awooga", "lol");
         user.createListing(new Listing(user.getId(), "Item 1"));
         assertEquals(1, user.getListings().size());
@@ -94,4 +104,4 @@ public class UserTest {
     }
 
 
-    }
+}
