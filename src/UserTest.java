@@ -69,7 +69,29 @@ public class UserTest {
         assertEquals(0, user.getInbox().size());
     }
 
+    @Test
+    public void testDeleteAccount() {
+        User user = new User("lucy", "lucypassword");
+        user.deleteAccount();
+        assertNull(user.getUsername());
+        assertNull(user.getPassword());
+        assertEquals(0.0, user.getBalance(), 0.01);
+        assertEquals(0.0, user.getRating(), 0.01);
+        assertTrue(user.getListings().isEmpty());
+        assertTrue(user.getInbox().isEmpty());
+    }
 
+    @Test
+    public void testInvalidUsername() {
+        User user = new User("", "password");
+        assertFalse(user.getUsername().isEmpty());
+    }
+
+    @Test
+    public void testInvalidPassword() {
+        User user = new User("validuser", "");
+        assertFalse(user.getPassword().isEmpty());
+    }
 
 
     }
