@@ -2,6 +2,8 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.fail;
+
 public class TestDatabaseWrapper {
     private TestTable[] tables = new TestTable[4];
 
@@ -69,7 +71,7 @@ public class TestDatabaseWrapper {
         table.delete();
         try {
             TestTable.getById(table.getId());
-            assert false;
+            fail("User was not deleted");
         } catch (RowNotFoundException e) {}
     }
 }
