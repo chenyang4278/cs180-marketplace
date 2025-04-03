@@ -98,15 +98,22 @@ public class UserTest {
 
     @Test
     public void testInvalidUsername() {
-        User user = new User("", "password");
-        assertFalse(user.getUsername().isEmpty());
+        try {
+            User user = new User("", "password");
+            fail("Expected IllegalArgumentException for empty username");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Username cannot be empty", e.getMessage());
+        }
     }
 
     @Test
     public void testInvalidPassword() {
-        User user = new User("validuser", "");
-        assertFalse(user.getPassword().isEmpty());
+        try {
+            User user = new User("validuser", "");
+            fail("Expected IllegalArgumentException for empty password");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Password cannot be empty", e.getMessage());
+        }
     }
-
 
 }

@@ -30,6 +30,12 @@ public class User extends Serializable implements IUser {
     public User() {}
 
     public User(String username, String password) {
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be empty");
+        }
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be empty");
+        }
         this.username = username;
         this.password = password;
         balance = 0.0;
