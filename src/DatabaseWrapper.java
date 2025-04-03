@@ -12,24 +12,24 @@ import java.util.stream.Collectors;
  * @version 3/31/25
  */
 public class DatabaseWrapper implements IDatabaseWrapper {
-    static private IDatabaseWrapper instance;
+    static private DatabaseWrapper instance;
     static private final Object staticLock = new Object();
 
-    private final IDatabase idDb;
+    private final Database idDb;
     static private final String[] idColumns = new String[] {
         "cls",
         "id"
     };
 
-    private final ArrayList<IDatabase> databases;
+    private final ArrayList<Database> databases;
     private final Object lock = new Object();
 
     private DatabaseWrapper() {
         idDb = new Database("id.csv", idColumns);
-        databases = new ArrayList<IDatabase>();
+        databases = new ArrayList<Database>();
     }
 
-    private ArrayList<String[]> getRows(IDatabase db, String column, String value) {
+    private ArrayList<String[]> getRows(Database db, String column, String value) {
         try {
             return db.get(column, value);
         } catch (DatabaseNotFoundException e) {
@@ -37,7 +37,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
         }
     }
 
-    private ArrayList<String[]> requireRows(IDatabase db, String column, String value, String errorMsg) throws RowNotFoundException {
+    private ArrayList<String[]> requireRows(Database db, String column, String value, String errorMsg) throws RowNotFoundException {
         ArrayList<String[]> rows = getRows(db, column, value);
         if (rows.isEmpty()) {
             throw new RowNotFoundException(errorMsg);
@@ -71,17 +71,17 @@ public class DatabaseWrapper implements IDatabaseWrapper {
         return nextId;
     }
 
-    private <T extends Serializable> IDatabase getDbFor(Class<T> cls) {
+    private <T extends Serializable> Database getDbFor(Class<T> cls) {
         String dbName = cls.getSimpleName() + ".csv";
         
         synchronized (lock) {
-            for (IDatabase db : databases) {
+            for (Database db : databases) {
                 if (db.getFilename().equals(dbName)) {
                     return db;
                 }
             }
 
-            IDatabase db = new Database(dbName, Serializable.getColumns(cls));
+            Database db = new Database(dbName, Serializable.getColumns(cls));
             databases.add(db);
             return db;
         }
@@ -98,7 +98,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @throws RowNotFoundException thrown if a matching row is not found
      */
     public <T extends Serializable> T getByColumn(Class<T> cls, String column, String value) throws RowNotFoundException {
-        IDatabase db = getDbFor(cls);
+        Database db = getDbFor(cls);
         ArrayList<String[]> rows = requireRows(db, column, value, cls.getSimpleName() + " not found");
         String[] row = rows.get(0);
         return Serializable.fromRow(cls, row);
@@ -114,7 +114,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @param <T> type that extends Serializable
      */
     public <T extends Serializable> List<T> filterByColumn(Class<T> cls, String column, String value) {
-        IDatabase db = getDbFor(cls);
+        Database db = getDbFor(cls);
         ArrayList<String[]> rows = getRows(db, column, value);
         return rows.stream().map(row -> Serializable.fromRow(cls, row)).collect(Collectors.toList());
     }
@@ -143,7 +143,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      */
     public <T extends Serializable> void save(T obj) throws DatabaseWriteException {
         var cls = obj.getClass();
-        IDatabase db = getDbFor(cls);
+        Database db = getDbFor(cls);
 
         try {
             // object has not yet been saved to the db
@@ -168,7 +168,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      */
     public <T extends Serializable> void delete(T obj) throws DatabaseWriteException {
         Class<? extends Serializable> cls = obj.getClass();
-        IDatabase db = getDbFor(cls);
+        Database db = getDbFor(cls);
 
         try {
             db.delete("id", String.valueOf(obj.getId()));
@@ -180,7 +180,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
     /**
      * @return Global DatabaseWrapper instance
      */
-    static public IDatabaseWrapper get() {
+    static public DatabaseWrapper get() {
         synchronized (staticLock) {
             if (instance == null) {
                 instance = new DatabaseWrapper();
