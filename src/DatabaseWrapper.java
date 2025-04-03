@@ -46,6 +46,8 @@ public class DatabaseWrapper implements IDatabaseWrapper {
         return rows;
     }
 
+    // called inside a lock
+    // reason stated inside save function
     private <T extends Serializable> int getNextId(Class<T> cls) throws DatabaseWriteException {
         String clsName = cls.getSimpleName();
 
@@ -150,6 +152,9 @@ public class DatabaseWrapper implements IDatabaseWrapper {
         try {
             // avoid race conditions in saving an object
             // e.g. writing two rows for the same object
+            // so need to get and set id within the lock
+            // also write in case something tries to update
+            // before it's in the database
             synchronized (lock) {
                 // object has not yet been saved to the db
                 if (obj.getId() == 0) {
