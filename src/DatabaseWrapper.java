@@ -146,11 +146,15 @@ public class DatabaseWrapper implements IDatabaseWrapper {
         Database db = getDbFor(cls);
 
         try {
-            // object has not yet been saved to the db
-            if (obj.getId() == 0) {
-                obj.setId(getNextId(cls));
-                db.write(obj.asRow());
-                return;
+            // avoid race conditions in saving an object
+            // e.g. writing two rows for the same object
+            synchronized (lock) {
+                // object has not yet been saved to the db
+                if (obj.getId() == 0) {
+                    obj.setId(getNextId(cls));
+                    db.write(obj.asRow());
+                    return;
+                }
             }
 
             db.update("id", String.valueOf(obj.getId()), obj.asRow());
@@ -167,13 +171,21 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @throws DatabaseWriteException thrown when failing to delete for whatever reason
      */
     public <T extends Serializable> void delete(T obj) throws DatabaseWriteException {
-        Class<? extends Serializable> cls = obj.getClass();
-        Database db = getDbFor(cls);
+        // avoid a race condition where an already-deleted object is attempted to be re-deleted
+        synchronized (lock) {
+            if (obj.getId() == 0) {
+                return;
+            }
 
-        try {
-            db.delete("id", String.valueOf(obj.getId()));
-        } catch (DatabaseNotFoundException e) {
-            throw new DatabaseWriteException("Failed to delete");
+            Class<? extends Serializable> cls = obj.getClass();
+            Database db = getDbFor(cls);
+
+            try {
+                db.delete("id", String.valueOf(obj.getId()));
+                obj.setId(0);
+            } catch (DatabaseNotFoundException e) {
+                throw new DatabaseWriteException("Failed to delete");
+            }
         }
     }
 
