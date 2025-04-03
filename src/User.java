@@ -80,11 +80,7 @@ public class User extends Serializable implements IUser {
 
     public ArrayList<Listing> getListings() {
         if (listings == null) {
-            try {
-                listings = (ArrayList<Listing>) DatabaseWrapper.get().filterByColumn(Listing.class, "seller_id", String.valueOf(this.getId()));
-            } catch (RowNotFoundException e) {
-                listings = new ArrayList<>();
-            }
+            listings = (ArrayList<Listing>) DatabaseWrapper.get().filterByColumn(Listing.class, "seller_id", String.valueOf(this.getId()));
         }
         return listings;
     }
@@ -92,11 +88,7 @@ public class User extends Serializable implements IUser {
 
     public ArrayList<Message> getInbox() {
         if (inbox == null) {
-            try {
-                inbox = (ArrayList<Message>) DatabaseWrapper.get().filterByColumn(Message.class, "receiver_id", String.valueOf(this.getId()));
-            } catch (RowNotFoundException e) {
-                inbox = new ArrayList<>();
-            }
+            inbox = (ArrayList<Message>) DatabaseWrapper.get().filterByColumn(Message.class, "receiver_id", String.valueOf(this.getId()));
         }
         return inbox;
     }
@@ -186,7 +178,7 @@ public class User extends Serializable implements IUser {
         return DatabaseWrapper.get().getById(User.class, userId);
     }
 
-    public static ArrayList<User> getUsersByColumn(String column, String value) throws RowNotFoundException {
+    public static ArrayList<User> getUsersByColumn(String column, String value) {
         return new ArrayList<>(DatabaseWrapper.get().filterByColumn(User.class, column, value));
     }
 
