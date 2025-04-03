@@ -1,8 +1,10 @@
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.List;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class TestDatabaseWrapper {
     private TestTable[] tables = new TestTable[4];
@@ -27,6 +29,13 @@ public class TestDatabaseWrapper {
         }
 
         return tables;
+    }
+
+    @BeforeClass
+    public static void setUpClass() {
+        // start on a clean slate
+        File f = new File("TestTable.csv");
+        f.delete();
     }
 
     @Test
@@ -85,5 +94,71 @@ public class TestDatabaseWrapper {
             TestTable.getById(-1);
             fail("Should have thrown an exception for no object with id -1");
         } catch (RowNotFoundException e) {}
+    }
+
+    @Test
+    public void testThreadSafety() throws InterruptedException {
+        Thread[] threads = new Thread[] {
+            new TestThread("1"),
+            new TestThread("2"),
+            new TestThread("3"),
+            new TestThread("4"),
+            new TestThread("5")
+        };
+
+        for (Thread thread : threads) {
+            thread.start();
+        }
+
+        for (Thread thread : threads) {
+            thread.join();
+        }
+
+        List<TestTable> tables = DatabaseWrapper.get().filterByColumn(TestTable.class, "count", "727");
+        assertEquals(250, tables.size());
+    }
+
+    class TestThread extends Thread {
+        private String name;
+
+        public TestThread(String name) {
+            this.name = name;
+        }
+
+        public void run() {
+            try {
+                String localName = "thread-safety-test-table-" + name;
+
+                for (int i=0; i<100; i++) {
+                    TestTable t = new TestTable(
+                        localName,
+                        100,
+                        200,
+                        0.54f,
+                        0.218d
+                    );
+                    t.save();
+                    t.setCount(727);
+                    t.save();
+                }
+
+                DatabaseWrapper db = DatabaseWrapper.get();
+                List<TestTable> tables = db.filterByColumn(TestTable.class, "name", localName);
+                assertEquals(100, tables.size());
+                for (TestTable table : tables) {
+                    assertEquals(727, table.getCount());
+                }
+
+                for (int i = 0; i < tables.size(); i += 2) {
+                    TestTable t = tables.get(i);
+                    t.delete();
+                }
+
+                tables = db.filterByColumn(TestTable.class, "name", localName);
+                assertEquals(50, tables.size());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
