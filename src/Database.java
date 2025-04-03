@@ -84,20 +84,20 @@ public class Database implements IDatabase {
 
     //Writes (appends) an array of string values to file.
     public void write(String[] values) throws DatabaseNotFoundException {
-        try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), true))) {
-            synchronized (GATE) {
+        synchronized (GATE) {
+            try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), true))) {
                 pwr.println(arrayToDataLine(values));
+            } catch (IOException e) {
+                throw new DatabaseNotFoundException("Invalid database");
             }
-        } catch (IOException e) {
-            throw new DatabaseNotFoundException("Invalid database");
         }
     }
 
     //Updates an line of a given value in the database.
     public void update(String header, String value, String uHeader, String uValue) throws DatabaseNotFoundException {
         String file = "";
-        try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
-            synchronized (GATE) {
+        synchronized (GATE) {
+            try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
                 String line = bfr.readLine();
                 int checkIndex = headerIndexOf(header);
                 int updateIndex = headerIndexOf(uHeader);
@@ -113,24 +113,22 @@ public class Database implements IDatabase {
                     }
                     line = bfr.readLine();
                 }
+            } catch (IOException e) {
+                throw new DatabaseNotFoundException("Invalid database");
             }
-        } catch (IOException e) {
-            throw new DatabaseNotFoundException("Invalid database");
-        }
-        try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
-            synchronized (GATE) {
+            try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
                 pwr.print(file);
+            } catch (IOException e) {
+                throw new DatabaseNotFoundException("Invalid database");
             }
-        } catch (IOException e) {
-            throw new DatabaseNotFoundException("Invalid database");
         }
     }
 
     //Updates an line in the database.
     public void update(String header, String value, String[] newrow) throws DatabaseNotFoundException {
         String file = "";
-        try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
-            synchronized (GATE) {
+        synchronized (GATE) {
+            try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
                 String line = bfr.readLine();
                 int checkIndex = headerIndexOf(header);
                 while (line != null) {
@@ -144,24 +142,22 @@ public class Database implements IDatabase {
                     }
                     line = bfr.readLine();
                 }
+            } catch (IOException e) {
+                throw new DatabaseNotFoundException("Invalid database");
             }
-        } catch (IOException e) {
-            throw new DatabaseNotFoundException("Invalid database");
-        }
-        try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
-            synchronized (GATE) {
+            try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
                 pwr.print(file);
+            } catch (IOException e) {
+                throw new DatabaseNotFoundException("Invalid database");
             }
-        } catch (IOException e) {
-            throw new DatabaseNotFoundException("Invalid database");
         }
     }
 
     //Finds lines with a specific key-value pair and returns in array form. Returns an empty array if no string is found.
     public ArrayList<String[]> get(String header, String value) throws DatabaseNotFoundException {
         ArrayList<String[]> values = new ArrayList<>();
-        try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
-            synchronized (GATE) {
+        synchronized (GATE) {
+            try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
                 String line = bfr.readLine();
                 int checkIndex = headerIndexOf(header);
                 while (line != null) {
@@ -173,9 +169,9 @@ public class Database implements IDatabase {
                     }
                     line = bfr.readLine();
                 }
+            } catch (IOException e) {
+                throw new DatabaseNotFoundException("Invalid database");
             }
-        } catch (IOException e) {
-            throw new DatabaseNotFoundException("Invalid database");
         }
         return values;
     }
@@ -183,8 +179,8 @@ public class Database implements IDatabase {
     //Deletes all lines containing a given key value pair.
     public void delete(String header, String value) throws DatabaseNotFoundException {
         String file = "";
-        try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
-            synchronized (GATE) {
+        synchronized (GATE) {
+            try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
                 String line = bfr.readLine();
                 int checkIndex = headerIndexOf(header);
                 while (line != null) {
@@ -196,16 +192,14 @@ public class Database implements IDatabase {
                     }
                     line = bfr.readLine();
                 }
+            } catch (IOException e) {
+                throw new DatabaseNotFoundException("Invalid database");
             }
-        } catch (IOException e) {
-            throw new DatabaseNotFoundException("Invalid database");
-        }
-        try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
-            synchronized (GATE) {
+            try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
                 pwr.print(file);
+            } catch (IOException e) {
+                throw new DatabaseNotFoundException("Invalid database");
             }
-        } catch (IOException e) {
-            throw new DatabaseNotFoundException("Invalid database");
         }
     }
 
