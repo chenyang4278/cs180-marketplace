@@ -63,14 +63,13 @@ public class UserTest {
     @Test
     public void testAddRemoveListing() {
         User user = new User("Awooga", "lol");
-        user.createListing(new Listing(user.getId(), "Awooga",
+        Listing l = new Listing(user.getId(), "Awooga",
                 "Water Bottle", "holds water", 20.00,
-                "jpg", false));
+                "jpg", false);
+        user.createListing(l);
         assertEquals(1, user.getListings().size());
 
-        user.removeListing(new Listing(user.getId(), "Awooga",
-                "Water Bottle", "holds water", 20.00,
-                "jpg", false));
+        user.removeListing(l);
         assertEquals(0, user.getListings().size());
     }
 

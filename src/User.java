@@ -109,16 +109,22 @@ public class User extends Serializable implements IUser {
     //waiting on listing class
     public void createListing(Listing item) {
         try{
-            DatabaseWrapper.get().save(item);
+            item.save();
             listings.add(item);
         } catch(DatabaseWriteException e){
-            System.out.println("Error addingn listing: " + e.getMessage());
+            System.out.println("Error adding listing: " + e.getMessage());
         }
 
     }
 
     public void removeListing(Listing item) {
-        listings.remove(item);
+        try {
+            item.delete();
+            listings.remove(item);
+        }
+        catch (DatabaseWriteException e) {
+            System.out.println("Error deleting account: " + e.getMessage());
+        }
     }
 
     public void sendMessage(String messageContent, int receiverId) {
@@ -133,7 +139,13 @@ public class User extends Serializable implements IUser {
     }
 
     public void removeMessage(Message message) {
-        inbox.remove(message);
+
+        try {
+            message.delete();
+            inbox.remove(message);
+        } catch(DatabaseWriteException e){
+            System.out.println("Error sending message: " + e.getMessage());
+        }
     }
 
     public void updateBalance(double amount) {
@@ -147,14 +159,13 @@ public class User extends Serializable implements IUser {
     public void deleteAccount() {
 
         try {
-            DatabaseWrapper.get().delete(this);
-
+            this.delete();
             for (Listing listing : this.getListings()) {
-                DatabaseWrapper.get().delete(listing);
+                listing.delete();
             }
 
             for (Message message : this.getInbox()) {
-                DatabaseWrapper.get().delete(message);
+                message.delete();
             }
 
             username = null;
