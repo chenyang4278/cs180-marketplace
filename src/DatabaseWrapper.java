@@ -30,14 +30,11 @@ public class DatabaseWrapper implements IDatabaseWrapper {
     }
 
     private ArrayList<String[]> getRows(IDatabase db, String column, String value) {
-        ArrayList<String[]> rows;
         try {
-            rows = db.get(column, value);
+            return db.get(column, value);
         } catch (DatabaseNotFoundException e) {
-            rows = new ArrayList<>();
+            return new ArrayList<>();
         }
-
-        return rows;
     }
 
     private ArrayList<String[]> requireRows(IDatabase db, String column, String value, String errorMsg) throws RowNotFoundException {
@@ -155,7 +152,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
                 db.write(obj.asRow());
                 return;
             }
-            
+
             db.update("id", String.valueOf(obj.getId()), obj.asRow());
         } catch (DatabaseNotFoundException e) {
             throw new DatabaseWriteException("Failed to save");
