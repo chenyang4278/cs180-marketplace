@@ -77,6 +77,10 @@ class TestTable extends Serializable {
                 preciseDecimal == other.preciseDecimal
             );
     }
+
+    public static TestTable getById(int id) throws RowNotFoundException {
+        return DatabaseWrapper.get().getById(TestTable.class, id);
+    }
 }
 
 public class TestDatabaseWrapper {
@@ -145,7 +149,7 @@ public class TestDatabaseWrapper {
         TestTable table = getTables()[0];
         table.delete();
         try {
-            DatabaseWrapper.get().getById(TestTable.class, table.getId());
+            TestTable.getById(table.getId());
             assert false;
         } catch (RowNotFoundException e) {}
     }
