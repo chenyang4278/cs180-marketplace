@@ -50,6 +50,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
         String clsName = cls.getSimpleName();
 
         ArrayList<String[]> ids = getRows(idDb, "cls", clsName);
+        // add id row for class if it doesn't exist
         if (ids.isEmpty()) {
             try {
                 idDb.write(new String[] { clsName, "1" });
@@ -62,6 +63,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
 
         int nextId = Integer.parseInt(ids.get(0)[1]) + 1;
 
+        // update last used id
         try {
             idDb.update("cls", clsName, "id", String.valueOf(nextId));
         } catch (DatabaseNotFoundException e) {

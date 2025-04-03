@@ -27,6 +27,7 @@ public abstract class Serializable implements ISerializable {
     }
 
     static private Object parseFieldValue(Field field, String value) {
+        // parse string value back to its original value type
         if (field.getType().equals(String.class)) {
             return value;
         } else if (field.getType().equals(int.class)) {
@@ -43,6 +44,8 @@ public abstract class Serializable implements ISerializable {
     }
 
     static private <T extends Serializable> Stream<Field> getFields(Class<T> cls) {
+        // get all fields declared in the class
+        // then add id field from this class
         Field[] fields = cls.getDeclaredFields();
         fields = Arrays.copyOf(fields, fields.length + 1);
         try {
@@ -50,6 +53,8 @@ public abstract class Serializable implements ISerializable {
         } catch (NoSuchFieldException e) { // unreachable
             throw new RuntimeException(e);
         }
+        // return fields that are annotated by SerializableField
+        // and sort by their specified index
         return Arrays.stream(fields)
             .filter(f -> f.isAnnotationPresent(SerializableField.class))
             .sorted((a, b) -> {
@@ -67,6 +72,7 @@ public abstract class Serializable implements ISerializable {
      * @param <T> class that extends Serializable
      */
     static public <T extends Serializable> String[] getColumns(Class<T> cls) {
+        // map list of annotated fields to their specified field names
         return getFields(cls)
             .map(f -> f.getAnnotation(SerializableField.class).field())
             .toArray(String[]::new);
@@ -84,13 +90,18 @@ public abstract class Serializable implements ISerializable {
         Field[] fields = getFields(cls).toArray(Field[]::new);
 
         try {
+            // create new blank object
             Object obj = cls.getConstructor().newInstance();
 
             for (Field field : fields) {
+                // get annotation info for this field
                 SerializableField annotation = field.getAnnotation(SerializableField.class);
                 if (annotation != null) {
+                    // set the field to be accessible
                     field.setAccessible(true);
+                    // then initiate its value
                     field.set(obj, parseFieldValue(field, row[annotation.index()]));
+                    // return it back to false
                     field.setAccessible(false);
                 }
             }
@@ -109,9 +120,10 @@ public abstract class Serializable implements ISerializable {
      */
     public String[] asRow() {
         try {
+            // map each field to its value in this object
             return getFields(this.getClass())
                 .map(f -> {
-                    try {
+                    try {  // java makes me put this try statement inside the stream
                         f.setAccessible(true);
                         String value = String.valueOf(f.get(this));
                         f.setAccessible(false);
@@ -121,10 +133,9 @@ public abstract class Serializable implements ISerializable {
                     }
                 })
                 .toArray(String[]::new);
-        } catch (Exception e) {
+        } catch (Exception e) {  // shouldn't occur unless maybe the classes are in different modules for some reason
             System.out.println("Failed to convert " + this.getClass().getSimpleName());
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
