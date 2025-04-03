@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * DatabaseWrapper
@@ -11,8 +12,8 @@ import java.util.List;
  * @version 3/31/25
  */
 public class DatabaseWrapper implements IDatabaseWrapper {
+    // TODO: implement thread-safety
     static private IDatabaseWrapper instance;
-    static private final Object staticLock = new Object();
 
     private final IDatabase idDb;
     static private final String[] idColumns = new String[] {
@@ -22,19 +23,20 @@ public class DatabaseWrapper implements IDatabaseWrapper {
 
     private final ArrayList<IDatabase> databases;
 
-    private final Object lock = new Object();
-
     private DatabaseWrapper() {
         idDb = new Database("id.csv", idColumns);
         databases = new ArrayList<IDatabase>();
     }
 
     private ArrayList<String[]> getRows(IDatabase db, String column, String value) {
+        ArrayList<String[]> rows;
         try {
-            return db.get(column, value);
+            rows = db.get(column, value);
         } catch (DatabaseNotFoundException e) {
-            return new ArrayList<>();
+            rows = new ArrayList<>();
         }
+
+        return rows;
     }
 
     private ArrayList<String[]> requireRows(IDatabase db, String column, String value, String errorMsg) throws RowNotFoundException {
@@ -60,7 +62,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
             return 1;
         }
 
-        int nextId = Integer.parseInt(ids.getFirst()[1]) + 1;
+        int nextId = Integer.parseInt(ids.get(0)[1]) + 1;
 
         try {
             idDb.update("cls", clsName, "id", String.valueOf(nextId));
@@ -95,12 +97,10 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @throws RowNotFoundException thrown if a matching row is not found
      */
     public <T extends Serializable> T getByColumn(Class<T> cls, String column, String value) throws RowNotFoundException {
-        synchronized (lock) {
-            IDatabase db = getDbFor(cls);
-            ArrayList<String[]> rows = requireRows(db, column, value, cls.getSimpleName() + " not found");
-            String[] row = rows.getFirst();
-            return Serializable.fromRow(cls, row);
-        }
+        IDatabase db = getDbFor(cls);
+        ArrayList<String[]> rows = requireRows(db, column, value, cls.getSimpleName() + " not found");
+        String[] row = rows.get(0);
+        return Serializable.fromRow(cls, row);
     }
 
     /**
@@ -113,11 +113,9 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @param <T> type that extends Serializable
      */
     public <T extends Serializable> List<T> filterByColumn(Class<T> cls, String column, String value) {
-        synchronized (lock) {
-            IDatabase db = getDbFor(cls);
-            ArrayList<String[]> rows = getRows(db, column, value);
-            return rows.stream().map(row -> Serializable.fromRow(cls, row)).toList();
-        }
+        IDatabase db = getDbFor(cls);
+        ArrayList<String[]> rows = getRows(db, column, value);
+        return rows.stream().map(row -> Serializable.fromRow(cls, row)).collect(Collectors.toList());
     }
 
     /**
@@ -143,23 +141,39 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @throws DatabaseWriteException thrown when failing to write for whatever reason
      */
     public <T extends Serializable> void save(T obj) throws DatabaseWriteException {
-        synchronized (lock) {
-            var cls = obj.getClass();
-            IDatabase db = getDbFor(cls);
+        var cls = obj.getClass();
+        IDatabase db = getDbFor(cls);
 
-            try {
-                // object has not yet been saved to the db
-                if (obj.getId() == 0) {
-                    obj.setId(getNextId(cls));
-                    db.write(obj.asRow());
-                    return;
-                }
-
-                // update entire row here (method doesn't exist yet)
-                db.update("id", String.valueOf(obj.getId()), obj.asRow());
-            } catch (DatabaseNotFoundException e) {
-                throw new DatabaseWriteException("Failed to save");
+        try {
+            // object has not yet been saved to the db
+            if (obj.getId() == 0) {
+                obj.setId(getNextId(cls));
+                db.write(obj.asRow());
+                return;
             }
+
+            // update entire row here (method doesn't exist yet)
+            db.update("id", String.valueOf(obj.getId()), obj.asRow());
+        } catch (DatabaseNotFoundException e) {
+            throw new DatabaseWriteException("Failed to save");
+        }
+    }
+
+    /**
+     * Delete an object
+     *
+     * @param obj the object to delete
+     * @param <T> type that extends Serializable
+     * @throws DatabaseWriteException thrown when failing to delete for whatever reason
+     */
+    public <T extends Serializable> void delete(T obj) throws DatabaseWriteException {
+        Class<? extends Serializable> cls = obj.getClass();
+        IDatabase db = getDbFor(cls);
+
+        try {
+            db.delete("id", String.valueOf(obj.getId()));
+        } catch (DatabaseNotFoundException e) {
+            throw new DatabaseWriteException("Failed to delete");
         }
     }
 
@@ -167,12 +181,10 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @return Global DatabaseWrapper instance
      */
     static public IDatabaseWrapper get() {
-        synchronized (staticLock) {
-            if (instance == null) {
-                instance = new DatabaseWrapper();
-            }
-
-            return instance;
+        if (instance == null) {
+            instance = new DatabaseWrapper();
         }
+
+        return instance;
     }
 }

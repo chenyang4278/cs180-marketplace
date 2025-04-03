@@ -137,4 +137,13 @@ public abstract class Serializable implements ISerializable {
     public void save() throws DatabaseWriteException {
         DatabaseWrapper.get().save(this);
     }
+
+    /**
+     * Deletes the object from the database
+     *
+     * @throws DatabaseWriteException
+     */
+    public void delete() throws DatabaseWriteException {
+        DatabaseWrapper.get().delete(this);
+    }
 }

@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-
 /**
  * User
  * <p>
@@ -8,7 +7,6 @@ import java.util.ArrayList;
  * @author Chen Yang, section 24
  * @version 3/28/25
  */
-
 public class User extends Serializable implements IUser {
 
     //this is user info
@@ -111,16 +109,22 @@ public class User extends Serializable implements IUser {
     //waiting on listing class
     public void createListing(Listing item) {
         try{
-            DatabaseWrapper.get().save(item);
+            item.save();
             listings.add(item);
         } catch(DatabaseWriteException e){
-            System.out.println("Error addingn listing: " + e.getMessage());
+            System.out.println("Error adding listing: " + e.getMessage());
         }
 
     }
 
     public void removeListing(Listing item) {
-        listings.remove(item);
+        try {
+            item.delete();
+            listings.remove(item);
+        }
+        catch (DatabaseWriteException e) {
+            System.out.println("Error deleting account: " + e.getMessage());
+        }
     }
 
     public void sendMessage(String messageContent, int receiverId) {
@@ -135,7 +139,13 @@ public class User extends Serializable implements IUser {
     }
 
     public void removeMessage(Message message) {
-        inbox.remove(message);
+
+        try {
+            message.delete();
+            inbox.remove(message);
+        } catch(DatabaseWriteException e){
+            System.out.println("Error sending message: " + e.getMessage());
+        }
     }
 
     public void updateBalance(double amount) {
@@ -147,12 +157,27 @@ public class User extends Serializable implements IUser {
     }
 
     public void deleteAccount() {
-        username = null;
-        password = null;
-        balance = 0.0;
-        rating = 0.0;
-        listings.clear();
-        inbox.clear();
+
+        try {
+            this.delete();
+            for (Listing listing : this.getListings()) {
+                listing.delete();
+            }
+
+            for (Message message : this.getInbox()) {
+                message.delete();
+            }
+
+            username = null;
+            password = null;
+            balance = 0.0;
+            rating = 0.0;
+            listings.clear();
+            inbox.clear();
+        }
+        catch (DatabaseWriteException e) {
+            System.out.println("Error deleting account: " + e.getMessage());
+        }
     }
 
 
