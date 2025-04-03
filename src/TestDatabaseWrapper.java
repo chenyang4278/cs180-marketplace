@@ -73,5 +73,17 @@ public class TestDatabaseWrapper {
             TestTable.getById(table.getId());
             fail("User was not deleted");
         } catch (RowNotFoundException e) {}
+
+        // should do nothing
+        table.delete();
+    }
+
+    @Test
+    public void testDoesNotExist() {
+        getTables();  // ensure initiated
+        try {
+            TestTable.getById(-1);
+            fail("Should have thrown an exception for no object with id -1");
+        } catch (RowNotFoundException e) {}
     }
 }
