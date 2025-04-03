@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
  * @version 3/31/25
  */
 public class DatabaseWrapper implements IDatabaseWrapper {
-    // TODO: implement thread-safety
     static private IDatabaseWrapper instance;
+    static private final Object staticLock = new Object();
 
     private final IDatabase idDb;
     static private final String[] idColumns = new String[] {
@@ -22,6 +22,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
     };
 
     private final ArrayList<IDatabase> databases;
+    private final Object lock = new Object();
 
     private DatabaseWrapper() {
         idDb = new Database("id.csv", idColumns);
@@ -75,15 +76,18 @@ public class DatabaseWrapper implements IDatabaseWrapper {
 
     private <T extends Serializable> IDatabase getDbFor(Class<T> cls) {
         String dbName = cls.getSimpleName() + ".csv";
-        for (IDatabase db : databases) {
-            if (db.getFilename().equals(dbName)) {
-                return db;
+        
+        synchronized (lock) {
+            for (IDatabase db : databases) {
+                if (db.getFilename().equals(dbName)) {
+                    return db;
+                }
             }
-        }
 
-        IDatabase db = new Database(dbName, Serializable.getColumns(cls));
-        databases.add(db);
-        return db;
+            IDatabase db = new Database(dbName, Serializable.getColumns(cls));
+            databases.add(db);
+            return db;
+        }
     }
 
     /**
@@ -181,8 +185,10 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @return Global DatabaseWrapper instance
      */
     static public IDatabaseWrapper get() {
-        if (instance == null) {
-            instance = new DatabaseWrapper();
+        synchronized (staticLock) {
+            if (instance == null) {
+                instance = new DatabaseWrapper();
+            }
         }
 
         return instance;

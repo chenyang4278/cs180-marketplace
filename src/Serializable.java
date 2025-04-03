@@ -122,7 +122,7 @@ public abstract class Serializable implements ISerializable {
                 })
                 .toArray(String[]::new);
         } catch (Exception e) {
-            System.out.println("Failed to convert " + this.getClass().getSimpleName() + " ");
+            System.out.println("Failed to convert " + this.getClass().getSimpleName());
             e.printStackTrace();
             return null;
         }
