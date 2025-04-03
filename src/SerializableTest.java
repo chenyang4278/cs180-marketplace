@@ -32,6 +32,14 @@ public class SerializableTest {
         assertEquals(30, t.getLongCount());
         assertEquals(5.4, t.getDecimal(), 0.001);
         assertEquals(3.2, t.getPreciseDecimal(), 0.001);
+
+        try {
+            Serializable.fromRow(
+                TestTable.class,
+                new String[] {}
+            );
+            fail("Should have thrown an exception for invalid number of values");
+        } catch (RuntimeException e) {}
     }
 
     @Test
