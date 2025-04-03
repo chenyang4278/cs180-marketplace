@@ -12,7 +12,7 @@ public class Database implements IDatabase {
 
     private String filename;
     private String[] headers;
-    private static Object gate = new Object();
+    private static final Object GATE = new Object();
 
 
     /* Planned format (headers) for databases:
@@ -85,7 +85,7 @@ public class Database implements IDatabase {
     //Writes (appends) an array of string values to file.
     public void write(String[] values) throws DatabaseNotFoundException {
         try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), true))) {
-            synchronized (gate) {
+            synchronized (GATE) {
                 pwr.println(arrayToDataLine(values));
             }
         } catch (IOException e) {
@@ -97,26 +97,28 @@ public class Database implements IDatabase {
     public void update(String header, String value, String uHeader, String uValue) throws DatabaseNotFoundException {
         String file = "";
         try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
-            String line = bfr.readLine();
-            int checkIndex = headerIndexOf(header);
-            int updateIndex = headerIndexOf(uHeader);
-            while (line != null) {
-                String[] parsed = dataLineToArray(line);
-                if (checkIndex != -1) {
-                    if (!parsed[checkIndex].equals(value)) {
-                        file += line + '\n';
-                    } else {
-                        parsed[updateIndex] = uValue;
-                        file += arrayToDataLine(parsed) + '\n';
+            synchronized (GATE) {
+                String line = bfr.readLine();
+                int checkIndex = headerIndexOf(header);
+                int updateIndex = headerIndexOf(uHeader);
+                while (line != null) {
+                    String[] parsed = dataLineToArray(line);
+                    if (checkIndex != -1) {
+                        if (!parsed[checkIndex].equals(value)) {
+                            file += line + '\n';
+                        } else {
+                            parsed[updateIndex] = uValue;
+                            file += arrayToDataLine(parsed) + '\n';
+                        }
                     }
+                    line = bfr.readLine();
                 }
-                line = bfr.readLine();
             }
         } catch (IOException e) {
             throw new DatabaseNotFoundException("Invalid database");
         }
         try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
-            synchronized (gate) {
+            synchronized (GATE) {
                 pwr.print(file);
             }
         } catch (IOException e) {
@@ -128,24 +130,26 @@ public class Database implements IDatabase {
     public void update(String header, String value, String[] newrow) throws DatabaseNotFoundException {
         String file = "";
         try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
-            String line = bfr.readLine();
-            int checkIndex = headerIndexOf(header);
-            while (line != null) {
-                String[] parsed = dataLineToArray(line);
-                if (checkIndex != -1) {
-                    if (!parsed[checkIndex].equals(value)) {
-                        file += line + '\n';
-                    } else {
-                        file += arrayToDataLine(newrow) + '\n';
+            synchronized (GATE) {
+                String line = bfr.readLine();
+                int checkIndex = headerIndexOf(header);
+                while (line != null) {
+                    String[] parsed = dataLineToArray(line);
+                    if (checkIndex != -1) {
+                        if (!parsed[checkIndex].equals(value)) {
+                            file += line + '\n';
+                        } else {
+                            file += arrayToDataLine(newrow) + '\n';
+                        }
                     }
+                    line = bfr.readLine();
                 }
-                line = bfr.readLine();
             }
         } catch (IOException e) {
             throw new DatabaseNotFoundException("Invalid database");
         }
         try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
-            synchronized (gate) {
+            synchronized (GATE) {
                 pwr.print(file);
             }
         } catch (IOException e) {
@@ -157,16 +161,18 @@ public class Database implements IDatabase {
     public ArrayList<String[]> get(String header, String value) throws DatabaseNotFoundException {
         ArrayList<String[]> values = new ArrayList<>();
         try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
-            String line = bfr.readLine();
-            int checkIndex = headerIndexOf(header);
-            while(line != null) {
-                String[] parsed = dataLineToArray(line);
-                if (checkIndex != -1) {
-                    if (parsed[checkIndex].equals(value)) {
-                        values.add(parsed);
+            synchronized (GATE) {
+                String line = bfr.readLine();
+                int checkIndex = headerIndexOf(header);
+                while (line != null) {
+                    String[] parsed = dataLineToArray(line);
+                    if (checkIndex != -1) {
+                        if (parsed[checkIndex].equals(value)) {
+                            values.add(parsed);
+                        }
                     }
+                    line = bfr.readLine();
                 }
-                line = bfr.readLine();
             }
         } catch (IOException e) {
             throw new DatabaseNotFoundException("Invalid database");
@@ -178,22 +184,24 @@ public class Database implements IDatabase {
     public void delete(String header, String value) throws DatabaseNotFoundException {
         String file = "";
         try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
-            String line = bfr.readLine();
-            int checkIndex = headerIndexOf(header);
-            while (line != null) {
-                String[] parsed = dataLineToArray(line);
-                if (checkIndex != -1) {
-                    if (!parsed[checkIndex].equals(value)) {
-                        file += line + '\n';
+            synchronized (GATE) {
+                String line = bfr.readLine();
+                int checkIndex = headerIndexOf(header);
+                while (line != null) {
+                    String[] parsed = dataLineToArray(line);
+                    if (checkIndex != -1) {
+                        if (!parsed[checkIndex].equals(value)) {
+                            file += line + '\n';
+                        }
                     }
+                    line = bfr.readLine();
                 }
-                line = bfr.readLine();
             }
         } catch (IOException e) {
             throw new DatabaseNotFoundException("Invalid database");
         }
         try (PrintWriter pwr = new PrintWriter(new FileOutputStream(new File(filename), false))) {
-            synchronized (gate) {
+            synchronized (GATE) {
                 pwr.print(file);
             }
         } catch (IOException e) {
