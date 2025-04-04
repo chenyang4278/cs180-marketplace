@@ -157,7 +157,6 @@ public class User extends Serializable implements IUser {
     public void deleteAccount() {
 
         try {
-//            this.delete();
             for (Listing listing : this.getListings()) {
                 listing.delete();
             }
@@ -165,6 +164,8 @@ public class User extends Serializable implements IUser {
             for (Message message : this.getInbox()) {
                 message.delete();
             }
+
+            this.delete();
 
             username = null;
             password = null;
