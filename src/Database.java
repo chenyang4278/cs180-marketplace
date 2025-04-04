@@ -65,11 +65,11 @@ public class Database implements IDatabase {
         String element = "";
         String[] parsed = new String[headers.length];
         int parseIdx = 0;
-        for (int i = 0; i < line.length()-1; i++) {
-            if (line.charAt(i) == '"' && line.charAt(i+1) == '"') {
+        for (int i = 0; i < line.length() - 1; i++) {
+            if (line.charAt(i) == '"' && line.charAt(i + 1) == '"') {
                 element += '"';
                 i++;
-            } else if (line.charAt(i) == '"' && line.charAt(i+1) == ',') {
+            } else if (line.charAt(i) == '"' && line.charAt(i + 1) == ',') {
                 parsed[parseIdx] = element;
                 element = "";
                 parseIdx++;
@@ -153,7 +153,8 @@ public class Database implements IDatabase {
         }
     }
 
-    //Finds lines with a specific key-value pair and returns in array form. Returns an empty array if no string is found.
+    //Finds lines with a specific key value pair and returns in array form.
+    //Returns an empty array if no string is found.
     public ArrayList<String[]> get(String header, String value) throws DatabaseNotFoundException {
         ArrayList<String[]> values = new ArrayList<>();
         synchronized (GATE) {
@@ -218,5 +219,4 @@ public class Database implements IDatabase {
     public void setHeaders(String[] headers) {
         this.headers = headers;
     }
-
 }

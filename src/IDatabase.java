@@ -1,5 +1,11 @@
 import java.util.ArrayList;
 
+/** 
+ * IDatabase Class. A base database interface.
+ * 
+ * @author Karma Luitel, lab L24
+ * @version 3/27/25
+*/
 interface IDatabase {
     void write(String[] values) throws DatabaseNotFoundException;
     ArrayList<String[]> get(String header, String value) throws DatabaseNotFoundException;
