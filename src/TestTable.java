@@ -1,3 +1,4 @@
+//Note that the sole purpose of this class is to be used for testing DatabaseWrapper and Serializable, so it does not have an interfaces or actual use in our project.
 public class TestTable extends Serializable {
     @SerializableField( field = "name", index = 1 )
     private String name;
