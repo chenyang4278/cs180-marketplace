@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * @version 4/1/25
  */
 
- //missing getById, getUsersByColumn
+//missing getById, getUsersByColumn
 
 public class UserTest {
 
@@ -44,7 +44,7 @@ public class UserTest {
         assertEquals(52.1, user.getRating(), 0.01);
 
         ArrayList<Message> inbox = new ArrayList<>();
-        Message m = new Message(user.getId(), user.getId()+1, "hi");
+        Message m = new Message(user.getId(), user.getId() + 1, "hi");
         inbox.add(m);
 
         user.setInbox(inbox);
@@ -130,6 +130,60 @@ public class UserTest {
             fail("Expected IllegalArgumentException for empty password");
         } catch (IllegalArgumentException e) {
             assertEquals("Password cannot be empty", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetById() {
+        User testUser = new User("mrdswater", "tastesweird");
+        try {
+            testUser.save();
+        } catch (DatabaseWriteException e) {
+            fail("Error saving test user: " + e.getMessage());
+        }
+
+        try {
+            User user = User.getById(testUser.getId());
+            assertNotNull(user);
+            assertEquals(testUser.getId(), user.getId());
+            assertEquals("mrdswater", user.getUsername());
+        } catch (RowNotFoundException e) {
+            fail("User with ID not found: " + e.getMessage());
+        }
+
+        try {
+            testUser.deleteAccount();
+
+        } catch (DatabaseWriteException e) {
+            fail("Error deleting test user: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetUsersByColumn() {
+        User testUser = new User("dsaiwater", "tastesweirdtoo");
+        try {
+            testUser.save();
+        } catch (DatabaseWriteException e) {
+            fail("Error saving test user: " + e.getMessage());
+
+        }
+
+        try {
+            ArrayList<User> users = User.getUsersByColumn("username", "dsaiwater");
+            assertNotNull(users);
+            assertFalse(users.isEmpty());
+            assertEquals("dsaiwater", users.get(0).getUsername());
+        } catch (RowNotFoundException e) {
+            fail("User with given column vlaue not found: " + e.getMessage());
+
+        }
+
+        try {
+            testUser.deleteAccount();
+
+        } catch (DatabaseWriteException e) {
+            fail("Error saving test user: " + e.getMessage());
         }
     }
 
