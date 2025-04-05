@@ -6,9 +6,6 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-
-//missing getByColoumn
-
 public class TestDatabaseWrapper {
     private TestTable[] tables = new TestTable[4];
 
@@ -45,11 +42,27 @@ public class TestDatabaseWrapper {
     public void testGetById() throws RowNotFoundException {
         TestTable[] tables = getTables();
 
-        IDatabaseWrapper db = DatabaseWrapper.get();
+        DatabaseWrapper db = DatabaseWrapper.get();
         for (TestTable table : tables) {
             TestTable tableFromDb = db.getById(TestTable.class, table.getId());
             assert tableFromDb != null;
             assert tableFromDb.equals(table);
+        }
+    }
+
+    @Test
+    public void testGetByColumn() throws RowNotFoundException {
+        TestTable[] tables = getTables();
+
+        DatabaseWrapper db = DatabaseWrapper.get();
+        for (TestTable table : tables) {
+            TestTable tableFromDb = db.getByColumn(
+                TestTable.class,
+                "long_count",
+                String.valueOf(table.getLongCount())
+            );
+            assert tableFromDb != null;
+            assert tableFromDb.getLongCount() == table.getLongCount();
         }
     }
 
