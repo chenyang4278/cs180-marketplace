@@ -151,12 +151,7 @@ public class UserTest {
             fail("User with ID not found: " + e.getMessage());
         }
 
-        try {
-            testUser.deleteAccount();
-
-        } catch (DatabaseWriteException e) {
-            fail("Error deleting test user: " + e.getMessage());
-        }
+        testUser.deleteAccount();
     }
 
     @Test
@@ -169,22 +164,13 @@ public class UserTest {
 
         }
 
-        try {
-            ArrayList<User> users = User.getUsersByColumn("username", "dsaiwater");
-            assertNotNull(users);
-            assertFalse(users.isEmpty());
-            assertEquals("dsaiwater", users.get(0).getUsername());
-        } catch (RowNotFoundException e) {
-            fail("User with given column vlaue not found: " + e.getMessage());
+        ArrayList<User> users = User.getUsersByColumn("username", "dsaiwater");
+        assertNotNull(users);
+        assertFalse(users.isEmpty());
+        assertEquals("dsaiwater", users.get(0).getUsername());
 
-        }
+        testUser.deleteAccount();
 
-        try {
-            testUser.deleteAccount();
-
-        } catch (DatabaseWriteException e) {
-            fail("Error saving test user: " + e.getMessage());
-        }
     }
 
 }
