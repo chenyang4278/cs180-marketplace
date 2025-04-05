@@ -21,7 +21,7 @@ public class Database implements IDatabase {
      * username,password,balance,rating
      * 
      * Listing:
-     * id,seller,name,value,image,sold
+     * id,seller,name,value,sold
      * 
      * Message:
      * sender,reciever,message,timestamp

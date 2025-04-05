@@ -21,6 +21,7 @@ public class Message extends Serializable implements IMessage {
         this.timestamp = System.currentTimeMillis();
     }
 
+    //general getters/setters for message information
     @Override
     public int getSenderId() {
         return senderId;

@@ -65,7 +65,7 @@ public class UserTest {
         User user = new User("Awooga", "lol");
         Listing l = new Listing(user.getId(), "Awooga",
                 "Water Bottle", "holds water", 20.00,
-                "jpg", false);
+                false);
         user.createListing(l);
         assertEquals(1, user.getListings().size());
 
@@ -85,7 +85,7 @@ public class UserTest {
     @Test
     public void testDeleteAccount() {
         User user = new User("lucy", "lucypassword");
-        user.createListing(new Listing(user.getId(), "Lucy", "Book", "A good book", 10.00, "jpg", false));
+        user.createListing(new Listing(user.getId(), "Lucy", "Book", "A good book", 10.00, false));
         user.sendMessage("This is a test message", 2);
         user.deleteAccount();
         assertNull(user.getUsername());

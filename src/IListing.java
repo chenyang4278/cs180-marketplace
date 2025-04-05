@@ -17,9 +17,6 @@ public interface IListing {
   double getPrice();
   void setPrice(double price);
 
-  String getImage(); //assuming that we want to import images through url
-  void setImage(String image);
-
   boolean isSold();
   void setSold(boolean sold);
 }

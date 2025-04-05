@@ -84,6 +84,7 @@ public class User extends Serializable implements IUser {
         this.rating = rating;
     }
 
+    //will get listing array from database
     public ArrayList<Listing> getListings() {
         if (listings == null) {
             listings = (ArrayList<Listing>) DatabaseWrapper.get().filterByColumn(Listing.class, "seller_id", String.valueOf(this.getId()));
@@ -91,7 +92,7 @@ public class User extends Serializable implements IUser {
         return listings;
     }
 
-
+    //will get message array from database
     public ArrayList<Message> getInbox() {
         if (inbox == null) {
             inbox = (ArrayList<Message>) DatabaseWrapper.get().filterByColumn(Message.class, "receiver_id", String.valueOf(this.getId()));
@@ -104,7 +105,7 @@ public class User extends Serializable implements IUser {
     }
 
 
-    //waiting on listing class
+    //will add listing to class and database
     public void createListing(Listing item) {
         try{
             item.save();
@@ -115,6 +116,7 @@ public class User extends Serializable implements IUser {
 
     }
 
+    //will remove listing from class and database
     public void removeListing(Listing item) {
         try {
             item.delete();
@@ -125,6 +127,7 @@ public class User extends Serializable implements IUser {
         }
     }
 
+    //will add message to class and database
     public void sendMessage(String messageContent, int receiverId) {
         try{
             Message message = new Message(this.getId(), receiverId, messageContent);
@@ -136,6 +139,7 @@ public class User extends Serializable implements IUser {
 
     }
 
+    //will remove message from class and database
     public void removeMessage(Message message) {
 
         try {
@@ -154,6 +158,7 @@ public class User extends Serializable implements IUser {
         this.rating = rating;
     }
 
+    //will delete all listings, message and this user object from database
     public void deleteAccount() {
 
         try {
@@ -179,12 +184,12 @@ public class User extends Serializable implements IUser {
         }
     }
 
-
-
+    //get a user by an id (static)
     public static User getById(int userId) throws RowNotFoundException {
         return DatabaseWrapper.get().getById(User.class, userId);
     }
 
+    //get a user by an coloumn value (static)
     public static ArrayList<User> getUsersByColumn(String column, String value) {
         return new ArrayList<>(DatabaseWrapper.get().filterByColumn(User.class, column, value));
     }
