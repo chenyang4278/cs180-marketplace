@@ -1,21 +1,22 @@
 //Note that the sole purpose of this class is to be used for testing DatabaseWrapper and Serializable, so it does not have an interfaces or actual use in our project.
 public class TestTable extends Serializable {
-    @SerializableField( field = "name", index = 1 )
+    @SerializableField(field = "name", index = 1)
     private String name;
 
-    @SerializableField( field = "count", index = 2 )
+    @SerializableField(field = "count", index = 2)
     private int count;
 
-    @SerializableField( field = "long_count", index = 3 )
+    @SerializableField(field = "long_count", index = 3)
     private long longCount;
 
-    @SerializableField( field = "decimal", index = 4 )
+    @SerializableField(field = "decimal", index = 4)
     private float decimal;
 
-    @SerializableField( field = "precise_decimal", index = 5 )
+    @SerializableField(field = "precise_decimal", index = 5)
     private double preciseDecimal;
 
-    public TestTable() {}
+    public TestTable() {
+    }
 
     public TestTable(String name, int count, long longCount, float decimal, double preciseDecimal) {
         this.name = name;
@@ -67,11 +68,11 @@ public class TestTable extends Serializable {
 
     public boolean equals(TestTable other) {
         return (
-            name.equals(other.name) &&
-                count == other.count &&
-                longCount == other.longCount &&
-                decimal == other.decimal &&
-                preciseDecimal == other.preciseDecimal
+                name.equals(other.name) &&
+                        count == other.count &&
+                        longCount == other.longCount &&
+                        decimal == other.decimal &&
+                        preciseDecimal == other.preciseDecimal
         );
     }
 

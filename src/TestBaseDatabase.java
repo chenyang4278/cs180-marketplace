@@ -1,6 +1,7 @@
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+
 import static org.junit.Assert.*;
 
 /**
@@ -18,7 +19,7 @@ public class TestBaseDatabase {
         String[] headers = {"username", "password", "balance", "rating"};
         Database userDb = new Database("userDb.csv", headers);
 
-       
+
         String[] user1 = {"karma", "pass2word123", "821.21", "12"};
         String[] user2 = {"kar3ma", "passw2ord123", "821.21", "12"};
         String[] user3 = {"ka2rma", "pass2word123", "821.21", "12"};
@@ -39,16 +40,16 @@ public class TestBaseDatabase {
     }
 
     @Test
-    public void testBRead() throws DatabaseNotFoundException {  
+    public void testBRead() throws DatabaseNotFoundException {
 
         String[] headers = {"username", "password", "balance", "rating"};
         Database userDb = new Database("userDb.csv", headers);
 
-        assertArrayEquals(new String[] {"ka\"2\"rma\",\"", "password123", "821.21", "12"},
+        assertArrayEquals(new String[]{"ka\"2\"rma\",\"", "password123", "821.21", "12"},
                 userDb.get("username", "ka\"2\"rma\",\"").get(0));
-        assertArrayEquals(new String[] {"ka\"2\"rma\",\"", "passw2ord123", "7821.21", "12"},
+        assertArrayEquals(new String[]{"ka\"2\"rma\",\"", "passw2ord123", "7821.21", "12"},
                 userDb.get("username", "ka\"2\"rma\",\"").get(1));
-        assertArrayEquals(new String[] {"ka\"2\"rma\",\"", "password123", "821.21", "12"},
+        assertArrayEquals(new String[]{"ka\"2\"rma\",\"", "password123", "821.21", "12"},
                 userDb.get("password", "password123").get(0));
 
         Database userDbDne = new Database("userDbDne.csv", headers);
@@ -59,7 +60,7 @@ public class TestBaseDatabase {
     }
 
     @Test
-    public void testCUpdate() throws DatabaseNotFoundException {  
+    public void testCUpdate() throws DatabaseNotFoundException {
 
         String[] headers = {"username", "password", "balance", "rating"};
         Database userDb = new Database("userDb.csv", headers);
@@ -70,7 +71,7 @@ public class TestBaseDatabase {
         assertEquals("12212", userDb.get("password", "12212").get(0)[1]);
 
         userDb.update("username", "kar3ma",
-                new String[] {"ka\"2\"rma\",\"", "password123", "821.21", "1234"});
+                new String[]{"ka\"2\"rma\",\"", "password123", "821.21", "1234"});
         assertEquals("1234", userDb.get("rating", "1234").get(0)[3]);
 
         userDb.update("username", "ka\"2\"rma\",\"", "balance",
@@ -86,7 +87,7 @@ public class TestBaseDatabase {
         Database userDbDne2 = new Database("userDbDne.csv", headers);
         Exception exception2 = assertThrows(DatabaseNotFoundException.class, () -> {
             userDbDne2.update("username", "kar3ma",
-                    new String[] {"ka\"2\"rma\",\"", "password123", "821.21", "1234"});
+                    new String[]{"ka\"2\"rma\",\"", "password123", "821.21", "1234"});
 
         });
         assertNotNull(exception2);
@@ -94,7 +95,7 @@ public class TestBaseDatabase {
     }
 
     @Test
-    public void testDDelete() throws DatabaseNotFoundException {  
+    public void testDDelete() throws DatabaseNotFoundException {
 
         String[] headers = {"username", "password", "balance", "rating"};
         Database userDb = new Database("userDb.csv", headers);

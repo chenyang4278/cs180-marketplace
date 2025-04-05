@@ -2,12 +2,12 @@ import java.io.*;
 import java.util.ArrayList;
 
 
-/** 
+/**
  * BaseDatabase Class. A base class to read/write to databases using arrays.
- * 
+ *
  * @author Karma Luitel, lab L24
  * @version 3/27/25
-*/
+ */
 public class Database implements IDatabase {
 
     private String filename;
@@ -16,13 +16,13 @@ public class Database implements IDatabase {
 
 
     /* Planned format (headers) for databases:
-     * 
+     *
      * User:
      * username,password,balance,rating
-     * 
+     *
      * Listing:
      * id,seller,name,value,sold
-     * 
+     *
      * Message:
      * sender,reciever,message,timestamp
      */

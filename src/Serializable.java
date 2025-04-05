@@ -15,7 +15,7 @@ import java.util.stream.Stream;
  */
 // abstract because this class should always be extended, never used directly
 public abstract class Serializable implements ISerializable {
-    @SerializableField( field = "id", index = 0 )
+    @SerializableField(field = "id", index = 0)
     private int id;
 
     public int getId() {
@@ -56,26 +56,26 @@ public abstract class Serializable implements ISerializable {
         // return fields that are annotated by SerializableField
         // and sort by their specified index
         return Arrays.stream(fields)
-            .filter(f -> f.isAnnotationPresent(SerializableField.class))
-            .sorted((a, b) -> {
-                var annotationA = a.getAnnotation(SerializableField.class);
-                var annotationB = b.getAnnotation(SerializableField.class);
-                return annotationA.index() - annotationB.index();
-            });
+                .filter(f -> f.isAnnotationPresent(SerializableField.class))
+                .sorted((a, b) -> {
+                    var annotationA = a.getAnnotation(SerializableField.class);
+                    var annotationB = b.getAnnotation(SerializableField.class);
+                    return annotationA.index() - annotationB.index();
+                });
     }
 
     /**
      * Get the column names of a class that extends Serializable
      *
      * @param cls class for which to get column names
-     * @return array of column names
      * @param <T> class that extends Serializable
+     * @return array of column names
      */
     static public <T extends Serializable> String[] getColumns(Class<T> cls) {
         // map list of annotated fields to their specified field names
         return getFields(cls)
-            .map(f -> f.getAnnotation(SerializableField.class).field())
-            .toArray(String[]::new);
+                .map(f -> f.getAnnotation(SerializableField.class).field())
+                .toArray(String[]::new);
     }
 
     /**
@@ -83,8 +83,8 @@ public abstract class Serializable implements ISerializable {
      *
      * @param cls Class to create an object of
      * @param row List of serialized values
-     * @return a new object with attributes set to the unserialized values
      * @param <T> class that extends Serializable and matches cls argument
+     * @return a new object with attributes set to the unserialized values
      */
     static public <T extends Serializable> T fromRow(Class<T> cls, String[] row) {
         Field[] fields = getFields(cls).toArray(Field[]::new);
@@ -109,7 +109,7 @@ public abstract class Serializable implements ISerializable {
             return (T) obj;
         } catch (Exception e) { // will occur if there's no empty constructor
             System.out.println(
-                "Failed to create " + cls.getName() + " from row. Make sure the class has an empty constructor."
+                    "Failed to create " + cls.getName() + " from row. Make sure the class has an empty constructor."
             );
             throw new RuntimeException(e);
         }
@@ -122,17 +122,17 @@ public abstract class Serializable implements ISerializable {
         try {
             // map each field to its value in this object
             return getFields(this.getClass())
-                .map(f -> {
-                    try {  // java makes me put this try statement inside the stream
-                        f.setAccessible(true);
-                        String value = String.valueOf(f.get(this));
-                        f.setAccessible(false);
-                        return value;
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .toArray(String[]::new);
+                    .map(f -> {
+                        try {  // java makes me put this try statement inside the stream
+                            f.setAccessible(true);
+                            String value = String.valueOf(f.get(this));
+                            f.setAccessible(false);
+                            return value;
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .toArray(String[]::new);
         } catch (Exception e) {  // shouldn't occur unless maybe the classes are in different modules for some reason
             System.out.println("Failed to convert " + this.getClass().getSimpleName());
             throw new RuntimeException(e);

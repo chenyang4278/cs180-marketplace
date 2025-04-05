@@ -57,9 +57,9 @@ public class TestDatabaseWrapper {
         DatabaseWrapper db = DatabaseWrapper.get();
         for (TestTable table : tables) {
             TestTable tableFromDb = db.getByColumn(
-                TestTable.class,
-                "long_count",
-                String.valueOf(table.getLongCount())
+                    TestTable.class,
+                    "long_count",
+                    String.valueOf(table.getLongCount())
             );
             assert tableFromDb != null;
             assert tableFromDb.getLongCount() == table.getLongCount();
@@ -97,7 +97,8 @@ public class TestDatabaseWrapper {
         try {
             TestTable.getById(table.getId());
             fail("User was not deleted");
-        } catch (RowNotFoundException e) {}
+        } catch (RowNotFoundException e) {
+        }
 
         // should do nothing
         table.delete();
@@ -109,17 +110,18 @@ public class TestDatabaseWrapper {
         try {
             TestTable.getById(-1);
             fail("Should have thrown an exception for no object with id -1");
-        } catch (RowNotFoundException e) {}
+        } catch (RowNotFoundException e) {
+        }
     }
 
     @Test
     public void testThreadSafety() throws InterruptedException {
-        Thread[] threads = new Thread[] {
-            new TestThread("1"),
-            new TestThread("2"),
-            new TestThread("3"),
-            new TestThread("4"),
-            new TestThread("5")
+        Thread[] threads = new Thread[]{
+                new TestThread("1"),
+                new TestThread("2"),
+                new TestThread("3"),
+                new TestThread("4"),
+                new TestThread("5")
         };
 
         for (Thread thread : threads) {
@@ -145,13 +147,13 @@ public class TestDatabaseWrapper {
             try {
                 String localName = "thread-safety-test-table-" + name;
 
-                for (int i=0; i<100; i++) {
+                for (int i = 0; i < 100; i++) {
                     TestTable t = new TestTable(
-                        localName,
-                        100,
-                        200,
-                        0.54f,
-                        0.218d
+                            localName,
+                            100,
+                            200,
+                            0.54f,
+                            0.218d
                     );
                     t.save();
                     t.setCount(727);

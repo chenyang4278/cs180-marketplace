@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+
 /**
  * User
  * <p>
@@ -27,7 +28,8 @@ public class User extends Serializable implements IUser {
     private ArrayList<Message> inbox;
 
     // Required for Serializable
-    public User() {}
+    public User() {
+    }
 
     public User(String username, String password) {
         if (username == null || username.trim().isEmpty()) {
@@ -107,10 +109,10 @@ public class User extends Serializable implements IUser {
 
     //will add listing to class and database
     public void createListing(Listing item) {
-        try{
+        try {
             item.save();
             listings.add(item);
-        } catch(DatabaseWriteException e){
+        } catch (DatabaseWriteException e) {
             System.out.println("Error adding listing: " + e.getMessage());
         }
 
@@ -121,19 +123,18 @@ public class User extends Serializable implements IUser {
         try {
             item.delete();
             listings.remove(item);
-        }
-        catch (DatabaseWriteException e) {
+        } catch (DatabaseWriteException e) {
             System.out.println("Error deleting account: " + e.getMessage());
         }
     }
 
     //will add message to class and database
     public void sendMessage(String messageContent, int receiverId) {
-        try{
+        try {
             Message message = new Message(this.getId(), receiverId, messageContent);
             message.save();
             inbox.add(message);
-        } catch(DatabaseWriteException e){
+        } catch (DatabaseWriteException e) {
             System.out.println("Error sending message: " + e.getMessage());
         }
 
@@ -145,7 +146,7 @@ public class User extends Serializable implements IUser {
         try {
             message.delete();
             inbox.remove(message);
-        } catch(DatabaseWriteException e){
+        } catch (DatabaseWriteException e) {
             System.out.println("Error sending message: " + e.getMessage());
         }
     }
@@ -178,8 +179,7 @@ public class User extends Serializable implements IUser {
             rating = 0.0;
             listings.clear();
             inbox.clear();
-        }
-        catch (DatabaseWriteException e) {
+        } catch (DatabaseWriteException e) {
             System.out.println("Error deleting account: " + e.getMessage());
         }
     }

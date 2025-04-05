@@ -6,8 +6,8 @@ public class SerializableTest {
     @Test
     public void testGetColumns() {
         assertArrayEquals(
-            new String[]{"id", "name", "count", "long_count", "decimal", "precise_decimal"},
-            Serializable.getColumns(TestTable.class)
+                new String[]{"id", "name", "count", "long_count", "decimal", "precise_decimal"},
+                Serializable.getColumns(TestTable.class)
         );
     }
 
@@ -15,16 +15,16 @@ public class SerializableTest {
     public void testAsRow() {
         TestTable t = new TestTable("table1", 10, 30, 5.4f, 3.2d);
         assertArrayEquals(
-            new String[] {String.valueOf(t.getId()), "table1", "10", "30", "5.4", "3.2"},
-            t.asRow()
+                new String[]{String.valueOf(t.getId()), "table1", "10", "30", "5.4", "3.2"},
+                t.asRow()
         );
     }
 
     @Test
     public void testFromRow() {
         TestTable t = Serializable.fromRow(
-            TestTable.class,
-            new String[] {"1", "table1", "10", "30", "5.4", "3.2"}
+                TestTable.class,
+                new String[]{"1", "table1", "10", "30", "5.4", "3.2"}
         );
         assertEquals(1, t.getId());
         assertEquals("table1", t.getName());
@@ -35,11 +35,12 @@ public class SerializableTest {
 
         try {
             Serializable.fromRow(
-                TestTable.class,
-                new String[] {}
+                    TestTable.class,
+                    new String[]{}
             );
             fail("Should have thrown an exception for invalid number of values");
-        } catch (RuntimeException e) {}
+        } catch (RuntimeException e) {
+        }
     }
 
     @Test

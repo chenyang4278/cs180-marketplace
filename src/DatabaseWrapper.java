@@ -16,9 +16,9 @@ public class DatabaseWrapper implements IDatabaseWrapper {
     static private final Object staticLock = new Object();
 
     private final Database idDb;
-    static private final String[] idColumns = new String[] {
-        "cls",
-        "id"
+    static private final String[] idColumns = new String[]{
+            "cls",
+            "id"
     };
 
     private final ArrayList<Database> databases;
@@ -55,7 +55,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
         // add id row for class if it doesn't exist
         if (ids.isEmpty()) {
             try {
-                idDb.write(new String[] { clsName, "1" });
+                idDb.write(new String[]{clsName, "1"});
             } catch (DatabaseNotFoundException e) {
                 throw new DatabaseWriteException("Failed to create ids file");
             }
@@ -77,7 +77,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
 
     private <T extends Serializable> Database getDbFor(Class<T> cls) {
         String dbName = cls.getSimpleName() + ".csv";
-        
+
         synchronized (lock) {
             for (Database db : databases) {
                 if (db.getFilename().equals(dbName)) {
@@ -94,11 +94,11 @@ public class DatabaseWrapper implements IDatabaseWrapper {
     /**
      * Get an instance of a class from one of its columns
      *
-     * @param cls the class to get an instance of
+     * @param cls    the class to get an instance of
      * @param column the column name
-     * @param value the value of the column
+     * @param value  the value of the column
+     * @param <T>    type that extends Serializable
      * @return an instance of T
-     * @param <T> type that extends Serializable
      * @throws RowNotFoundException thrown if a matching row is not found
      */
     public <T extends Serializable> T getByColumn(Class<T> cls, String column, String value) throws RowNotFoundException {
@@ -111,11 +111,11 @@ public class DatabaseWrapper implements IDatabaseWrapper {
     /**
      * Get a list of instances of a class, filtering by a column
      *
-     * @param cls the class to get instances of
+     * @param cls    the class to get instances of
      * @param column the column name
-     * @param value the value of the column
+     * @param value  the value of the column
+     * @param <T>    type that extends Serializable
      * @return a list of instances according to the filter
-     * @param <T> type that extends Serializable
      */
     public <T extends Serializable> List<T> filterByColumn(Class<T> cls, String column, String value) {
         Database db = getDbFor(cls);
@@ -127,9 +127,9 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * Get an instance of a class from an id value
      *
      * @param cls the class to get an instance of
-     * @param id the id value
-     * @return an instance of T
+     * @param id  the id value
      * @param <T> type that extends Serializable
+     * @return an instance of T
      * @throws RowNotFoundException thrown if the id is not found
      */
     public <T extends Serializable> T getById(Class<T> cls, int id) throws RowNotFoundException {
