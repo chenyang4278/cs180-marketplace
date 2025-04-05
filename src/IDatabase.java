@@ -14,4 +14,6 @@ interface IDatabase {
     void delete(String header, String value) throws DatabaseNotFoundException;
     String getFilename();
     void setFilename(String filename);
+    String[] getHeaders();
+    void setHeaders(String[] headers);
 }
