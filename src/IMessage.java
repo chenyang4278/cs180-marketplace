@@ -6,5 +6,5 @@ public interface IMessage {
     String getMessage();
     void setMessage(String message);
     long getTimestamp();
-    void setTimestamp(int timestamp);
+    void setTimestamp(long timestamp);
 }

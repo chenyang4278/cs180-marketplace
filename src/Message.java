@@ -58,7 +58,7 @@ public class Message extends Serializable implements IMessage {
     }
 
     @Override
-    public void setTimestamp(int timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 }
