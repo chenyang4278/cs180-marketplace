@@ -6,6 +6,9 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+
+//missing getByColoumn
+
 public class TestDatabaseWrapper {
     private TestTable[] tables = new TestTable[4];
 

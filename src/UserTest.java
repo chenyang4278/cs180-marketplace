@@ -2,6 +2,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+
 /**
  * UserTest
  * <p>
@@ -10,6 +12,8 @@ import static org.junit.Assert.*;
  * @author Chen Yang, section 24
  * @version 4/1/25
  */
+
+ //missing getById, getUsersByColumn
 
 public class UserTest {
 
@@ -32,6 +36,19 @@ public class UserTest {
 
         user.setPassword("newpassword123");
         assertEquals("newpassword123", user.getPassword());
+
+        user.setBalance(122.1);
+        assertEquals(122.1, user.getBalance(), 0.01);
+
+        user.setRating(52.1);
+        assertEquals(52.1, user.getRating(), 0.01);
+
+        ArrayList<Message> inbox = new ArrayList<>();
+        Message m = new Message(user.getId(), user.getId()+1, "hi");
+        inbox.add(m);
+
+        user.setInbox(inbox);
+        assertEquals(m, user.getInbox().get(0));
     }
 
     @Test
