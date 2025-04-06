@@ -35,4 +35,5 @@ For now our project is a  set of Database and User/Listing/Message object classe
 ### Listing.java
 - Benny Huang
 - The listing class sets and gets the values needed to create a lsting. It utilizes the "IListing" interface to create a set of methods that relate to listings. The class also extends the "Serializable" class, which allows Listing to use "id" that are obtained from methods like "getId()" and "setId()."
-- Methods associated with the Listing class include:
+- Methods associated with the Listing class include: getListingId(), setListingId(), getSellerId(), setSellerId(), getSellerName(), setSellerName(String sellerName), getTitle(), setTitle(), getDescription(), setDescription(), getPrice(), setPrice(), isSold(), setSold(), toString().
+- Testing associated with the Listing class mostly entails making sure the setters and getters return the right values when they are being used.
