@@ -25,7 +25,7 @@ public class Listing extends Serializable implements IListing {
     @SerializableField(field = "price", index = 5)
     private double price; //price value of the item being sold
 
-    @SerializableField(field = "title", index = 6)
+    @SerializableField(field = "image", index = 6)
     private String image; //image hash of the item being sold
 
     @SerializableField(field = "sold", index = 7)
