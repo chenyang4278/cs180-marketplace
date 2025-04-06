@@ -13,19 +13,19 @@ import java.util.stream.Collectors;
  */
 public class DatabaseWrapper implements IDatabaseWrapper {
     static private DatabaseWrapper instance;
-    static private final Object staticLock = new Object();
+    static private final Object STATIC_LOCK = new Object();
 
     private final Database idDb;
-    static private final String[] idColumns = new String[]{
-            "cls",
-            "id"
+    static private final String[] ID_COLUMNS = new String[]{
+        "cls",
+        "id"
     };
 
     private final ArrayList<Database> databases;
     private final Object lock = new Object();
 
     private DatabaseWrapper() {
-        idDb = new Database("id.csv", idColumns);
+        idDb = new Database("id.csv", ID_COLUMNS);
         databases = new ArrayList<Database>();
     }
 
@@ -37,7 +37,8 @@ public class DatabaseWrapper implements IDatabaseWrapper {
         }
     }
 
-    private ArrayList<String[]> requireRows(Database db, String column, String value, String errorMsg) throws RowNotFoundException {
+    private ArrayList<String[]> requireRows(Database db, String column,
+        String value, String errorMsg) throws RowNotFoundException {
         ArrayList<String[]> rows = getRows(db, column, value);
         if (rows.isEmpty()) {
             throw new RowNotFoundException(errorMsg);
@@ -101,7 +102,8 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @return an instance of T
      * @throws RowNotFoundException thrown if a matching row is not found
      */
-    public <T extends Serializable> T getByColumn(Class<T> cls, String column, String value) throws RowNotFoundException {
+    public <T extends Serializable> T getByColumn(Class<T> cls,
+        String column, String value) throws RowNotFoundException {
         Database db = getDbFor(cls);
         ArrayList<String[]> rows = requireRows(db, column, value, cls.getSimpleName() + " not found");
         String[] row = rows.get(0);
@@ -200,7 +202,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @return Global DatabaseWrapper instance
      */
     static public DatabaseWrapper get() {
-        synchronized (staticLock) {
+        synchronized (STATIC_LOCK) {
             if (instance == null) {
                 instance = new DatabaseWrapper();
             }

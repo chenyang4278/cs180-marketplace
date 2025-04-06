@@ -47,7 +47,7 @@ public class User extends Serializable implements IUser {
 
     }
 
-    //getters and settrs
+    //getters and setters
     public String getUsername() {
 
         return username;
@@ -86,10 +86,15 @@ public class User extends Serializable implements IUser {
         this.rating = rating;
     }
 
+    public void setInbox(ArrayList<Message> inbox) {
+        this.inbox = inbox;
+    }
+
     //will get listing array from database
     public ArrayList<Listing> getListings() {
         if (listings == null) {
-            listings = (ArrayList<Listing>) DatabaseWrapper.get().filterByColumn(Listing.class, "seller_id", String.valueOf(this.getId()));
+            listings = (ArrayList<Listing>) DatabaseWrapper.get().filterByColumn(Listing.class,
+                "seller_id", String.valueOf(this.getId()));
         }
         return listings;
     }
@@ -97,15 +102,11 @@ public class User extends Serializable implements IUser {
     //will get message array from database
     public ArrayList<Message> getInbox() {
         if (inbox == null) {
-            inbox = (ArrayList<Message>) DatabaseWrapper.get().filterByColumn(Message.class, "receiver_id", String.valueOf(this.getId()));
+            inbox = (ArrayList<Message>) DatabaseWrapper.get().filterByColumn(Message.class,
+                "receiver_id", String.valueOf(this.getId()));
         }
         return inbox;
     }
-
-    public void setInbox(ArrayList<Message> inbox) {
-        this.inbox = inbox;
-    }
-
 
     //will add listing to class and database
     public void createListing(Listing item) {
@@ -151,12 +152,24 @@ public class User extends Serializable implements IUser {
         }
     }
 
+    //will actually update the balance in the database compared to just setting it
     public void updateBalance(double amount) {
-        this.balance += amount;
+        try {
+            balance += amount;
+            this.save();
+        } catch (DatabaseWriteException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void updateRating(double rating) {
-        this.rating = rating;
+    //will actually update the rating in the database compared to just setting it
+    public void updateRating(double newRating) {
+        try {
+            rating = newRating;
+            this.save();
+        } catch (DatabaseWriteException e) {
+            e.printStackTrace();
+        }
     }
 
     //will delete all listings, message and this user object from database
@@ -193,6 +206,4 @@ public class User extends Serializable implements IUser {
     public static ArrayList<User> getUsersByColumn(String column, String value) {
         return new ArrayList<>(DatabaseWrapper.get().filterByColumn(User.class, column, value));
     }
-
-
 }

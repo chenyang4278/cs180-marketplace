@@ -7,13 +7,14 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * TestDatabaseWrapper
+ * TestDatabaseWrapper.java
  * <p>
  * A class that handles a JUnit tests for the DatabaseWrapper class.
  *
  * @author Ayden Cline
  * @version 3/31/25
  */
+
 public class TestDatabaseWrapper {
     private TestTable[] tables = new TestTable[4];
 
@@ -48,10 +49,10 @@ public class TestDatabaseWrapper {
 
     @Test
     public void testGetById() throws RowNotFoundException {
-        TestTable[] tables = getTables();
+        TestTable[] lTables = getTables();
 
         DatabaseWrapper db = DatabaseWrapper.get();
-        for (TestTable table : tables) {
+        for (TestTable table : lTables) {
             TestTable tableFromDb = db.getById(TestTable.class, table.getId());
             assert tableFromDb != null;
             assert tableFromDb.equals(table);
@@ -60,15 +61,14 @@ public class TestDatabaseWrapper {
 
     @Test
     public void testGetByColumn() throws RowNotFoundException {
-        TestTable[] tables = getTables();
+        TestTable[] lTables = getTables();
 
         DatabaseWrapper db = DatabaseWrapper.get();
-        for (TestTable table : tables) {
+        for (TestTable table : lTables) {
             TestTable tableFromDb = db.getByColumn(
                     TestTable.class,
                     "long_count",
-                    String.valueOf(table.getLongCount())
-            );
+                    String.valueOf(table.getLongCount()));
             assert tableFromDb != null;
             assert tableFromDb.getLongCount() == table.getLongCount();
         }
@@ -91,9 +91,9 @@ public class TestDatabaseWrapper {
 
     @Test
     public void testFilter() {
-        getTables();  // ensure initiated
-        List<TestTable> tables = DatabaseWrapper.get().filterByColumn(TestTable.class, "count", "0");
-        for (TestTable table : tables) {
+        getTables(); // ensure initiated
+        List<TestTable> lTables = DatabaseWrapper.get().filterByColumn(TestTable.class, "count", "0");
+        for (TestTable table : lTables) {
             assert table.getCount() == 0;
         }
     }
@@ -106,6 +106,7 @@ public class TestDatabaseWrapper {
             TestTable.getById(table.getId());
             fail("User was not deleted");
         } catch (RowNotFoundException e) {
+            System.out.println(e.getMessage());
         }
 
         // should do nothing
@@ -114,22 +115,23 @@ public class TestDatabaseWrapper {
 
     @Test
     public void testDoesNotExist() {
-        getTables();  // ensure initiated
+        getTables(); // ensure initiated
         try {
             TestTable.getById(-1);
             fail("Should have thrown an exception for no object with id -1");
         } catch (RowNotFoundException e) {
+            System.out.println(e.getMessage());
         }
     }
 
     @Test
     public void testThreadSafety() throws InterruptedException {
-        Thread[] threads = new Thread[]{
-                new TestThread("1"),
-                new TestThread("2"),
-                new TestThread("3"),
-                new TestThread("4"),
-                new TestThread("5")
+        Thread[] threads = new Thread[] {
+            new TestThread("1"),
+            new TestThread("2"),
+            new TestThread("3"),
+            new TestThread("4"),
+            new TestThread("5")
         };
 
         for (Thread thread : threads) {
@@ -140,10 +142,18 @@ public class TestDatabaseWrapper {
             thread.join();
         }
 
-        List<TestTable> tables = DatabaseWrapper.get().filterByColumn(TestTable.class, "count", "727");
-        assertEquals(250, tables.size());
+        List<TestTable> lTables = DatabaseWrapper.get().filterByColumn(TestTable.class, "count", "727");
+        assertEquals(250, lTables.size());
     }
 
+    /**
+     * TestThread.java
+     * <p>
+     * A class used solely for testing the thread safety of the DatabaseWrapper, so it has no interface/documentation.
+     * Does not have any other use in our project.
+     * @author Ayden Cline
+     * @version 3/31/25
+     */
     class TestThread extends Thread {
         private String name;
 
@@ -161,27 +171,26 @@ public class TestDatabaseWrapper {
                             100,
                             200,
                             0.54f,
-                            0.218d
-                    );
+                            0.218d);
                     t.save();
                     t.setCount(727);
                     t.save();
                 }
 
                 DatabaseWrapper db = DatabaseWrapper.get();
-                List<TestTable> tables = db.filterByColumn(TestTable.class, "name", localName);
-                assertEquals(100, tables.size());
-                for (TestTable table : tables) {
+                List<TestTable> lTables = db.filterByColumn(TestTable.class, "name", localName);
+                assertEquals(100, lTables.size());
+                for (TestTable table : lTables) {
                     assertEquals(727, table.getCount());
                 }
 
-                for (int i = 0; i < tables.size(); i += 2) {
-                    TestTable t = tables.get(i);
+                for (int i = 0; i < lTables.size(); i += 2) {
+                    TestTable t = lTables.get(i);
                     t.delete();
                 }
 
-                tables = db.filterByColumn(TestTable.class, "name", localName);
-                assertEquals(50, tables.size());
+                lTables = db.filterByColumn(TestTable.class, "name", localName);
+                assertEquals(50, lTables.size());
             } catch (Exception e) {
                 e.printStackTrace();
             }

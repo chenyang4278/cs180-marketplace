@@ -47,6 +47,7 @@ public class TestSerializable {
             );
             fail("Should have thrown an exception for invalid number of values");
         } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
         }
     }
 
