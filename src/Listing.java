@@ -1,6 +1,9 @@
 /**
  * Listing.java
  *
+ * This program sets and gets the data
+ * needed for listings.
+ *
  * @author Benny Huang, lab sec 024
  * @version March 30th, 2025
  */
