@@ -1,8 +1,15 @@
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-
-public class SerializableTest {
+/**
+ * TestSerializable
+ * <p>
+ * A class that handles a JUnit tests for the Serializable class.
+ *
+ * @author Ayden Cline
+ * @version 3/31/25
+ */
+public class TestSerializable {
     @Test
     public void testGetColumns() {
         assertArrayEquals(

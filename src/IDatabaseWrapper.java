@@ -1,5 +1,13 @@
 import java.util.List;
 
+/**
+ * IDatabaseWrapper
+ * <p>
+ * A interface for a DatabaseWrapper class.
+ *
+ * @author Ayden Cline
+ * @version 3/31/25
+ */
 public interface IDatabaseWrapper {
     <T extends Serializable> T getByColumn(Class<T> cls, String column, String value) throws RowNotFoundException;
 

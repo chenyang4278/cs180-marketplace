@@ -2,7 +2,15 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class MessageTest {
+/**
+ * TestMessage
+ * <p>
+ * A class that handles JUnit tests for the message class.
+ *
+ * @author Ayden Cline
+ * @version 3/31/25
+ */
+public class TestMessage {
     @Test
     public void testSetAndGetSenderId() {
         Message msg = new Message(1, 1, "message");

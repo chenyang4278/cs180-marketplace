@@ -2,7 +2,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * TestL:sting.java
+ * TestListing.java
  *
  * JUnit tests for the Listing class.
  *
@@ -10,7 +10,7 @@ import org.junit.Test;
  * @version April 6, 25
  */
 
-public class ListingTest {
+public class TestListing {
 
     @Test
     public void testDefaultConstructorAndSetters() {

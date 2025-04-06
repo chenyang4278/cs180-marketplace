@@ -1,3 +1,11 @@
+/**
+ * IMessage
+ * <p>
+ * A interface for a Message class.
+ *
+ * @author Ayden Cline
+ * @version 3/31/25
+ */
 public interface IMessage {
     int getSenderId();
 

@@ -5,7 +5,9 @@ import org.junit.runners.MethodSorters;
 import static org.junit.Assert.*;
 
 /**
- * TestBaseDatabase Class. A class to test Database.java
+ * TestBaseDatabase Class
+ * 
+ * A class to test JUnit tests for Database.java
  *
  * @author Karma Luitel, lab L24
  * @version 3/28/25

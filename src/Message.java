@@ -1,3 +1,12 @@
+/**
+ * Message
+ * <p>
+ * A class that defines and allows operations on a message 
+ * being sent from a user to another user.
+ *
+ * @author Ayden Cline
+ * @version 3/31/25
+ */
 public class Message extends Serializable implements IMessage {
     @SerializableField(field = "sender_id", index = 1)
     private int senderId;

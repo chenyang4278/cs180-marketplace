@@ -115,8 +115,9 @@ public class Listing extends Serializable implements IListing {
 
     //get string value of listing
     public String toString() {
+        String priceString = String.format("%.2f", price);
         return "Listing: id = " + getId() + ", sellerId = " + sellerId + ", sellerName = " + sellerName
-                + ", title = " + title + ", description = " + description + ", price = " + price
+                + ", title = " + title + ", description = " + description + ", price = " + priceString
                 + ", sold = " + sold + ".";
     }
 }

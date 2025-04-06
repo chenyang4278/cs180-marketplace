@@ -5,17 +5,14 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 
 /**
- * UserTest
+ * TestUser
  * <p>
  * Junit tests for user class
  *
  * @author Chen Yang, section 24
  * @version 4/1/25
  */
-
-//missing getById, getUsersByColumn
-
-public class UserTest {
+public class TestUser {
 
     @Test
     public void testUserCreation() {

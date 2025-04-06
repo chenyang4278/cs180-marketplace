@@ -1,3 +1,11 @@
+/**
+ * ISerializable
+ * <p>
+ * A interface for a Serializable class, used to aid database operations.
+ *
+ * @author Ayden Cline
+ * @version 3/31/25
+ */
 public interface ISerializable {
     int getId();
 
