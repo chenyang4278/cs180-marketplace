@@ -38,3 +38,4 @@ For now our project is a  set of Database and User/Listing/Message object classe
 - Methods associated with the Listing class include: getListingId(), setListingId(), getSellerId(), setSellerId(), getSellerName(), setSellerName(String sellerName), getTitle(), setTitle(), getDescription(), setDescription(), getPrice(), setPrice(), isSold(), setSold(), toString().
 - Testing associated with the Listing class mostly entails making sure the setters and getters return the right values when they are being used.
 - All of this allows for the other classes, such as user or databaseWrapper classes, use the methods that are created in this listing class.
+- Image support will be implemented through getImage() and setImage().
