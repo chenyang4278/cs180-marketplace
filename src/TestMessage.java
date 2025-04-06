@@ -39,4 +39,14 @@ public class TestMessage {
         msg.setTimestamp(now);
         assertEquals(now, msg.getTimestamp());
     }
+
+    @Test
+    public void testInvalidMessage() {
+        try {
+            new Message(1, 1, "");
+            fail("Should have thrown an exception for empty message");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }

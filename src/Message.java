@@ -25,6 +25,10 @@ public class Message extends Serializable implements IMessage {
     }
 
     public Message(int senderId, int receiverId, String message) {
+        if (message.isEmpty()) {
+            throw new IllegalArgumentException("Message cannot be empty");
+        }
+
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.message = message;
