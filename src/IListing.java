@@ -10,6 +10,7 @@
  * @version April 06, 2025
  *
  */
+
 public interface IListing {
     int getListingId();
 
@@ -38,6 +39,10 @@ public interface IListing {
     boolean isSold();
 
     void setSold(boolean sold);
+
+    String getImage();
+
+    void setImage(String image);
 
     String toString();
 }
