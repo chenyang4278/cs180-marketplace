@@ -56,7 +56,7 @@ public class TestListing {
         listing.setListingId(777);
 
         String expected = "Listing: id = 777, sellerId = 888, sellerName = Egan," +
-                "title = Charizard, description = Charizard is cool., price = 500.00, sold = false.";
+                " title = Charizard, description = Charizard is cool., price = 500.00, sold = false.";
         assertEquals(expected, listing.toString());
     }
 }
