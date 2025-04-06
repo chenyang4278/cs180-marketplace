@@ -23,7 +23,9 @@ For now our project is a  set of Database and User/Listing/Message object classe
 ### Message.java
 - Ayden Cline
 - This class extends `Serializable` and holds information about a message.
-- todo
+- The class holds information about who sent the message, who received it, the content, and when it was sent. Upon construction, the timestamp attribute is set to the current time, using `System.currentTimeMillis`. If an empty message is passed, an IllegalArgumentException is raised. The class also has getters and setters for each attribute.
+- This class is used by the `User` class to send and receive messages.
+- The tests for this class make sure that each getter and setter works as intended. It also tests that an IllegalArgumentException is thrown where it should be.
 ### User.java
 - Chen Yang
 - The User class is used to represent a user in the system. It stores and manages the user's details like their username, password, balance, and rating. The class also helps with managing the user's listings and messages.
