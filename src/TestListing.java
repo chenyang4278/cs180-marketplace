@@ -2,14 +2,13 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * TestListing.java
- *
+ * TestListing
+ * <p>
  * JUnit tests for the Listing class.
  *
  * @author Benny Huang
  * @version April 6, 25
  */
-
 public class TestListing {
 
     @Test

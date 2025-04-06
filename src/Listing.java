@@ -1,13 +1,12 @@
 /**
  * Listing.java
- *
+ * <p>
  * This program sets and gets the data
  * needed for listings.
  *
  * @author Benny Huang, lab sec 024
  * @version March 30th, 2025
  */
-
 public class Listing extends Serializable implements IListing {
 
     @SerializableField(field = "seller_id", index = 1)

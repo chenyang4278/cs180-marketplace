@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 /**
  * TestBaseDatabase Class
- * 
+ * <p>
  * A class to test JUnit tests for Database.java
  *
  * @author Karma Luitel, lab L24

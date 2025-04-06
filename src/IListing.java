@@ -1,17 +1,15 @@
 /**
  *
  * IListing.java
- *
+ * <p>
  * This interface creates a
  * list of methods that are
  * used by the listing class.
  * 
  * @author Benny Huang, sec 024
- *
  * @version April 06, 2025
  *
  */
-
 public interface IListing {
     int getListingId();
 

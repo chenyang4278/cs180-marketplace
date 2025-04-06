@@ -7,14 +7,13 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * TestDatabaseWrapper.java
+ * TestDatabaseWrapper
  * <p>
  * A class that handles a JUnit tests for the DatabaseWrapper class.
  *
  * @author Ayden Cline
  * @version 3/31/25
  */
-
 public class TestDatabaseWrapper {
     private TestTable[] tables = new TestTable[4];
 
@@ -147,10 +146,11 @@ public class TestDatabaseWrapper {
     }
 
     /**
-     * TestThread.java
+     * TestThread
      * <p>
      * A class used solely for testing the thread safety of the DatabaseWrapper, so it has no interface/documentation.
      * Does not have any other use in our project.
+     *
      * @author Ayden Cline
      * @version 3/31/25
      */
