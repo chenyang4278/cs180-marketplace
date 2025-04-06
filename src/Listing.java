@@ -123,7 +123,7 @@ public class Listing extends Serializable implements IListing {
     }
 
     @Override
-    void setImage(String image) {
+    public void setImage(String image) {
         this.image = image;
     }
     
