@@ -25,6 +25,9 @@ public class Listing extends Serializable implements IListing {
     @SerializableField(field = "price", index = 5)
     private double price; //price value of the item being sold
 
+    @SerializableField(field = "title", index = 6)
+    private String image; //image hash of the item being sold
+
     @SerializableField(field = "sold", index = 7)
     private boolean sold; //true or false of whether item has sold or not
 
@@ -33,12 +36,13 @@ public class Listing extends Serializable implements IListing {
     }
 
     public Listing(int sellerId, String sellerName, String title, String description,
-                   double price, boolean sold) {
+                   double price, String image, boolean sold) {
         this.sellerId = sellerId;
         this.sellerName = sellerName;
         this.title = title;
         this.description = description;
         this.price = price;
+        this.image = image;
         this.sold = sold;
     }
 
