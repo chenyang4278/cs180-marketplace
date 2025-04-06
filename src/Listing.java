@@ -7,25 +7,26 @@
  * @author Benny Huang, lab sec 024
  * @version March 30th, 2025
  */
+
 public class Listing extends Serializable implements IListing {
 
     @SerializableField(field = "seller_id", index = 1)
-    private int sellerId;
+    private int sellerId; //Id of the seller
 
     @SerializableField(field = "seller_name", index = 2)
-    private String sellerName;
+    private String sellerName; //name of the seller of an item
 
     @SerializableField(field = "title", index = 3)
-    private String title;
+    private String title; //title of the item being sold
 
     @SerializableField(field = "description", index = 4)
-    private String description;
+    private String description; //description of the item being sold
 
     @SerializableField(field = "price", index = 5)
-    private double price;
+    private double price; //price value of the item being sold
 
     @SerializableField(field = "sold", index = 7)
-    private boolean sold;
+    private boolean sold; //true or false of whether item has sold or not
 
     // Required for Serializable
     public Listing() {
@@ -112,11 +113,21 @@ public class Listing extends Serializable implements IListing {
         this.sold = sold;
     }
 
-    //get string value of listing
+    @Override
+    public String getImage() {
+        return image;
+    }
+
+    @Override
+    void setImage(String image) {
+        this.image = image;
+    }
+    
+    @Override
     public String toString() {
         String priceString = String.format("%.2f", price);
-        return "Listing: id = " + getId() + ", sellerId = " + sellerId + ", sellerName = " + sellerName
+        return ("Listing: id = " + getId() + ", sellerId = " + sellerId + ", sellerName = " + sellerName
                 + ", title = " + title + ", description = " + description + ", price = " + priceString
-                + ", sold = " + sold + ".";
+                + ", image = " + image + ", sold = " + sold + ".");
     }
 }
