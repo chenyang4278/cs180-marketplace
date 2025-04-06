@@ -34,3 +34,5 @@ For now our project is a  set of Database and User/Listing/Message object classe
 - Testing for the User class makes sure that a user can be created with a valid username and password, that the balance and rating can be updated, and that listings and messages can be added and removed. It also checks that deleting the account works correctly and removes everything associated with the user.
 ### Listing.java
 - Benny Huang
+- The listing class sets and gets the values needed to create a lsting. It utilizes the "IListing" interface to create a set of methods that relate to listings. The class also extends the "Serializable" class, which allows Listing to use "id" that are obtained from methods like "getId()" and "setId()."
+- Methods associated with the Listing class include:
