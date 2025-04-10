@@ -1,4 +1,7 @@
+package test.database;
+
 import org.junit.Test;
+import main.database.Serializable;
 
 import static org.junit.Assert.*;
 

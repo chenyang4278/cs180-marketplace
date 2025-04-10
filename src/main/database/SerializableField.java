@@ -1,3 +1,5 @@
+package main.database;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
