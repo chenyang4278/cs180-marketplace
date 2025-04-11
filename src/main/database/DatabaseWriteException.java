@@ -1,3 +1,5 @@
+package database;
+
 /**
  * DatabaseWriteException
  * <p>

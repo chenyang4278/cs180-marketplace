@@ -1,3 +1,5 @@
+package database;
+
 /**
  * DatabaseNotFoundException Class. An exception that handles a missing database.
  *
