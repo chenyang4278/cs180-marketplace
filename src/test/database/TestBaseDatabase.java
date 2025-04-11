@@ -1,10 +1,8 @@
-package test.database;
+package database;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import main.database.Database;
-import main.database.DatabaseNotFoundException;
 
 import static org.junit.Assert.*;
 

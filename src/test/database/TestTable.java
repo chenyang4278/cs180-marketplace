@@ -1,9 +1,4 @@
-package test.database;
-
-import main.database.DatabaseWrapper;
-import main.database.RowNotFoundException;
-import main.database.Serializable;
-import main.database.SerializableField;
+package database;
 
 /**
  * TestTable

@@ -1,10 +1,7 @@
-package test.database;
+package database;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import main.database.DatabaseWrapper;
-import main.database.DatabaseWriteException;
-import main.database.RowNotFoundException;
 
 import java.io.File;
 import java.util.List;

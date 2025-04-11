@@ -1,4 +1,4 @@
-package main.database;
+package database;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
