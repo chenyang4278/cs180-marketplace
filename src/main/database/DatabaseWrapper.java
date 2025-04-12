@@ -51,7 +51,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
 
     // called inside a lock
     // reason stated inside save function
-    private <T extends Serializable> int getNextId(Class<T> cls) throws DatabaseWriteException {
+    private <T extends Table> int getNextId(Class<T> cls) throws DatabaseWriteException {
         String clsName = cls.getSimpleName();
 
         ArrayList<String[]> ids = getRows(idDb, "cls", clsName);
@@ -78,7 +78,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
         return nextId;
     }
 
-    private <T extends Serializable> Database getDbFor(Class<T> cls) {
+    private <T extends Table> Database getDbFor(Class<T> cls) {
         String dbName = cls.getSimpleName() + ".csv";
 
         synchronized (lock) {
@@ -88,7 +88,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
                 }
             }
 
-            Database db = new Database(dbName, Serializable.getColumns(cls));
+            Database db = new Database(dbName, Table.getColumns(cls));
             databases.add(db);
             return db;
         }
@@ -104,12 +104,12 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @return an instance of T
      * @throws RowNotFoundException thrown if a matching row is not found
      */
-    public <T extends Serializable> T getByColumn(Class<T> cls,
-        String column, String value) throws RowNotFoundException {
+    public <T extends Table> T getByColumn(Class<T> cls,
+                                           String column, String value) throws RowNotFoundException {
         Database db = getDbFor(cls);
         ArrayList<String[]> rows = requireRows(db, column, value, cls.getSimpleName() + " not found");
         String[] row = rows.get(0);
-        return Serializable.fromRow(cls, row);
+        return Table.fromRow(cls, row);
     }
 
     /**
@@ -121,10 +121,10 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @param <T>    type that extends Serializable
      * @return a list of instances according to the filter
      */
-    public <T extends Serializable> List<T> filterByColumn(Class<T> cls, String column, String value) {
+    public <T extends Table> List<T> filterByColumn(Class<T> cls, String column, String value) {
         Database db = getDbFor(cls);
         ArrayList<String[]> rows = getRows(db, column, value);
-        return rows.stream().map(row -> Serializable.fromRow(cls, row)).collect(Collectors.toList());
+        return rows.stream().map(row -> Table.fromRow(cls, row)).collect(Collectors.toList());
     }
 
     /**
@@ -136,7 +136,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @return an instance of T
      * @throws RowNotFoundException thrown if the id is not found
      */
-    public <T extends Serializable> T getById(Class<T> cls, int id) throws RowNotFoundException {
+    public <T extends Table> T getById(Class<T> cls, int id) throws RowNotFoundException {
         return getByColumn(cls, "id", String.valueOf(id));
     }
 
@@ -149,7 +149,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @param <T> type that extends Serializable
      * @throws DatabaseWriteException thrown when failing to write for whatever reason
      */
-    public <T extends Serializable> void save(T obj) throws DatabaseWriteException {
+    public <T extends Table> void save(T obj) throws DatabaseWriteException {
         var cls = obj.getClass();
         Database db = getDbFor(cls);
 
@@ -181,14 +181,14 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @param <T> type that extends Serializable
      * @throws DatabaseWriteException thrown when failing to delete for whatever reason
      */
-    public <T extends Serializable> void delete(T obj) throws DatabaseWriteException {
+    public <T extends Table> void delete(T obj) throws DatabaseWriteException {
         // avoid a race condition where an already-deleted object is attempted to be re-deleted
         synchronized (lock) {
             if (obj.getId() == 0) {
                 return;
             }
 
-            Class<? extends Serializable> cls = obj.getClass();
+            Class<? extends Table> cls = obj.getClass();
             Database db = getDbFor(cls);
 
             try {
@@ -198,30 +198,6 @@ public class DatabaseWrapper implements IDatabaseWrapper {
                 throw new DatabaseWriteException("Failed to delete");
             }
         }
-    }
-
-    /**
-     * Convert an object into a reversible string.
-     * Intended to be used by the server/client in sending/receiving packets.
-     *
-     * @param obj the object to convert
-     * @return a string that's reversible with the stringAsObj function
-     * @param <T> type that extends Serializable
-     */
-    public <T extends Serializable> String objAsString(T obj) {
-        return getDbFor(obj.getClass()).arrayToDataLine(obj.asRow());
-    }
-
-    /**
-     * Convert a string from objAsString back into an object.
-     * Intended to be used by the server/client in sending/receiving packets.
-     *
-     * @param cls class of the object to return
-     * @return an object from the string
-     * @param <T> type that extends Serializable
-     */
-    public <T extends Serializable> T stringAsObj(Class<T> cls, String string) {
-        return Serializable.fromRow(cls, getDbFor(cls).dataLineToArray(string));
     }
 
     /**

@@ -10,20 +10,20 @@ import java.util.ArrayList;
  * @author Chen Yang, section 24
  * @version 3/28/25
  */
-public class User extends Serializable implements IUser {
+public class User extends Table implements IUser {
 
     //this is user info
 
-    @SerializableField(field = "username", index = 1)
+    @TableField(field = "username", index = 1)
     private String username;
 
-    @SerializableField(field = "password", index = 2)
+    @TableField(field = "password", index = 2)
     private String password;
 
-    @SerializableField(field = "balance", index = 3)
+    @TableField(field = "balance", index = 3)
     private double balance;
 
-    @SerializableField(field = "rating", index = 4)
+    @TableField(field = "rating", index = 4)
     private double rating;
 
     private ArrayList<Listing> listings;

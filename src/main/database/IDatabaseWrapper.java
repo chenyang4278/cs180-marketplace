@@ -11,17 +11,13 @@ import java.util.List;
  * @version 3/31/25
  */
 public interface IDatabaseWrapper {
-    <T extends Serializable> T getByColumn(Class<T> cls, String column, String value) throws RowNotFoundException;
+    <T extends Table> T getByColumn(Class<T> cls, String column, String value) throws RowNotFoundException;
 
-    <T extends Serializable> List<T> filterByColumn(Class<T> cls, String column, String value);
+    <T extends Table> List<T> filterByColumn(Class<T> cls, String column, String value);
 
-    <T extends Serializable> T getById(Class<T> cls, int id) throws RowNotFoundException;
+    <T extends Table> T getById(Class<T> cls, int id) throws RowNotFoundException;
 
-    <T extends Serializable> void save(T obj) throws DatabaseWriteException;
+    <T extends Table> void save(T obj) throws DatabaseWriteException;
 
-    <T extends Serializable> void delete(T obj) throws DatabaseWriteException;
-
-    <T extends Serializable> String objAsString(T obj);
-
-    <T extends Serializable> T stringAsObj(Class<T> cls, String string);
+    <T extends Table> void delete(T obj) throws DatabaseWriteException;
 }

@@ -9,20 +9,20 @@ package database;
  * @author Ayden Cline
  * @version 3/31/25
  */
-public class TestTable extends Serializable {
-    @SerializableField(field = "name", index = 1)
+public class TestTable extends Table {
+    @TableField(field = "name", index = 1)
     private String name;
 
-    @SerializableField(field = "count", index = 2)
+    @TableField(field = "count", index = 2)
     private int count;
 
-    @SerializableField(field = "long_count", index = 3)
+    @TableField(field = "long_count", index = 3)
     private long longCount;
 
-    @SerializableField(field = "decimal", index = 4)
+    @TableField(field = "decimal", index = 4)
     private float decimal;
 
-    @SerializableField(field = "precise_decimal", index = 5)
+    @TableField(field = "precise_decimal", index = 5)
     private double preciseDecimal;
 
     public TestTable() {

@@ -1,9 +1,10 @@
 package packet;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PacketHeader implements IPacketHeader {
+public class PacketHeader implements IPacketHeader, Serializable {
     private String name;
     private List<String> values;
 

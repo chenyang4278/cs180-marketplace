@@ -9,17 +9,17 @@ package database;
  * @author Ayden Cline
  * @version 3/31/25
  */
-public class Message extends Serializable implements IMessage {
-    @SerializableField(field = "sender_id", index = 1)
+public class Message extends Table implements IMessage {
+    @TableField(field = "sender_id", index = 1)
     private int senderId;
 
-    @SerializableField(field = "receiver_id", index = 2)
+    @TableField(field = "receiver_id", index = 2)
     private int receiverId;
 
-    @SerializableField(field = "message", index = 3)
+    @TableField(field = "message", index = 3)
     private String message;
 
-    @SerializableField(field = "timestamp", index = 4)
+    @TableField(field = "timestamp", index = 4)
     private long timestamp;
 
     // Required for Serializable

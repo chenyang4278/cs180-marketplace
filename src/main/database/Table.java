@@ -16,8 +16,8 @@ import java.util.stream.Stream;
  * @version 3/31/25
  */
 // abstract because this class should always be extended, never used directly
-public abstract class Serializable implements ISerializable {
-    @SerializableField(field = "id", index = 0)
+public abstract class Table implements ISerializable {
+    @TableField(field = "id", index = 0)
     private int id;
 
     public int getId() {
@@ -45,23 +45,23 @@ public abstract class Serializable implements ISerializable {
         throw new RuntimeException("Unserializable field type: " + field.getType());
     }
 
-    static private <T extends Serializable> Stream<Field> getFields(Class<T> cls) {
+    static private <T extends Table> Stream<Field> getFields(Class<T> cls) {
         // get all fields declared in the class
         // then add id field from this class
         Field[] fields = cls.getDeclaredFields();
         fields = Arrays.copyOf(fields, fields.length + 1);
         try {
-            fields[fields.length - 1] = Serializable.class.getDeclaredField("id");
+            fields[fields.length - 1] = Table.class.getDeclaredField("id");
         } catch (NoSuchFieldException e) { // unreachable
             throw new RuntimeException(e);
         }
         // return fields that are annotated by SerializableField
         // and sort by their specified index
         return Arrays.stream(fields)
-                .filter(f -> f.isAnnotationPresent(SerializableField.class))
+                .filter(f -> f.isAnnotationPresent(TableField.class))
                 .sorted((a, b) -> {
-                    var annotationA = a.getAnnotation(SerializableField.class);
-                    var annotationB = b.getAnnotation(SerializableField.class);
+                    var annotationA = a.getAnnotation(TableField.class);
+                    var annotationB = b.getAnnotation(TableField.class);
                     return annotationA.index() - annotationB.index();
                 });
     }
@@ -73,10 +73,10 @@ public abstract class Serializable implements ISerializable {
      * @param <T> class that extends Serializable
      * @return array of column names
      */
-    static public <T extends Serializable> String[] getColumns(Class<T> cls) {
+    static public <T extends Table> String[] getColumns(Class<T> cls) {
         // map list of annotated fields to their specified field names
         return getFields(cls)
-                .map(f -> f.getAnnotation(SerializableField.class).field())
+                .map(f -> f.getAnnotation(TableField.class).field())
                 .toArray(String[]::new);
     }
 
@@ -88,7 +88,7 @@ public abstract class Serializable implements ISerializable {
      * @param <T> class that extends Serializable and matches cls argument
      * @return a new object with attributes set to the unserialized values
      */
-    static public <T extends Serializable> T fromRow(Class<T> cls, String[] row) {
+    static public <T extends Table> T fromRow(Class<T> cls, String[] row) {
         Field[] fields = getFields(cls).toArray(Field[]::new);
 
         try {
@@ -97,7 +97,7 @@ public abstract class Serializable implements ISerializable {
 
             for (Field field : fields) {
                 // get annotation info for this field
-                SerializableField annotation = field.getAnnotation(SerializableField.class);
+                TableField annotation = field.getAnnotation(TableField.class);
                 if (annotation != null) {
                     // set the field to be accessible
                     field.setAccessible(true);

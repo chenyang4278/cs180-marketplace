@@ -1,7 +1,7 @@
 package server.handlers;
 
 import packet.*;
-import packet.factory.ErrorPacketFactory;
+import packet.response.ErrorPacket;
 
 import java.io.*;
 import java.net.Socket;
@@ -39,18 +39,18 @@ public class ClientHandler implements Runnable {
                 }
 
                 if (handler == null) {
-                    sendPacket(new ErrorPacketFactory("Path not found").create());
+                    sendPacket(new ErrorPacket("Path not found"));
                 } else {
                     sendPacket(handler.handle(packet, args));
                 }
             }
         } catch (PacketParsingException e) {
             try {
-                sendPacket(new ErrorPacketFactory("Bad packet formatting: " + e.getMessage()).create());
+                sendPacket(new ErrorPacket("Bad packet formatting: " + e.getMessage()));
             } catch (IOException e2) {
                 e.printStackTrace();
             }
-        } catch (IOException ignored) {
+        } catch (IOException e) {
             System.out.println("Connection closed");
         } catch (Exception e) {
             e.printStackTrace();
