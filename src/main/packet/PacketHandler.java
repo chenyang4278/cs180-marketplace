@@ -1,4 +1,4 @@
-package server.packet;
+package packet;
 
 import database.DatabaseWrapper;
 
@@ -22,16 +22,19 @@ public abstract class PacketHandler implements IPacketHandler {
 
         int nArgs = 0;
         for (String part : pathParts) {
-            if (part.charAt(0) == ':') {
+            if (!part.isEmpty() && part.charAt(0) == ':') {
                 nArgs++;
             }
         }
 
         String[] args = new String[nArgs];
         for (int i = 0; i < pathParts.length; i++) {
-            if (pathParts[i].charAt(0) == ':') {
-                args[0] = matchingPathParts[i];
-            } else if (!pathParts[i].equals(matchingPathParts[i])) {
+            String part = pathParts[i];
+            String matchingPart = matchingPathParts[i];
+
+            if (!part.isEmpty() && part.charAt(0) == ':') {
+                args[0] = matchingPart;
+            } else if (!part.equals(matchingPart)) {
                 return null;
             }
         }

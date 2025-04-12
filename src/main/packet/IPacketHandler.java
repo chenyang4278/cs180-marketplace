@@ -1,4 +1,4 @@
-package server.packet;
+package packet;
 
 public interface IPacketHandler {
     Packet handle(Packet packet, String[] args);

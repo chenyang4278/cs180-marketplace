@@ -44,7 +44,7 @@ public class Database implements IDatabase {
         return -1;
     }
 
-    private String arrayToDataLine(String[] values) {
+    public String arrayToDataLine(String[] values) {
         String toWrite = "\"";
         for (int i = 0; i < values.length; i++) {
             String line = values[i];
@@ -63,7 +63,7 @@ public class Database implements IDatabase {
         return toWrite;
     }
 
-    private String[] dataLineToArray(String line) {
+    public String[] dataLineToArray(String line) {
         String element = "";
         String[] parsed = new String[headers.length];
         int parseIdx = 0;

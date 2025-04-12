@@ -20,4 +20,8 @@ public interface IDatabaseWrapper {
     <T extends Serializable> void save(T obj) throws DatabaseWriteException;
 
     <T extends Serializable> void delete(T obj) throws DatabaseWriteException;
+
+    <T extends Serializable> String objAsString(T obj);
+
+    <T extends Serializable> T stringAsObj(Class<T> cls, String string);
 }

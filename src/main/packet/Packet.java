@@ -1,9 +1,6 @@
-package server.packet;
+package packet;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.ByteBuffer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,25 +15,25 @@ public class Packet implements IPacket {
         this.body = body;
     }
 
-    public Packet(String body) {
-        this.path = "";
+    public Packet(String path) {
+        this.path = path;
         this.headers = new ArrayList<>();
-        this.body = body;
+        this.body = "";
     }
 
-    static Packet fromString(String data) throws IllegalArgumentException, ErrorPacketException {
+    public Packet() {
+        this.path = "";
+        this.headers = new ArrayList<>();
+        this.body = "";
+    }
+
+    static Packet fromString(String data) throws PacketParsingException, ErrorPacketException {
         int pos = 0;
 
         String[] lines = data.split("\n");
-        if (lines.length < 2) {
-            throw new IllegalArgumentException("Invalid packet");
-        }
-
-        if (!lines[0].startsWith("/")) {
-            throw new IllegalArgumentException("Invalid packet");
-        }
 
         String path = lines[0];
+
         pos += path.length() + 1;
 
         // header parsing
@@ -52,7 +49,7 @@ public class Packet implements IPacket {
 
             String[] parts = line.split(":", 2);
             if (parts.length != 2) {
-                throw new IllegalArgumentException("Invalid packet");
+                throw new PacketParsingException("Invalid packet");
             }
 
             String name = parts[0];
@@ -96,23 +93,26 @@ public class Packet implements IPacket {
     }
 
     @Override
-    public void write(Writer writer) throws IOException {
+    public void write(OutputStream stream) throws IOException {
         char[] data = toString().toCharArray();
 
-        ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
-        buffer.putInt(data.length);
+        ObjectOutputStream oos = new ObjectOutputStream(stream);
+        oos.writeInt(data.length);
+        oos.flush();
 
-        writer.write(buffer.asCharBuffer().array());
+        OutputStreamWriter writer = new OutputStreamWriter(stream);
+
         writer.write(data);
+        writer.flush();
     }
 
-    public static Packet read(Reader reader) throws IOException, PacketParsingException, ErrorPacketException {
-        ByteBuffer buf = ByteBuffer.allocate(Integer.BYTES);
-        if (reader.read(buf.asCharBuffer()) != Integer.BYTES) {
-            throw new PacketParsingException("Failed to read packet length");
-        }
+    public static Packet read(InputStream stream) throws IOException, PacketParsingException, ErrorPacketException {
+        ObjectInputStream ois = new ObjectInputStream(stream);
+        int packetLength = ois.readInt();
 
-        char[] data = new char[buf.getInt()];
+        InputStreamReader reader = new InputStreamReader(stream);
+
+        char[] data = new char[packetLength];
         if (reader.read(data) != data.length) {
             throw new PacketParsingException("Failed to read full packet data");
         }
@@ -127,9 +127,9 @@ public class Packet implements IPacket {
         builder.append(path).append("\n");
 
         for (PacketHeader header : headers) {
-            builder.append(header.toString()).append("\n");
+            builder.append(header.toString());
         }
-        builder.append("\n");
+        builder.append("\n").append(body);
 
         return builder.toString();
     }

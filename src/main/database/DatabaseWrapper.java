@@ -201,6 +201,30 @@ public class DatabaseWrapper implements IDatabaseWrapper {
     }
 
     /**
+     * Convert an object into a reversible string.
+     * Intended to be used by the server/client in sending/receiving packets.
+     *
+     * @param obj the object to convert
+     * @return a string that's reversible with the stringAsObj function
+     * @param <T> type that extends Serializable
+     */
+    public <T extends Serializable> String objAsString(T obj) {
+        return getDbFor(obj.getClass()).arrayToDataLine(obj.asRow());
+    }
+
+    /**
+     * Convert a string from objAsString back into an object.
+     * Intended to be used by the server/client in sending/receiving packets.
+     *
+     * @param cls class of the object to return
+     * @return an object from the string
+     * @param <T> type that extends Serializable
+     */
+    public <T extends Serializable> T stringAsObj(Class<T> cls, String string) {
+        return Serializable.fromRow(cls, getDbFor(cls).dataLineToArray(string));
+    }
+
+    /**
      * @return Global DatabaseWrapper instance
      */
     static public DatabaseWrapper get() {

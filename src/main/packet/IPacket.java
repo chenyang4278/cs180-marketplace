@@ -1,7 +1,7 @@
-package server.packet;
+package packet;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.OutputStream;
 import java.util.List;
 
 public interface IPacket {
@@ -13,5 +13,5 @@ public interface IPacket {
     void setBody(String body);
 
     void addHeader(String name, String value);
-    void write(Writer writer) throws IOException;
+    void write(OutputStream stream) throws IOException;
 }

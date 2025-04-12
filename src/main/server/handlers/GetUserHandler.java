@@ -1,11 +1,11 @@
-package server;
+package server.handlers;
 
 import database.RowNotFoundException;
 import database.User;
-import server.packet.ErrorPacket;
-import server.packet.ObjectPacket;
-import server.packet.Packet;
-import server.packet.PacketHandler;
+import packet.factory.ErrorPacketFactory;
+import packet.factory.ObjectPacketFactory;
+import packet.Packet;
+import packet.PacketHandler;
 
 public class GetUserHandler extends PacketHandler {
     public GetUserHandler() {
@@ -15,10 +15,11 @@ public class GetUserHandler extends PacketHandler {
     @Override
     public Packet handle(Packet packet, String[] args) {
         try {
+            System.out.println(args[0]);
             User user = db.getByColumn(User.class, "id", args[0]);
-            return new ObjectPacket<>(user);
+            return new ObjectPacketFactory<>(user).create();
         } catch (RowNotFoundException ignored) {
-            return new ErrorPacket("User not found");
+            return new ErrorPacketFactory("User not found").create();
         }
     }
 }

@@ -1,4 +1,4 @@
-package server.packet;
+package packet;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -9,6 +9,10 @@ import java.util.ArrayList;
  * @version 3/27/25
  */
 interface IDatabase {
+    String arrayToDataLine(String[] values);
+
+    String[] dataLineToArray(String line);
+
     void write(String[] values) throws DatabaseNotFoundException;
 
     ArrayList<String[]> get(String header, String value) throws DatabaseNotFoundException;
