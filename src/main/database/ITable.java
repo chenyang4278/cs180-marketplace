@@ -1,5 +1,7 @@
 package database;
 
+import java.io.Serializable;
+
 /**
  * ISerializable
  * <p>
@@ -8,7 +10,7 @@ package database;
  * @author Ayden Cline
  * @version 3/31/25
  */
-public interface ISerializable {
+public interface ITable extends Serializable {
     int getId();
 
     void setId(int id);

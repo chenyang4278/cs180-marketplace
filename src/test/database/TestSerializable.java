@@ -17,7 +17,7 @@ public class TestSerializable {
     public void testGetColumns() {
         assertArrayEquals(
                 new String[]{"id", "name", "count", "long_count", "decimal", "precise_decimal"},
-                Serializable.getColumns(TestTable.class)
+                Table.getColumns(TestTable.class)
         );
     }
 
@@ -32,7 +32,7 @@ public class TestSerializable {
 
     @Test
     public void testFromRow() {
-        TestTable t = Serializable.fromRow(
+        TestTable t = Table.fromRow(
                 TestTable.class,
                 new String[]{"1", "table1", "10", "30", "5.4", "3.2"}
         );
@@ -44,7 +44,7 @@ public class TestSerializable {
         assertEquals(3.2, t.getPreciseDecimal(), 0.001);
 
         try {
-            Serializable.fromRow(
+            Table.fromRow(
                     TestTable.class,
                     new String[]{}
             );
@@ -57,7 +57,7 @@ public class TestSerializable {
     @Test
     public void testToAndBack() {
         TestTable t1 = new TestTable("table1", 10, 30, 5.4f, 3.2d);
-        TestTable t2 = Serializable.fromRow(TestTable.class, t1.asRow());
+        TestTable t2 = Table.fromRow(TestTable.class, t1.asRow());
         assertTrue(t1.equals(t2));
     }
 }

@@ -10,27 +10,27 @@ package database;
  * @version March 30th, 2025
  */
 
-public class Listing extends Serializable implements IListing {
+public class Listing extends Table implements IListing {
 
-    @SerializableField(field = "seller_id", index = 1)
+    @TableField(field = "seller_id", index = 1)
     private int sellerId; //Id of the seller
 
-    @SerializableField(field = "seller_name", index = 2)
+    @TableField(field = "seller_name", index = 2)
     private String sellerName; //name of the seller of an item
 
-    @SerializableField(field = "title", index = 3)
+    @TableField(field = "title", index = 3)
     private String title; //title of the item being sold
 
-    @SerializableField(field = "description", index = 4)
+    @TableField(field = "description", index = 4)
     private String description; //description of the item being sold
 
-    @SerializableField(field = "price", index = 5)
+    @TableField(field = "price", index = 5)
     private double price; //price value of the item being sold
 
-    @SerializableField(field = "image", index = 6)
+    @TableField(field = "image", index = 6)
     private String image; //image hash of the item being sold
 
-    @SerializableField(field = "sold", index = 7)
+    @TableField(field = "sold", index = 7)
     private boolean sold; //true or false of whether item has sold or not
 
     // Required for Serializable

@@ -13,7 +13,7 @@ import java.lang.annotation.RetentionPolicy;
  * @version 3/31/25
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SerializableField {
+public @interface TableField {
     String field();
     int index();
 }
