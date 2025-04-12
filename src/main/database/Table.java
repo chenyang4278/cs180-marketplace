@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  * @version 3/31/25
  */
 // abstract because this class should always be extended, never used directly
-public abstract class Table implements ISerializable {
+public abstract class Table implements ITable {
     @TableField(field = "id", index = 0)
     private int id;
 

@@ -15,7 +15,6 @@ public class GetUserHandler extends PacketHandler {
     @Override
     public Packet handle(Packet packet, String[] args) {
         try {
-            System.out.println(args[0]);
             User user = db.getByColumn(User.class, "id", args[0]);
             return new ObjectPacket<>(user);
         } catch (RowNotFoundException ignored) {

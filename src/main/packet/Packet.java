@@ -56,7 +56,7 @@ public class Packet implements IPacket, Serializable {
         oos.flush();
     }
 
-    public static Packet read(InputStream stream) throws IOException, PacketParsingException, ErrorPacketException {
+    public static <T extends Packet> T read(InputStream stream) throws IOException, PacketParsingException, ErrorPacketException {
         ObjectInputStream ois = new ObjectInputStream(stream);
         try {
             Packet packet = (Packet) ois.readObject();
@@ -66,7 +66,7 @@ public class Packet implements IPacket, Serializable {
                 throw new ErrorPacketException(((ErrorPacket) packet).getMessage());
             }
 
-            return packet;
+            return (T) packet;
         } catch (ClassNotFoundException e) {
             throw new PacketParsingException("Invalid packet");
         }
