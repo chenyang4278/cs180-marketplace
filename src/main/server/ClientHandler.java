@@ -1,7 +1,8 @@
-package server.handlers;
+package server;
 
 import packet.*;
 import packet.response.ErrorPacket;
+import server.handlers.GetUserHandler;
 
 import java.io.*;
 import java.net.Socket;
