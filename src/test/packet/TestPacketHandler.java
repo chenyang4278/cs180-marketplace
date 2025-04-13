@@ -25,17 +25,17 @@ public class TestPacketHandler {
      * @version 4/12/25
      */
     class TestingHandler extends PacketHandler {
-        public TestingHandler() {
-            super("/testing/:arg1/:arg2");
-        }
+        public TestingHandler(String p) { super(p); }
         @Override
         public Packet handle(Packet packet, String[] args) { return null; }
     }
 
     @Test
     public void testPacketMatch() {
-        TestingHandler t = new TestingHandler();
+        TestingHandler t = new TestingHandler("/testing/:arg1/:arg2");
         assertEquals("1", t.match("/testing/1/2")[0]);
         assertEquals("2", t.match("/testing/1/2")[1]);
+        TestingHandler t2 = new TestingHandler("/testing/:arg1/:arg2/:arg3");
+        assertNull(t2.match("/testing/1/2"));
     }
 }
