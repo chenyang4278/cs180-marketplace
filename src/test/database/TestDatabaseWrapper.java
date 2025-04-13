@@ -44,7 +44,7 @@ public class TestDatabaseWrapper {
     @BeforeClass
     public static void setUpClass() {
         // start on a clean slate
-        File f = new File("TestTable.csv");
+        File f = new File("TestingClass.csv");
         f.delete();
     }
 
@@ -125,7 +125,6 @@ public class TestDatabaseWrapper {
         }
     }
 
-    //If this test is failing, make sure to delete any previously existing csv files. Rerun and test should work.
     @Test
     public void testThreadSafety() throws InterruptedException {
         Thread[] threads = new Thread[] {
