@@ -28,12 +28,14 @@ public abstract class PacketHandler implements IPacketHandler {
         }
 
         String[] args = new String[nArgs];
+        int argsI = 0;
         for (int i = 0; i < pathParts.length; i++) {
             String part = pathParts[i];
             String matchingPart = matchingPathParts[i];
 
             if (!part.isEmpty() && part.charAt(0) == ':') {
-                args[0] = matchingPart;
+                args[argsI] = matchingPart;
+                argsI++;
             } else if (!part.equals(matchingPart)) {
                 return null;
             }
