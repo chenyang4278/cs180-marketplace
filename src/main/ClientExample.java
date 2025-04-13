@@ -1,6 +1,8 @@
+import database.Listing;
 import database.User;
 import packet.ErrorPacketException;
 import packet.Packet;
+import packet.PacketHeader;
 import packet.PacketParsingException;
 import packet.response.ObjectPacket;
 
@@ -8,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class ClientExample {
     public static void main(String[] args) throws IOException, PacketParsingException, ErrorPacketException {
@@ -26,9 +29,28 @@ public class ClientExample {
             System.out.println(e.getMessage());
         }
 
-        new Packet("/users/10").write(os);
-
+        ArrayList<PacketHeader> headers = new ArrayList<PacketHeader>();
+        PacketHeader ph1 = new PacketHeader("username", "karma");
+        PacketHeader ph2 = new PacketHeader("password", "123456");
+        headers.add(ph1);
+        headers.add(ph2);
+        new Packet("/usercreate/", headers).write(os);
         ObjectPacket<User> packet = Packet.read(is);
-        System.out.println("Received user: " + packet.getObj().getUsername());
+        User u = packet.getObj();
+        System.out.println(u.getId());
+
+        headers.clear();
+        headers.add(new PacketHeader("username", "karma"));
+        headers.add(new PacketHeader("title", "10 apples"));
+        headers.add(new PacketHeader("description", "10 granny smith apples, sour"));
+        headers.add(new PacketHeader("price", "1.10"));
+        headers.add(new PacketHeader("image", "null"));
+
+        new Packet("/listingcreate/", headers).write(os);
+        ObjectPacket<Listing> packet2 = Packet.read(is);
+        Listing l = packet2.getObj();
+        System.out.println(l.getDescription());
+
+
     }
 }

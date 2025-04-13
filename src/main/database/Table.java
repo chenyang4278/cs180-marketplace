@@ -40,6 +40,8 @@ public abstract class Table implements ITable {
             return Double.parseDouble(value);
         } else if (field.getType().equals(float.class)) {
             return Float.parseFloat(value);
+        } else if (field.getType().equals(boolean.class)) {
+            return Boolean.parseBoolean(value);
         }
 
         throw new RuntimeException("Invalid table field type: " + field.getType());

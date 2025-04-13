@@ -8,9 +8,9 @@ import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
 /* Handlers that we will need:
- * createAccount (username, password) - creates an account in db, get user obj
+ * createAccount (username, password) - creates an account in db, get user obj - DONE
  * login (username + password) - will retrieve a user object
- * createListing (price, name, ...) - creates a listing in db
+ * createListing (price, name, ...) - creates a listing in db - DONE
  * deleteListing - delete listing from db
  * deleteAccount - delete an user account from db
  * getListings (based on listing title or associated user) - list of listing objects with attributes
@@ -30,8 +30,8 @@ import packet.response.ObjectPacket;
  * @author Ayden Cline
  * @version 4/12/25
  */
-public class GetUserHandler extends PacketHandler {
-    public GetUserHandler() {
+public class GetUserFromIdHandler extends PacketHandler {
+    public GetUserFromIdHandler() {
         super("/users/:id");
     }
 

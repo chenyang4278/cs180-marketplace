@@ -2,7 +2,9 @@ package server;
 
 import packet.*;
 import packet.response.ErrorPacket;
-import server.handlers.GetUserHandler;
+import server.handlers.CreateUserHandler;
+import server.handlers.CreateListingHandler;
+import server.handlers.GetUserFromIdHandler;
 
 import java.io.*;
 import java.net.Socket;
@@ -19,7 +21,9 @@ import java.net.Socket;
  */
 public class ClientHandler implements Runnable {
     public static PacketHandler[] handlers = new PacketHandler[] {
-        new GetUserHandler()
+            new GetUserFromIdHandler(),
+            new CreateUserHandler(),
+            new CreateListingHandler()
     };
 
     private Socket socket;
