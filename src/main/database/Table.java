@@ -5,11 +5,11 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
- * Serializable
+ * Table
  * <p>
  * A class to be extended by classes of objects that are intended to be stored in the database.
  * Fields that are to be serialized and stored should be denoted by using the
- * SerializableField annotation and specifying the field name and index.
+ * TableField annotation and specifying the field name and index.
  * Index specification should start at 1 (id is index 0) and go up for each field.
  *
  * @author Ayden Cline
@@ -42,7 +42,7 @@ public abstract class Table implements ITable {
             return Float.parseFloat(value);
         }
 
-        throw new RuntimeException("Unserializable field type: " + field.getType());
+        throw new RuntimeException("Invalid table field type: " + field.getType());
     }
 
     static private <T extends Table> Stream<Field> getFields(Class<T> cls) {
@@ -55,7 +55,7 @@ public abstract class Table implements ITable {
         } catch (NoSuchFieldException e) { // unreachable
             throw new RuntimeException(e);
         }
-        // return fields that are annotated by SerializableField
+        // return fields that are annotated by TableField
         // and sort by their specified index
         return Arrays.stream(fields)
                 .filter(f -> f.isAnnotationPresent(TableField.class))
@@ -67,10 +67,10 @@ public abstract class Table implements ITable {
     }
 
     /**
-     * Get the column names of a class that extends Serializable
+     * Get the column names of a class that extends Table
      *
      * @param cls class for which to get column names
-     * @param <T> class that extends Serializable
+     * @param <T> class that extends Table
      * @return array of column names
      */
     static public <T extends Table> String[] getColumns(Class<T> cls) {
@@ -85,7 +85,7 @@ public abstract class Table implements ITable {
      *
      * @param cls Class to create an object of
      * @param row List of serialized values
-     * @param <T> class that extends Serializable and matches cls argument
+     * @param <T> class that extends Table and matches cls argument
      * @return a new object with attributes set to the unserialized values
      */
     static public <T extends Table> T fromRow(Class<T> cls, String[] row) {

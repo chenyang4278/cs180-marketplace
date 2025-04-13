@@ -100,7 +100,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @param cls    the class to get an instance of
      * @param column the column name
      * @param value  the value of the column
-     * @param <T>    type that extends Serializable
+     * @param <T>    type that extends Table
      * @return an instance of T
      * @throws RowNotFoundException thrown if a matching row is not found
      */
@@ -118,7 +118,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @param cls    the class to get instances of
      * @param column the column name
      * @param value  the value of the column
-     * @param <T>    type that extends Serializable
+     * @param <T>    type that extends Table
      * @return a list of instances according to the filter
      */
     public <T extends Table> List<T> filterByColumn(Class<T> cls, String column, String value) {
@@ -132,7 +132,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      *
      * @param cls the class to get an instance of
      * @param id  the id value
-     * @param <T> type that extends Serializable
+     * @param <T> type that extends Table
      * @return an instance of T
      * @throws RowNotFoundException thrown if the id is not found
      */
@@ -146,7 +146,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * so a new row is added.
      *
      * @param obj the object to save
-     * @param <T> type that extends Serializable
+     * @param <T> type that extends Table
      * @throws DatabaseWriteException thrown when failing to write for whatever reason
      */
     public <T extends Table> void save(T obj) throws DatabaseWriteException {
@@ -178,7 +178,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * Delete an object
      *
      * @param obj the object to delete
-     * @param <T> type that extends Serializable
+     * @param <T> type that extends Table
      * @throws DatabaseWriteException thrown when failing to delete for whatever reason
      */
     public <T extends Table> void delete(T obj) throws DatabaseWriteException {

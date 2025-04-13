@@ -22,7 +22,7 @@ public class Message extends Table implements IMessage {
     @TableField(field = "timestamp", index = 4)
     private long timestamp;
 
-    // Required for Serializable
+    // Required for Table
     public Message() {
     }
 

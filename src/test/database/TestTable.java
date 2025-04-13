@@ -1,90 +1,63 @@
 package database;
 
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 /**
  * TestTable
- * Note that the sole purpose of this class is to be used for testing
- * DatabaseWrapper and Serializable,
- * so it does not have an interfaces or actual use in our project.
+ * <p>
+ * A class that handles a JUnit tests for the Table class.
  *
  * @author Ayden Cline
  * @version 3/31/25
  */
-public class TestTable extends Table {
-    @TableField(field = "name", index = 1)
-    private String name;
-
-    @TableField(field = "count", index = 2)
-    private int count;
-
-    @TableField(field = "long_count", index = 3)
-    private long longCount;
-
-    @TableField(field = "decimal", index = 4)
-    private float decimal;
-
-    @TableField(field = "precise_decimal", index = 5)
-    private double preciseDecimal;
-
-    public TestTable() {
+public class TestTable {
+    @Test
+    public void testGetColumns() {
+        assertArrayEquals(
+                new String[]{"id", "name", "count", "long_count", "decimal", "precise_decimal"},
+                Table.getColumns(TestingClass.class)
+        );
     }
 
-    public TestTable(String name, int count, long longCount, float decimal, double preciseDecimal) {
-        this.name = name;
-        this.count = count;
-        this.longCount = longCount;
-        this.decimal = decimal;
-        this.preciseDecimal = preciseDecimal;
+    @Test
+    public void testAsRow() {
+        TestingClass t = new TestingClass("table1", 10, 30, 5.4f, 3.2d);
+        assertArrayEquals(
+                new String[]{String.valueOf(t.getId()), "table1", "10", "30", "5.4", "3.2"},
+                t.asRow()
+        );
     }
 
-    public String getName() {
-        return name;
+    @Test
+    public void testFromRow() {
+        TestingClass t = Table.fromRow(
+                TestingClass.class,
+                new String[]{"1", "table1", "10", "30", "5.4", "3.2"}
+        );
+        assertEquals(1, t.getId());
+        assertEquals("table1", t.getName());
+        assertEquals(10, t.getCount());
+        assertEquals(30, t.getLongCount());
+        assertEquals(5.4, t.getDecimal(), 0.001);
+        assertEquals(3.2, t.getPreciseDecimal(), 0.001);
+
+        try {
+            Table.fromRow(
+                    TestingClass.class,
+                    new String[]{}
+            );
+            fail("Should have thrown an exception for invalid number of values");
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public long getLongCount() {
-        return longCount;
-    }
-
-    public void setLongCount(long longCount) {
-        this.longCount = longCount;
-    }
-
-    public float getDecimal() {
-        return decimal;
-    }
-
-    public void setDecimal(float decimal) {
-        this.decimal = decimal;
-    }
-
-    public double getPreciseDecimal() {
-        return preciseDecimal;
-    }
-
-    public void setPreciseDecimal(double preciseDecimal) {
-        this.preciseDecimal = preciseDecimal;
-    }
-
-    public boolean equals(TestTable other) {
-        return (name.equals(other.name) &&
-                count == other.count &&
-                longCount == other.longCount &&
-                decimal == other.decimal &&
-                preciseDecimal == other.preciseDecimal);
-    }
-
-    public static TestTable getById(int id) throws RowNotFoundException {
-        return DatabaseWrapper.get().getById(TestTable.class, id);
+    @Test
+    public void testToAndBack() {
+        TestingClass t1 = new TestingClass("table1", 10, 30, 5.4f, 3.2d);
+        TestingClass t2 = Table.fromRow(TestingClass.class, t1.asRow());
+        assertTrue(t1.equals(t2));
     }
 }

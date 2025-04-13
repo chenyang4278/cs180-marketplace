@@ -17,15 +17,15 @@ import static org.junit.Assert.*;
  * @version 3/31/25
  */
 public class TestDatabaseWrapper {
-    private TestTable[] tables = new TestTable[4];
+    private TestingClass[] tables = new TestingClass[4];
 
     private void initTables() {
         try {
-            tables[0] = new TestTable("hi", Integer.MIN_VALUE, Long.MAX_VALUE, Float.MIN_VALUE, Double.MAX_VALUE);
-            tables[1] = new TestTable("hi2", 0, 0, 0, 0);
-            tables[2] = new TestTable("hi3", Integer.MAX_VALUE, Long.MIN_VALUE, Float.MAX_VALUE, Double.MIN_VALUE);
-            tables[3] = new TestTable("hi4", Integer.MIN_VALUE, Long.MAX_VALUE, Float.MIN_VALUE, Double.MAX_VALUE);
-            for (TestTable table : tables) {
+            tables[0] = new TestingClass("hi", Integer.MIN_VALUE, Long.MAX_VALUE, Float.MIN_VALUE, Double.MAX_VALUE);
+            tables[1] = new TestingClass("hi2", 0, 0, 0, 0);
+            tables[2] = new TestingClass("hi3", Integer.MAX_VALUE, Long.MIN_VALUE, Float.MAX_VALUE, Double.MIN_VALUE);
+            tables[3] = new TestingClass("hi4", Integer.MIN_VALUE, Long.MAX_VALUE, Float.MIN_VALUE, Double.MAX_VALUE);
+            for (TestingClass table : tables) {
                 table.save();
             }
         } catch (DatabaseWriteException e) {
@@ -33,7 +33,7 @@ public class TestDatabaseWrapper {
         }
     }
 
-    private TestTable[] getTables() {
+    private TestingClass[] getTables() {
         if (tables[0] == null) {
             initTables();
         }
@@ -50,11 +50,11 @@ public class TestDatabaseWrapper {
 
     @Test
     public void testGetById() throws RowNotFoundException {
-        TestTable[] lTables = getTables();
+        TestingClass[] lTables = getTables();
 
         DatabaseWrapper db = DatabaseWrapper.get();
-        for (TestTable table : lTables) {
-            TestTable tableFromDb = db.getById(TestTable.class, table.getId());
+        for (TestingClass table : lTables) {
+            TestingClass tableFromDb = db.getById(TestingClass.class, table.getId());
             assert tableFromDb != null;
             assert tableFromDb.equals(table);
         }
@@ -62,12 +62,12 @@ public class TestDatabaseWrapper {
 
     @Test
     public void testGetByColumn() throws RowNotFoundException {
-        TestTable[] lTables = getTables();
+        TestingClass[] lTables = getTables();
 
         DatabaseWrapper db = DatabaseWrapper.get();
-        for (TestTable table : lTables) {
-            TestTable tableFromDb = db.getByColumn(
-                    TestTable.class,
+        for (TestingClass table : lTables) {
+            TestingClass tableFromDb = db.getByColumn(
+                    TestingClass.class,
                     "long_count",
                     String.valueOf(table.getLongCount()));
             assert tableFromDb != null;
@@ -77,7 +77,7 @@ public class TestDatabaseWrapper {
 
     @Test
     public void testUpdate() throws RowNotFoundException, DatabaseWriteException {
-        TestTable table = getTables()[0];
+        TestingClass table = getTables()[0];
         table.setName("updated hi");
         table.setCount(0);
         table.setLongCount(10);
@@ -85,7 +85,7 @@ public class TestDatabaseWrapper {
         table.setPreciseDecimal(10.55d);
         table.save();
 
-        TestTable tableFromDb = DatabaseWrapper.get().getById(TestTable.class, table.getId());
+        TestingClass tableFromDb = DatabaseWrapper.get().getById(TestingClass.class, table.getId());
         assert tableFromDb != null;
         assert table.equals(tableFromDb);
     }
@@ -93,18 +93,18 @@ public class TestDatabaseWrapper {
     @Test
     public void testFilter() {
         getTables(); // ensure initiated
-        List<TestTable> lTables = DatabaseWrapper.get().filterByColumn(TestTable.class, "count", "0");
-        for (TestTable table : lTables) {
+        List<TestingClass> lTables = DatabaseWrapper.get().filterByColumn(TestingClass.class, "count", "0");
+        for (TestingClass table : lTables) {
             assert table.getCount() == 0;
         }
     }
 
     @Test
     public void testDelete() throws DatabaseWriteException {
-        TestTable table = getTables()[0];
+        TestingClass table = getTables()[0];
         table.delete();
         try {
-            TestTable.getById(table.getId());
+            TestingClass.getById(table.getId());
             fail("User was not deleted");
         } catch (RowNotFoundException e) {
             System.out.println(e.getMessage());
@@ -118,7 +118,7 @@ public class TestDatabaseWrapper {
     public void testDoesNotExist() {
         getTables(); // ensure initiated
         try {
-            TestTable.getById(-1);
+            TestingClass.getById(-1);
             fail("Should have thrown an exception for no object with id -1");
         } catch (RowNotFoundException e) {
             System.out.println(e.getMessage());
@@ -143,7 +143,7 @@ public class TestDatabaseWrapper {
             thread.join();
         }
 
-        List<TestTable> lTables = DatabaseWrapper.get().filterByColumn(TestTable.class, "count", "727");
+        List<TestingClass> lTables = DatabaseWrapper.get().filterByColumn(TestingClass.class, "count", "727");
         assertEquals(250, lTables.size());
     }
 
@@ -168,7 +168,7 @@ public class TestDatabaseWrapper {
                 String localName = "thread-safety-test-table-" + name;
 
                 for (int i = 0; i < 100; i++) {
-                    TestTable t = new TestTable(
+                    TestingClass t = new TestingClass(
                             localName,
                             100,
                             200,
@@ -180,18 +180,18 @@ public class TestDatabaseWrapper {
                 }
 
                 DatabaseWrapper db = DatabaseWrapper.get();
-                List<TestTable> lTables = db.filterByColumn(TestTable.class, "name", localName);
+                List<TestingClass> lTables = db.filterByColumn(TestingClass.class, "name", localName);
                 assertEquals(100, lTables.size());
-                for (TestTable table : lTables) {
+                for (TestingClass table : lTables) {
                     assertEquals(727, table.getCount());
                 }
 
                 for (int i = 0; i < lTables.size(); i += 2) {
-                    TestTable t = lTables.get(i);
+                    TestingClass t = lTables.get(i);
                     t.delete();
                 }
 
-                lTables = db.filterByColumn(TestTable.class, "name", localName);
+                lTables = db.filterByColumn(TestingClass.class, "name", localName);
                 assertEquals(50, lTables.size());
             } catch (Exception e) {
                 e.printStackTrace();

@@ -33,7 +33,7 @@ public class Listing extends Table implements IListing {
     @TableField(field = "sold", index = 7)
     private boolean sold; //true or false of whether item has sold or not
 
-    // Required for Serializable
+    // Required for Table
     public Listing() {
     }
 

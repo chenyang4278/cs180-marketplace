@@ -4,9 +4,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * SerializableField
+ * TableField
  * <p>
- * A class that allows an annotation to define a field as Serializable,
+ * A class that allows an annotation to define a field as being able to be put in a table,
  * used for easy database operations.
  *
  * @author Ayden Cline

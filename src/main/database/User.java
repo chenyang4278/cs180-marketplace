@@ -29,7 +29,7 @@ public class User extends Table implements IUser {
     private ArrayList<Listing> listings;
     private ArrayList<Message> inbox;
 
-    // Required for Serializable
+    // Required for Table
     public User() {
     }
 

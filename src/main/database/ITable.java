@@ -3,9 +3,9 @@ package database;
 import java.io.Serializable;
 
 /**
- * ISerializable
+ * ITable
  * <p>
- * A interface for a Serializable class, used to aid database operations.
+ * A interface for a Table class, used to aid database operations.
  *
  * @author Ayden Cline
  * @version 3/31/25
