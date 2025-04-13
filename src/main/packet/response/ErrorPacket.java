@@ -4,6 +4,15 @@ import packet.Packet;
 
 import java.io.Serializable;
 
+/**
+ * ErrorPacket
+ * <p>
+ * Extends Packet with a default 'Status' header indicating an error
+ * and a message attribute.
+ *
+ * @author Ayden Cline
+ * @version 4/12/25
+ */
 public class ErrorPacket extends Packet implements Serializable {
     private String message;
 

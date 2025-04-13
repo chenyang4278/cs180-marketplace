@@ -7,6 +7,14 @@ import packet.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
+/**
+ * GetUserHandler
+ * <p>
+ * Packet handler that returns a user given an id
+ *
+ * @author Ayden Cline
+ * @version 4/12/25
+ */
 public class GetUserHandler extends PacketHandler {
     public GetUserHandler() {
         super("/users/:id");

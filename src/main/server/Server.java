@@ -6,6 +6,15 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Server
+ * <p>
+ * Simple server that sends new socket connections to a
+ * thread pool using ClientHandler.
+ *
+ * @author Ayden Cline
+ * @version 4/12/25
+ */
 public class Server {
     public static void main(String[] args) throws IOException {
         ExecutorService pool = Executors.newCachedThreadPool();

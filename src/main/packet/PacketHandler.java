@@ -2,8 +2,16 @@ package packet;
 
 import database.DatabaseWrapper;
 
+/**
+ * PacketHandler
+ * <p>
+ * Abstract class for handling incoming client packets.
+ *
+ * @author Ayden Cline
+ * @version 4/12/25
+ */
 public abstract class PacketHandler implements IPacketHandler {
-    private String path;
+    private final String path;
     protected DatabaseWrapper db;
 
     public PacketHandler(String path) {
@@ -11,6 +19,15 @@ public abstract class PacketHandler implements IPacketHandler {
 
         db = DatabaseWrapper.get();
     }
+
+    /**
+     * Returns whether the given path matches the path
+     * of this handler. If so, returns any arguments in
+     * the path
+     *
+     * @param matchingPath path to check for a match
+     * @return String[] if match, otherwise null
+     */
     public String[] match(String matchingPath) {
         String[] pathParts = path.split("/");
         String[] matchingPathParts = matchingPath.split("/");

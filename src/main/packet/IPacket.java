@@ -4,6 +4,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+/**
+ * IPacket
+ *
+ * @author Ayden Cline
+ * @version 4/12/25
+ */
 public interface IPacket {
     String getPath();
     List<PacketHeader> getHeaders();

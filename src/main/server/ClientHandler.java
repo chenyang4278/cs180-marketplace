@@ -7,6 +7,16 @@ import server.handlers.GetUserHandler;
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * ClientHandler
+ * <p>
+ * Does initial handling of packets coming from clients.
+ * The packets are then sent to their proper handler or
+ * a path not found error is returned.
+ *
+ * @author Ayden Cline
+ * @version 4/12/25
+ */
 public class ClientHandler implements Runnable {
     public static PacketHandler[] handlers = new PacketHandler[] {
         new GetUserHandler()

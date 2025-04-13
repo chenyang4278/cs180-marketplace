@@ -6,6 +6,15 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Packet
+ * <p>
+ * Object that is sent between server and client and
+ * can be extended to create packets with more info.
+ *
+ * @author Ayden Cline
+ * @version 4/12/25
+ */
 public class Packet implements IPacket, Serializable {
     private String path;
     private List<PacketHeader> headers;
@@ -48,6 +57,12 @@ public class Packet implements IPacket, Serializable {
         return null;
     }
 
+    /**
+     * Writes this packet to an output stream
+     *
+     * @param stream stream to write to
+     * @throws IOException possibly thrown while writing
+     */
     @Override
     public void write(OutputStream stream) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(stream);
@@ -56,6 +71,16 @@ public class Packet implements IPacket, Serializable {
         oos.flush();
     }
 
+    /**
+     * Reads a packet from an input stream
+     *
+     * @param stream stream to read from
+     * @return read packet
+     * @param <T> type of packet to attempt to read
+     * @throws IOException possibly thrown while reading
+     * @throws PacketParsingException thrown if the object read isn't a valid packet object
+     * @throws ErrorPacketException thrown if an error packet is returned
+     */
     public static <T extends Packet> T read(InputStream stream) throws IOException, PacketParsingException, ErrorPacketException {
         ObjectInputStream ois = new ObjectInputStream(stream);
         try {

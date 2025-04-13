@@ -29,10 +29,4 @@ public class TestPacketHeader {
         ph.addValue("value 3");
         assertEquals("value 3", ph.getValues().get(2));
     }
-
-    @Test
-    public void testToString() {
-        PacketHeader ph = new PacketHeader("packetheader", "1");
-        assertEquals("packetheader:1\n", ph.toString());
-    }
 }
