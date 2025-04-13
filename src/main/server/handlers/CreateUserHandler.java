@@ -1,5 +1,6 @@
 package server.handlers;
 
+import database.DatabaseWrapper;
 import database.DatabaseWriteException;
 import database.RowNotFoundException;
 import database.User;
@@ -24,11 +25,11 @@ public class CreateUserHandler extends PacketHandler {
         String password = packet.getHeader("password").getValues().get(0);
         try {
             User user = db.getByColumn(User.class, "username", username);
-            return new ErrorPacket("User already exists");
+            return new ErrorPacket("Username already exists!");
         } catch (RowNotFoundException ignored) {
             User u = new User(username, password);
             try {
-                u.save();
+                DatabaseWrapper.get().save(u);
                 return new ObjectPacket<User>(u);
             } catch (DatabaseWriteException e) {
                 return new ErrorPacket("Database faliure in creating user");

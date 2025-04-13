@@ -49,6 +49,7 @@ public class ClientExample {
         new Packet("/listingcreate/", headers).write(os);
         ObjectPacket<Listing> packet2 = Packet.read(is);
         Listing l = packet2.getObj();
+        //would now add listing to user obj
         System.out.println(l.getDescription());
 
 

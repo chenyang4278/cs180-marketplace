@@ -1,0 +1,42 @@
+package server.handlers;
+
+import database.*;
+import packet.Packet;
+import packet.PacketHandler;
+import packet.response.ErrorPacket;
+import packet.response.ObjectPacket;
+
+
+public class CreateMessageHandler extends PacketHandler {
+    public CreateMessageHandler() {
+        super("/messagecreate/");
+    }
+
+    /*
+     * Expected PacketHeaders:
+     * senderId
+     * recieverId
+     * message
+     */
+    @Override
+    public Packet handle(Packet packet, String[] args) {
+        String ssid = packet.getHeader("senderId").getValues().get(0);
+        String rsid = packet.getHeader("recieverId").getValues().get(0);
+        String message = packet.getHeader("message").getValues().get(0);
+        int sid = 0;
+        int rid = 0;
+        try {
+            sid = Integer.parseInt(ssid);
+            rid = Integer.parseInt(rsid);
+            Message m = new Message(sid, rid, message);
+            try {
+                DatabaseWrapper.get().save(m);
+                return new ObjectPacket<Message>(m);
+            } catch (DatabaseWriteException e) {
+                return new ErrorPacket("Database faliure in creating message");
+            }
+        } catch (NumberFormatException e) {
+            return new ErrorPacket("Invalid ids!");
+        }
+    }
+}

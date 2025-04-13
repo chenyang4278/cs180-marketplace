@@ -2,9 +2,7 @@ package server;
 
 import packet.*;
 import packet.response.ErrorPacket;
-import server.handlers.CreateUserHandler;
-import server.handlers.CreateListingHandler;
-import server.handlers.GetUserFromIdHandler;
+import server.handlers.*;
 
 import java.io.*;
 import java.net.Socket;
@@ -19,11 +17,25 @@ import java.net.Socket;
  * @author Ayden Cline
  * @version 4/12/25
  */
+
+/* Handlers that we will need:
+ * login (username + password) - will retrieve a user object
+ * buy (balance + update listing) - will update user balance and listing in db, returns updated user obj?
+ * sendMessage - will create a message between two users
+ *
+ * Some possible extras
+ * editUser
+ * editListing
+ */
 public class ClientHandler implements Runnable {
     public static PacketHandler[] handlers = new PacketHandler[] {
-            new GetUserFromIdHandler(),
+            new CreateListingHandler(),
             new CreateUserHandler(),
-            new CreateListingHandler()
+            new DeleteListingHandler(),
+            new DeleteUserHandler(),
+            new GetListingsFromAttributeHandler(),
+            new GetUsersFromAttributeHandler(),
+            new GetUserFromIdHandler()
     };
 
     private Socket socket;

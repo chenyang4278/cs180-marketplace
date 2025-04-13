@@ -1,9 +1,6 @@
 package server.handlers;
 
-import database.DatabaseWriteException;
-import database.Listing;
-import database.RowNotFoundException;
-import database.User;
+import database.*;
 import packet.Packet;
 import packet.PacketHandler;
 import packet.response.ErrorPacket;
@@ -40,22 +37,18 @@ public class CreateListingHandler extends PacketHandler {
         } catch (NumberFormatException e) {
             return new ErrorPacket("Invalid listing price!");
         }
+
         try {
-            db.getByColumn(Listing.class, "title", title);
-            return new ErrorPacket("Listing already exists");
-        } catch (RowNotFoundException ignored) {
+            User u = db.getByColumn(User.class, "username", username);
+            Listing l = new Listing(u.getId(), username, title, description, dbPrice, image, false);
             try {
-                User u = db.getByColumn(User.class, "username", username);
-                Listing l = new Listing(u.getId(), username, title, description, dbPrice, image, false);
-                try {
-                    l.save();
-                    return new ObjectPacket<Listing>(l);
-                } catch (DatabaseWriteException e) {
-                    return new ErrorPacket("Database faliure in creating listing");
-                }
-            } catch (RowNotFoundException e) {
-                return new ErrorPacket("Database faliure in reading user");
+                DatabaseWrapper.get().save(l);
+                return new ObjectPacket<Listing>(l);
+            } catch (DatabaseWriteException e) {
+                return new ErrorPacket("Database faliure in creating listing");
             }
+        } catch (RowNotFoundException e) {
+            return new ErrorPacket("Database faliure in reading user");
         }
     }
 }
