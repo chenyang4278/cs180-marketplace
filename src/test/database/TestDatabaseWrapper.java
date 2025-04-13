@@ -125,6 +125,7 @@ public class TestDatabaseWrapper {
         }
     }
 
+    //If this test is failing, make sure to delete any previously existing csv files. Rerun and test should work.
     @Test
     public void testThreadSafety() throws InterruptedException {
         Thread[] threads = new Thread[] {
