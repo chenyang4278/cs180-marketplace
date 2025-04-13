@@ -11,7 +11,6 @@ public abstract class PacketHandler implements IPacketHandler {
 
         db = DatabaseWrapper.get();
     }
-
     public String[] match(String matchingPath) {
         String[] pathParts = path.split("/");
         String[] matchingPathParts = matchingPath.split("/");
@@ -44,3 +43,4 @@ public abstract class PacketHandler implements IPacketHandler {
         return args;
     }
 }
+

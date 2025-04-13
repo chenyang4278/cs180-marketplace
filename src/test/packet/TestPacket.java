@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * TestPacket Class
@@ -65,13 +66,15 @@ public class TestPacket {
         try {
             ArrayList<PacketHeader> headers = new ArrayList<PacketHeader>();
             headers.add(new PacketHeader("testHeader", "first header"));
+            headers.add(new PacketHeader("testHeader2", "first header 2"));
             Packet p = new Packet("mypath", headers);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             p.write(outputStream);
             ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
             Packet p2 = Packet.read(inputStream);
             assertEquals("mypath", p2.getPath());
-
+            assertEquals(2, p2.getHeaders().size());
+            assertEquals("first header 2", p2.getHeader("testHeader2").getValues().get(0));
         } catch (Exception e) {
             fail("Exception during test: " + e.getMessage());
         }
