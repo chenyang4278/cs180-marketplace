@@ -6,6 +6,14 @@ import packet.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
+/**
+ * CreateListingHandler
+ * <p>
+ * Handles creating listings.
+ *
+ * @author Karma Luitel
+ * @version 4/13/25
+ */
 public class CreateListingHandler extends PacketHandler {
     public CreateListingHandler() {
         super("/listingcreate/");

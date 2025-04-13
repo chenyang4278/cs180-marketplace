@@ -6,7 +6,14 @@ import packet.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
-
+/**
+ * CreateMessageHandler
+ * <p>
+ * Handles creating messages.
+ *
+ * @author Karma Luitel
+ * @version 4/13/25
+ */
 public class CreateMessageHandler extends PacketHandler {
     public CreateMessageHandler() {
         super("/messagecreate/");

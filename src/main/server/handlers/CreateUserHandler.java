@@ -9,6 +9,14 @@ import packet.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
+/**
+ * CreateUserHandler
+ * <p>
+ * Handles creating users.
+ *
+ * @author Karma Luitel
+ * @version 4/13/25
+ */
 public class CreateUserHandler extends PacketHandler {
     public CreateUserHandler() {
         super("/usercreate/");

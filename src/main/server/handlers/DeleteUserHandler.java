@@ -9,6 +9,14 @@ import packet.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.SuccessPacket;
 
+/**
+ * DeleteUserHandler
+ * <p>
+ * Handles deleting users.
+ *
+ * @author Karma Luitel
+ * @version 4/13/25
+ */
 public class DeleteUserHandler extends PacketHandler {
     public DeleteUserHandler() {
         super("/userdelete/");
@@ -16,21 +24,29 @@ public class DeleteUserHandler extends PacketHandler {
 
     /*
      * Expected PacketHeaders:
-     * username - arg in index 0
+     * userId - arg in index 0
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-        String username = packet.getHeader("username").getValues().get(0);
+        String sid = packet.getHeader("userId").getValues().get(0);
+        int id = 0;
         try {
-            User u = db.getByColumn(User.class, "username", username);
+            id = Integer.parseInt(sid);
             try {
-                DatabaseWrapper.get().delete(u);
-                return new SuccessPacket();
-            } catch (DatabaseWriteException e) {
-                return new ErrorPacket("Database delete faliure!");
+                User u = db.getById(User.class, id);
+                try {
+                    DatabaseWrapper.get().delete(u);
+                    return new SuccessPacket();
+                } catch (DatabaseWriteException e) {
+                    return new ErrorPacket("Database delete faliure!");
+                }
+            } catch (RowNotFoundException ignored) {
+                return new ErrorPacket("User does not exist!");
             }
-        } catch (RowNotFoundException ignored) {
-            return new ErrorPacket("User does not exist!");
+        } catch (NumberFormatException e) {
+            return new ErrorPacket("Invalid id!");
         }
+
+
     }
 }

@@ -10,6 +10,14 @@ import packet.response.ObjectListPacket;
 
 import java.util.ArrayList;
 
+/**
+ * GetMessagesBetweenUsersHandler
+ * <p>
+ * Handles getting messages between two users.
+ *
+ * @author Karma Luitel
+ * @version 4/13/25
+ */
 public class GetMessagesBetweenUsersHandler extends PacketHandler {
     public GetMessagesBetweenUsersHandler() { super("/getmessages/"); }
 

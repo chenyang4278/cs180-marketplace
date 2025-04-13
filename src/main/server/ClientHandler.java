@@ -20,12 +20,13 @@ import java.net.Socket;
 
 /* Handlers that we will need:
  * login (username + password) - will retrieve a user object
- * buy (balance + update listing) - will update user balance and listing in db, returns updated user obj?
- * sendMessage - will create a message between two users
- *
  * Some possible extras
  * editUser
  * editListing
+ *
+ * TODO: Testcases for handlers
+ * TODO: Interfaces for handlers
+ * TODO: Interfaces for response packets
  */
 public class ClientHandler implements Runnable {
     public static PacketHandler[] handlers = new PacketHandler[] {

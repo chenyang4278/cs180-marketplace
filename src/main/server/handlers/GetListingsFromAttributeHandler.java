@@ -7,6 +7,14 @@ import packet.response.ObjectListPacket;
 
 import java.util.ArrayList;
 
+/**
+ * GetListingsFromAttributeHandler
+ * <p>
+ * Handles getting listings from a provided attribute.
+ *
+ * @author Karma Luitel
+ * @version 4/13/25
+ */
 public class GetListingsFromAttributeHandler extends PacketHandler {
     public GetListingsFromAttributeHandler() { super("/listingsattribute/"); }
 

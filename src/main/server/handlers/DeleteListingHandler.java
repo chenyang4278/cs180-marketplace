@@ -9,6 +9,14 @@ import packet.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.SuccessPacket;
 
+/**
+ * DeleteListingHandler
+ * <p>
+ * Handles deleting listings.
+ *
+ * @author Karma Luitel
+ * @version 4/13/25
+ */
 public class DeleteListingHandler extends PacketHandler {
     public DeleteListingHandler() {
         super("/listingdelete/");
@@ -16,11 +24,11 @@ public class DeleteListingHandler extends PacketHandler {
 
     /*
      * Expected PacketHeaders:
-     * id - arg in index 0
+     * listingId - arg in index 0
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-        String sid = packet.getHeader("title").getValues().get(0);
+        String sid = packet.getHeader("listingId").getValues().get(0);
         int id = 0;
         try {
             id = Integer.parseInt(sid);
