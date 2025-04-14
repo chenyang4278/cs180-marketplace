@@ -1,5 +1,6 @@
-package database;
+package data;
 
+import database.TestingClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

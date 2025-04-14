@@ -1,9 +1,5 @@
 package packet;
-import database.RowNotFoundException;
-import database.User;
 import org.junit.Test;
-import packet.response.ErrorPacket;
-import packet.response.ObjectPacket;
 
 import static org.junit.Assert.*;
 

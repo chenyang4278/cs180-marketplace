@@ -1,7 +1,7 @@
 package server.handlers;
 
 import database.DatabaseWrapper;
-import database.User;
+import data.User;
 import database.DatabaseWriteException;
 import database.RowNotFoundException;
 import packet.Packet;

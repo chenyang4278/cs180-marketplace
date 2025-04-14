@@ -1,8 +1,6 @@
 package packet.response;
 
-import database.Table;
-
-import java.util.ArrayList;
+import data.Table;
 
 /**
  * IObjectListPacket

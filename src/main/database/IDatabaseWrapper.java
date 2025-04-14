@@ -1,5 +1,7 @@
 package database;
 
+import data.Table;
+
 import java.util.List;
 
 /**

@@ -1,5 +1,6 @@
 package server.handlers;
 
+import data.Message;
 import database.*;
 import packet.Packet;
 import packet.PacketHandler;
