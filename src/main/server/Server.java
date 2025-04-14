@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
  * @author Ayden Cline
  * @version 4/12/25
  */
-public class Server {
+public class Server implements IServer {
     public static void main(String[] args) throws IOException {
         ExecutorService pool = Executors.newCachedThreadPool();
 

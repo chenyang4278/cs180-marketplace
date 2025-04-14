@@ -17,6 +17,7 @@ public class TestPacketHeader {
         PacketHeader ph = new PacketHeader("packetheader", "value 1", "value 2");
         assertEquals("packetheader", ph.getName());
         assertEquals("value 1", ph.getValues().get(0));
+        assertEquals("value 2", ph.getValues().get(1));
 
         PacketHeader ph2 = new PacketHeader("header");
         assertEquals("header", ph2.getName());

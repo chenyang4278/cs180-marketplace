@@ -3,11 +3,14 @@ import org.junit.Test;
 
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
+import packet.response.ObjectListPacket;
 import packet.response.SuccessPacket;
 
 import static org.junit.Assert.*;
 
 import database.TestingClass;
+
+import java.util.ArrayList;
 
 /**
  * TestResponsePacket Class
@@ -36,6 +39,23 @@ public class TestResponsePacket {
         TestingClass testObject2 = new TestingClass("hi2", Integer.MIN_VALUE, Long.MAX_VALUE, Float.MIN_VALUE, Double.MAX_VALUE);
         op.setObj(testObject2);
         assertEquals(testObject2, op.getObj());
+    }
+
+    @Test
+    public void testObjListPacket() {
+        TestingClass testObject1 = new TestingClass("hi1", Integer.MIN_VALUE, Long.MAX_VALUE, Float.MIN_VALUE, Double.MAX_VALUE);
+        TestingClass testObject2 = new TestingClass("hi2", Integer.MIN_VALUE, Long.MAX_VALUE, Float.MIN_VALUE, Double.MAX_VALUE);
+        TestingClass testObject3 = new TestingClass("hi3", Integer.MIN_VALUE, Long.MAX_VALUE, Float.MIN_VALUE, Double.MAX_VALUE);
+        ArrayList<TestingClass> objList = new ArrayList<>();
+        objList.add(testObject1);
+        objList.add(testObject2);
+        objList.add(testObject3);
+        ObjectListPacket<TestingClass> op = new ObjectListPacket<TestingClass>(objList);
+        assertEquals(objList, op.getObjList());
+        ArrayList<TestingClass> objList2 = new ArrayList<>();
+        objList2.add(new TestingClass("hi4", Integer.MIN_VALUE, Long.MAX_VALUE, Float.MIN_VALUE, Double.MAX_VALUE));
+        op.setObjList(objList2);
+        assertEquals(objList2, op.getObjList());
     }
 
     @Test

@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @author Ayden Cline
  * @version 4/12/25
  */
-public class SuccessPacket extends Packet implements Serializable {
+public class SuccessPacket extends Packet implements Serializable, ISuccessPacket {
     public SuccessPacket() {
         addHeader("Status", "OK");
     }

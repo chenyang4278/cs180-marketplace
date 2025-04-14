@@ -26,7 +26,7 @@ import java.net.Socket;
  *
  * TODO: Testcases for handlers
  */
-public class ClientHandler implements Runnable {
+public class ClientHandler implements Runnable, IClientHandler {
     public static PacketHandler[] handlers = new PacketHandler[] {
             new BuyListingHandler(),
             new CreateListingHandler(),
