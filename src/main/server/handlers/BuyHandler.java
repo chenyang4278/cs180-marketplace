@@ -43,14 +43,18 @@ public class BuyHandler extends PacketHandler {
                 User u = db.getById(User.class, bid);
                 Listing l = db.getById(Listing.class, lid);
                 if (u.getBalance() > l.getPrice() + EPSILON) {
-                    u.setBalance(u.getBalance() - l.getPrice());
-                    l.setSold(true);
-                    try {
-                        DatabaseWrapper.get().save(u);
-                        DatabaseWrapper.get().save(l);
-                        return new ObjectPacket<User>(u);
-                    } catch (DatabaseWriteException e) {
-                        return new ErrorPacket("Database update error!");
+                    if (!l.isSold()) {
+                        u.setBalance(u.getBalance() - l.getPrice());
+                        l.setSold(true);
+                        try {
+                            DatabaseWrapper.get().save(u);
+                            DatabaseWrapper.get().save(l);
+                            return new ObjectPacket<User>(u);
+                        } catch (DatabaseWriteException e) {
+                            return new ErrorPacket("Database update error!");
+                        }
+                    } else {
+                        return new ErrorPacket("Item already has already been sold!");
                     }
                 } else {
                     return new ErrorPacket("User does not have enough balance to buy this item!");
