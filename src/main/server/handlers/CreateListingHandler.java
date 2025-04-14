@@ -23,7 +23,7 @@ public class CreateListingHandler extends PacketHandler implements ICreateListin
 
     /*
      * Expected PacketHeaders:
-     * username - arg in index 0
+     * userId - arg in index 0
      * title - arg in index 0
      * description - arg in index 0
      * price - arg in index 0
@@ -32,13 +32,14 @@ public class CreateListingHandler extends PacketHandler implements ICreateListin
     @Override
     public Packet handle(Packet packet, String[] args) {
 
-        String username = packet.getHeader("username").getValues().get(0);
+        String userId = packet.getHeader("userId").getValues().get(0);
         String title = packet.getHeader("title").getValues().get(0);
         String description = packet.getHeader("description").getValues().get(0);
         String price = packet.getHeader("price").getValues().get(0);
         String image = packet.getHeader("image").getValues().get(0);
 
         double dbPrice = 0;
+        int id = 0;
         try {
             dbPrice = Double.parseDouble(price);
             if (dbPrice < 0) {
@@ -49,8 +50,14 @@ public class CreateListingHandler extends PacketHandler implements ICreateListin
         }
 
         try {
-            User u = db.getByColumn(User.class, "username", username);
-            Listing l = new Listing(u.getId(), username, title, description, dbPrice, image, false);
+            id = Integer.parseInt(userId);
+        } catch (NumberFormatException e) {
+            return new ErrorPacket("Invalid user id!");
+        }
+
+        try {
+            User u = db.getById(User.class, id);
+            Listing l = new Listing(id, u.getUsername(), title, description, dbPrice, image, false);
             try {
                 DatabaseWrapper.get().save(l);
                 return new ObjectPacket<Listing>(l);
