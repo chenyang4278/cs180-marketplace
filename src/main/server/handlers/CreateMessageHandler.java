@@ -36,6 +36,9 @@ public class CreateMessageHandler extends PacketHandler implements ICreateMessag
         try {
             sid = Integer.parseInt(ssid);
             rid = Integer.parseInt(rsid);
+            if (sid == rid) {
+                return new ErrorPacket("You cannot message yourself!");
+            }
             Message m = new Message(sid, rid, message);
             try {
                 DatabaseWrapper.get().save(m);

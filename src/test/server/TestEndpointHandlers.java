@@ -185,6 +185,13 @@ public class TestEndpointHandlers {
         } catch (RowNotFoundException e) {
             throw new RuntimeException(e);
         }
+
+        phl.clear();
+        phl.add(new PacketHeader("senderId", "" + u1.getId()));
+        phl.add( new PacketHeader("recieverId", "" + u1.getId()));
+        phl.add( new PacketHeader("message", "hi, this is a message"));
+        ErrorPacket e = (ErrorPacket) cl.handle(new Packet("this dosent matter", phl), null);
+        assertEquals("You cannot message yourself!", e.getMessage());
     }
 
     @Test
@@ -324,11 +331,72 @@ public class TestEndpointHandlers {
 
     @Test
     public void testGetMessagesBetweenUsersHandler() {
+        clearDb();
+        User u1 = new User("karma", "verysecretpassword");
+        User u2 = new User("ayden", "extrasecretpassword");
+        User u3 = new User("chen", "extrasecretpassword");
+        try {
+            DatabaseWrapper.get().save(u1);
+            DatabaseWrapper.get().save(u2);
+            DatabaseWrapper.get().save(u3);
+        } catch (DatabaseWriteException e) {
+            throw new RuntimeException(e);
+        }
+        Message m1 = new Message(u1.getId(), u2.getId(), "this is a message from u1 to u2");
+        //wait before creating next message, this may error very rarely
+        for (int i = 0; i < 1000000000; i+=2) {
+            i--;
+        }
+        Message m2 = new Message(u1.getId(), u2.getId(), "this is a another message from u1 to u2");
+        Message m3 = new Message(u1.getId(), u3.getId(), "this is a message from u1 to u3");
+        Message m4 = new Message(u3.getId(), u2.getId(), "this is a another message from u3 to u2");
+        Message m5 = new Message(u2.getId(), u3.getId(), "this is a another message from u2 to u3");
+        try {
+            DatabaseWrapper.get().save(m1);
+            DatabaseWrapper.get().save(m2);
+            DatabaseWrapper.get().save(m3);
+            DatabaseWrapper.get().save(m4);
+            DatabaseWrapper.get().save(m5);
+        } catch (DatabaseWriteException e) {
+            throw new RuntimeException(e);
+        }
 
+        GetMessagesBetweenUsersHandler h = new GetMessagesBetweenUsersHandler();
+
+        ArrayList<PacketHeader> phl = new ArrayList<>();
+        phl.add(new PacketHeader("senderId", "" + u1.getId()));
+        phl.add(new PacketHeader("recieverId", "" + u2.getId()));
+        ObjectListPacket<Message> o = (ObjectListPacket<Message>) h.handle(new Packet("this dosent matter", phl), null);
+        assertEquals(2, o.getObjList().size());
+
+        //TODO Fix this?
+        //dependent on wait before creating next message, this may error very, very rarely
+        assertTrue(o.getObjList().get(0).getTimestamp() < o.getObjList().get(1).getTimestamp());
+
+        phl.clear();
+        phl.add(new PacketHeader("senderId", "" + u2.getId()));
+        phl.add(new PacketHeader("recieverId", "" + u3.getId()));
+        ObjectListPacket<Message> o2 = (ObjectListPacket<Message>) h.handle(new Packet("this dosent matter", phl), null);
+        assertEquals(1, o2.getObjList().size());
+        assertEquals("this is a another message from u2 to u3", o2.getObjList().get(0).getMessage());
+
+        phl.clear();
+        phl.add(new PacketHeader("senderId", "" + u3.getId()));
+        phl.add(new PacketHeader("recieverId", "" + u2.getId()));
+        ObjectListPacket<Message> o3 = (ObjectListPacket<Message>) h.handle(new Packet("this dosent matter", phl), null);
+        assertEquals(1, o2.getObjList().size());
+        assertEquals("this is a another message from u3 to u2", o3.getObjList().get(0).getMessage());
+
+        phl.clear();
+        phl.add(new PacketHeader("senderId", "" + u3.getId()));
+        phl.add(new PacketHeader("recieverId", "" + u3.getId()));
+        ErrorPacket o4 = (ErrorPacket) h.handle(new Packet("this dosent matter", phl), null);
+        assertEquals("You cannot message yourself!", o4.getMessage());
     }
 
     @Test
     public void testGetUserFromIdHandler() {
+        clearDb();
         User u = new User("karma", "verysecretpassword");
         try {
             DatabaseWrapper.get().save(u);

@@ -33,7 +33,10 @@ public class GetMessagesBetweenUsersHandler extends PacketHandler implements IGe
         try {
             sid = Integer.parseInt(ssid);
             rid = Integer.parseInt(rsid);
-            ArrayList<Message> messagesI = (ArrayList<Message>) db.filterByColumn(Message.class, "sender_id", "" + sid);
+            if (sid == rid) {
+                return new ErrorPacket("You cannot message yourself!");
+            }
+            ArrayList<Message> messagesI = (ArrayList<Message>) db.filterByColumn(Message.class, "senderId", "" + sid);
             ArrayList<Message> messagesF = new ArrayList<>();
             for (Message m : messagesI) {
                 if (m.getReceiverId() == rid) {
