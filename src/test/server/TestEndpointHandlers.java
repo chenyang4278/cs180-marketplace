@@ -1,19 +1,18 @@
 package server;
 
 import data.Listing;
+import data.Message;
 import database.DatabaseWrapper;
 import database.DatabaseWriteException;
 import data.User;
 import database.RowNotFoundException;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import packet.Packet;
 import packet.PacketHeader;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
-import server.handlers.BuyListingHandler;
-import server.handlers.CreateListingHandler;
-import server.handlers.GetUserFromIdHandler;
+import packet.response.SuccessPacket;
+import server.handlers.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -87,7 +86,7 @@ public class TestEndpointHandlers {
             phl.add(new PacketHeader("buyingId", "adwawd"));
             phl.add( new PacketHeader("listingId", "awdawd"));
             ErrorPacket e3 = (ErrorPacket) bl.handle(new Packet("this dosent matter", phl), null);
-            assertEquals("Invalid ids!", e3.getMessage());
+            assertEquals("Invalid ids!", e3.getMessage()); // same code for all invalid ids
 
             phl.clear();
             phl.add(new PacketHeader("buyingId", "-10"));
@@ -145,22 +144,113 @@ public class TestEndpointHandlers {
 
     @Test
     public void testCreateMessageHandler() {
+        clearDb();
 
+        User u1 = new User("karma", "1234");
+        User u2 = new User("ayden", "123467");
+        try {
+            DatabaseWrapper.get().save(u1);
+            DatabaseWrapper.get().save(u2);
+        } catch (DatabaseWriteException e) {
+            throw new RuntimeException(e);
+        }
+
+        ArrayList<PacketHeader> phl = new ArrayList<>();
+        phl.add(new PacketHeader("senderId", "" + u1.getId()));
+        phl.add( new PacketHeader("recieverId", "" + u2.getId()));
+        phl.add( new PacketHeader("message", "hi, this is a message"));
+        CreateMessageHandler cl = new CreateMessageHandler();
+        ObjectPacket<Message> ol = (ObjectPacket<Message>) cl.handle(new Packet("this dosent matter", phl), null);
+        Message m = ol.getObj();
+        try {
+            Message m2 = DatabaseWrapper.get().getById(Message.class, m.getId());
+            assertEquals(m.getSenderId(), m2.getSenderId());
+            assertEquals(m.getReceiverId(), m2.getReceiverId());
+            assertEquals(m.getMessage(), m2.getMessage());
+            assertEquals("hi, this is a message", m2.getMessage());
+        } catch (RowNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
     public void testCreateUserHandler() {
+        clearDb();
 
+        User u1 = new User("karma", "1234");
+        ArrayList<PacketHeader> phl = new ArrayList<>();
+        phl.add(new PacketHeader("username", "karma" ));
+        phl.add( new PacketHeader("password", "password"));
+        CreateUserHandler cl = new CreateUserHandler();
+        ObjectPacket<User> ol = (ObjectPacket<User>) cl.handle(new Packet("this dosent matter", phl), null);
+        User u2 = ol.getObj();
+        try {
+            User u3 = DatabaseWrapper.get().getById(User.class, u2.getId());
+            assertEquals(u3.getUsername(), u2.getUsername());
+            assertEquals(u3.getPassword(), u2.getPassword());
+            assertEquals("karma", u2.getUsername());
+            assertEquals("password", u2.getPassword());
+        } catch (RowNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        ErrorPacket e = (ErrorPacket) cl.handle(new Packet("this dosent matter", phl), null);
+        assertEquals("Username already exists!", e.getMessage());
     }
 
     @Test
     public void testDeleteListingHandler() {
+        clearDb();
 
+        Listing l = new Listing(10, "karma", "a keyboard",
+                "idk", 50.00, "null",
+                false);
+        try {
+            DatabaseWrapper.get().save(l );
+            ArrayList<PacketHeader> phl = new ArrayList<>();
+            phl.add(new PacketHeader("listingId", "" + l.getId()));
+            DeleteListingHandler dl = new DeleteListingHandler();
+            SuccessPacket ol = (SuccessPacket) dl.handle(new Packet("this dosent matter", phl), null);
+            try {
+                DatabaseWrapper.get().getById(Listing.class, l.getId());
+                assertTrue(false);
+            } catch (RowNotFoundException e) {
+                assertTrue(true);
+            }
+
+            phl.clear();
+            phl.add(new PacketHeader("listingId", "-10"));
+            ErrorPacket e = (ErrorPacket) dl.handle(new Packet("this dosent matter", phl), null);
+            assertEquals("Listing does not exist!", e.getMessage());
+        } catch (DatabaseWriteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
     public void testDeleteUserHandler() {
+        clearDb();
 
+        User u1 = new User("karma", "1234");
+        try {
+            DatabaseWrapper.get().save(u1);
+            ArrayList<PacketHeader> phl = new ArrayList<>();
+            phl.add(new PacketHeader("userId", "" + u1.getId()));
+            DeleteUserHandler dl = new DeleteUserHandler();
+            SuccessPacket ol = (SuccessPacket) dl.handle(new Packet("this dosent matter", phl), null);
+            try {
+                DatabaseWrapper.get().getById(User.class, u1.getId());
+                assertTrue(false);
+            } catch (RowNotFoundException e) {
+                assertTrue(true);
+            }
+
+            phl.clear();
+            phl.add(new PacketHeader("userId", "-10"));
+            ErrorPacket e = (ErrorPacket) dl.handle(new Packet("this dosent matter", phl), null);
+            assertEquals("User does not exist!", e.getMessage());
+        } catch (DatabaseWriteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
