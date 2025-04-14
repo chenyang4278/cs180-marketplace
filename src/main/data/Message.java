@@ -10,10 +10,10 @@ package data;
  * @version 3/31/25
  */
 public class Message extends Table implements IMessage {
-    @TableField(field = "sender_id", index = 1)
+    @TableField(field = "senderId", index = 1)
     private int senderId;
 
-    @TableField(field = "receiver_id", index = 2)
+    @TableField(field = "receiverId", index = 2)
     private int receiverId;
 
     @TableField(field = "message", index = 3)

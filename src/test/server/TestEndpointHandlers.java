@@ -10,6 +10,7 @@ import org.junit.Test;
 import packet.Packet;
 import packet.PacketHeader;
 import packet.response.ErrorPacket;
+import packet.response.ObjectListPacket;
 import packet.response.ObjectPacket;
 import packet.response.SuccessPacket;
 import server.handlers.*;
@@ -19,6 +20,14 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
+/**
+ * TestEndpointHandlers Class
+ * <p>
+ * A class to test JUnit tests for endpoints.
+ *
+ * @author Karma Luitel, lab L24
+ * @version 4/13/25
+ */
 public class TestEndpointHandlers {
 
     private void clearDb() {
@@ -31,6 +40,11 @@ public class TestEndpointHandlers {
         f1.delete();
         File f2 = new File("Message.csv");
         f2.delete();
+    }
+
+    @Test
+    public void testLoginHandler() {
+        //TODO - Ayden needs to implement the handler.
     }
 
     @Test
@@ -255,7 +269,57 @@ public class TestEndpointHandlers {
 
     @Test
     public void testGetListingsFromAttributeHandler() {
+        clearDb();
 
+        Listing l = new Listing(0, "ayden", "a keyboard",
+                "idk", 50.00, "null",
+                false);
+        Listing l2 = new Listing(1, "karma", "a sold keyboard",
+                "idk", 20.00, "null",
+                true);
+        Listing l3 = new Listing(1, "karma", "a 2 keyboard",
+                "idk", 20.00, "null",
+                true);
+        Listing l4 = new Listing(2, "chen", "a 3 keyboard",
+                "idk", 50.00, "null",
+                true);
+        Listing l5 = new Listing(3, "idk", "a 4 keyboard",
+                "idk", 50.00, "null",
+                true);
+        Listing l6 = new Listing(1, "karma", "a 5 keyboard",
+                "idk", 50.00, "null",
+                true);
+
+        try {
+            DatabaseWrapper.get().save(l);
+            DatabaseWrapper.get().save(l2);
+            DatabaseWrapper.get().save(l3);
+            DatabaseWrapper.get().save(l4);
+            DatabaseWrapper.get().save(l5);
+            DatabaseWrapper.get().save(l6);
+        } catch (DatabaseWriteException e) {
+            throw new RuntimeException(e);
+        }
+
+        ArrayList<PacketHeader> phl = new ArrayList<>();
+        phl.add(new PacketHeader("attribute", "sellerId"));
+        phl.add(new PacketHeader("attributeval", "1"));
+        GetListingsFromAttributeHandler h = new GetListingsFromAttributeHandler();
+        ObjectListPacket<Listing> o = (ObjectListPacket<Listing>) h.handle(new Packet("this dosent matter", phl), null);
+        assertEquals(3, o.getObjList().size());
+
+        phl.clear();
+        phl.add(new PacketHeader("attribute", "sellerName"));
+        phl.add(new PacketHeader("attributeval", "idk"));
+        ObjectListPacket<Listing> o2 = (ObjectListPacket<Listing>) h.handle(new Packet("this dosent matter", phl), null);
+        assertEquals(1, o2.getObjList().size());
+        assertEquals("a 4 keyboard", o2.getObjList().get(0).getTitle());
+
+        phl.clear();
+        phl.add(new PacketHeader("attribute", "image"));
+        phl.add(new PacketHeader("attributeval", "null"));
+        ObjectListPacket<Listing> o3 = (ObjectListPacket<Listing>) h.handle(new Packet("this dosent matter", phl), null);
+        assertEquals(6, o3.getObjList().size());
     }
 
     @Test
@@ -279,6 +343,52 @@ public class TestEndpointHandlers {
 
     @Test
     public void testGetUsersFromAttributeHandler() {
+        clearDb();
+
+        User u1 = new User("karma", "1234");
+        User u2 = new User("karma1", "1awd234");
+        User u3 = new User("karma2", "1234a");
+        User u4 = new User("karma3", "12312214");
+        User u5 = new User("karma4", "1234");
+        User u6 = new User("karma5", "1234");
+
+        try {
+            DatabaseWrapper.get().save(u1);
+            DatabaseWrapper.get().save(u2);
+            DatabaseWrapper.get().save(u3);
+            DatabaseWrapper.get().save(u4);
+            DatabaseWrapper.get().save(u5);
+            DatabaseWrapper.get().save(u6);
+        } catch (DatabaseWriteException e) {
+            throw new RuntimeException(e);
+        }
+
+        ArrayList<PacketHeader> phl = new ArrayList<>();
+        phl.add(new PacketHeader("attribute", "username"));
+        phl.add(new PacketHeader("attributeval", "karma"));
+        GetUsersFromAttributeHandler h = new GetUsersFromAttributeHandler();
+        ObjectListPacket<User> o = (ObjectListPacket<User>) h.handle(new Packet("this dosent matter", phl), null);
+        assertEquals(1, o.getObjList().size());
+        assertEquals("karma", o.getObjList().get(0).getUsername());
+
+        phl.clear();
+        phl.add(new PacketHeader("attribute", "password"));
+        phl.add(new PacketHeader("attributeval", "1awd234"));
+        ObjectListPacket<User> o2 = (ObjectListPacket<User>) h.handle(new Packet("this dosent matter", phl), null);
+        assertEquals(1, o2.getObjList().size());
+        assertEquals("1awd234", o2.getObjList().get(0).getPassword());
+
+        phl.clear();
+        phl.add(new PacketHeader("attribute", "password"));
+        phl.add(new PacketHeader("attributeval", "1234"));
+        ObjectListPacket<User> o3 = (ObjectListPacket<User>) h.handle(new Packet("this dosent matter", phl), null);
+        assertEquals(3, o3.getObjList().size());
+
+        phl.clear();
+        phl.add(new PacketHeader("attribute", "password"));
+        phl.add(new PacketHeader("attributeval", "12222234"));
+        ObjectListPacket<User> o4 = (ObjectListPacket<User>) h.handle(new Packet("this dosent matter", phl), null);
+        assertEquals(0, o4.getObjList().size());
 
     }
 }

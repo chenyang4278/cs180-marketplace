@@ -12,10 +12,10 @@ package data;
 
 public class Listing extends Table implements IListing {
 
-    @TableField(field = "seller_id", index = 1)
+    @TableField(field = "sellerId", index = 1)
     private int sellerId; //Id of the seller
 
-    @TableField(field = "seller_name", index = 2)
+    @TableField(field = "sellerName", index = 2)
     private String sellerName; //name of the seller of an item
 
     @TableField(field = "title", index = 3)
