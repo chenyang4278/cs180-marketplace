@@ -1,10 +1,9 @@
 package packet.response;
 
-import database.Table;
+import data.Table;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * ObjectListPacket

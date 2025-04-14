@@ -1,6 +1,6 @@
 package server.handlers;
 
-import database.User;
+import data.User;
 import packet.Packet;
 import packet.PacketHandler;
 import packet.response.ObjectListPacket;

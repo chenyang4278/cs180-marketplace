@@ -1,5 +1,5 @@
-import database.Listing;
-import database.User;
+import data.Listing;
+import data.User;
 import packet.ErrorPacketException;
 import packet.Packet;
 import packet.PacketHeader;

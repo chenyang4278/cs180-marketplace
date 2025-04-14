@@ -2,7 +2,7 @@ package server.handlers;
 
 import database.DatabaseWrapper;
 import database.DatabaseWriteException;
-import database.Listing;
+import data.Listing;
 import database.RowNotFoundException;
 import packet.Packet;
 import packet.PacketHandler;

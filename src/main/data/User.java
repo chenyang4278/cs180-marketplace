@@ -1,4 +1,6 @@
-package database;
+package data;
+
+import database.*;
 
 import java.util.ArrayList;
 

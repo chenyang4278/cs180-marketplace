@@ -1,8 +1,6 @@
 package server.handlers;
 
-import database.Message;
-import database.RowNotFoundException;
-import database.User;
+import data.Message;
 import packet.Packet;
 import packet.PacketHandler;
 import packet.response.ErrorPacket;

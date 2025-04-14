@@ -1,4 +1,6 @@
-package database;
+package data;
+
+import database.DatabaseWriteException;
 
 import java.io.Serializable;
 

@@ -1,4 +1,4 @@
-package database;
+package data;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

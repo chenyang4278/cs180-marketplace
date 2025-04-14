@@ -2,7 +2,7 @@ package server;
 
 import database.DatabaseWrapper;
 import database.DatabaseWriteException;
-import database.User;
+import data.User;
 import org.junit.Test;
 import packet.response.ObjectPacket;
 import server.handlers.GetUserFromIdHandler;

@@ -1,5 +1,8 @@
 package database;
 
+import data.Table;
+import data.TableField;
+
 /**
  * TestingClass
  * Note that the sole purpose of this class is to be used for testing

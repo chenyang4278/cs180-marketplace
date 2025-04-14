@@ -18,15 +18,13 @@ import java.net.Socket;
  * @version 4/12/25
  */
 
-/* Handlers that we will need:
+/* Handlers we need to implement:
  * login (username + password) - will retrieve a user object
  * Some possible extras
  * editUser
  * editListing
  *
  * TODO: Testcases for handlers
- * TODO: Interfaces for handlers
- * TODO: Interfaces for response packets
  */
 public class ClientHandler implements Runnable {
     public static PacketHandler[] handlers = new PacketHandler[] {
