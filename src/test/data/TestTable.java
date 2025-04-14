@@ -61,4 +61,11 @@ public class TestTable {
         TestingClass t2 = Table.fromRow(TestingClass.class, t1.asRow());
         assertTrue(t1.equals(t2));
     }
+
+    @Test
+    public void testSetId() {
+        TestingClass t1 = new TestingClass("table1", 10, 30, 5.4f, 3.2d);
+        t1.setId(-1);
+        assertEquals(-1, t1.getId());
+    }
 }
