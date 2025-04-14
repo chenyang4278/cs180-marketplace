@@ -14,12 +14,12 @@ import packet.response.ObjectPacket;
  * @author Karma Luitel
  * @version 4/13/25
  */
-public class BuyHandler extends PacketHandler {
+public class BuyListingHandler extends PacketHandler {
 
     final double EPSILON = 1e-9;
 
-    public BuyHandler() {
-        super("/buy/");
+    public BuyListingHandler() {
+        super("/buylisting/");
     }
 
     /*

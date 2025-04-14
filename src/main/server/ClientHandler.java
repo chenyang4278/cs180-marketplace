@@ -30,13 +30,16 @@ import java.net.Socket;
  */
 public class ClientHandler implements Runnable {
     public static PacketHandler[] handlers = new PacketHandler[] {
+            new BuyListingHandler(),
             new CreateListingHandler(),
+            new CreateMessageHandler(),
             new CreateUserHandler(),
             new DeleteListingHandler(),
             new DeleteUserHandler(),
             new GetListingsFromAttributeHandler(),
-            new GetUsersFromAttributeHandler(),
-            new GetUserFromIdHandler()
+            new GetMessagesBetweenUsersHandler(),
+            new GetUserFromIdHandler(),
+            new GetUsersFromAttributeHandler()
     };
 
     private Socket socket;
