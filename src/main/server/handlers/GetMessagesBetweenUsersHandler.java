@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * @author Karma Luitel
  * @version 4/13/25
  */
-public class GetMessagesBetweenUsersHandler extends PacketHandler {
+public class GetMessagesBetweenUsersHandler extends PacketHandler implements IGetMessagesBetweenUsersHandler {
     public GetMessagesBetweenUsersHandler() { super("/getmessages/"); }
 
     /*

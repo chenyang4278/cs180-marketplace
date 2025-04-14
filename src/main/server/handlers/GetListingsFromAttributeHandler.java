@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * @author Karma Luitel
  * @version 4/13/25
  */
-public class GetListingsFromAttributeHandler extends PacketHandler {
+public class GetListingsFromAttributeHandler extends PacketHandler implements IGetListingsFromAttributeHandler {
     public GetListingsFromAttributeHandler() { super("/listingsattribute/"); }
 
     /* For example, an attribute would be "username", an attribute val would be "karma"

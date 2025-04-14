@@ -14,7 +14,7 @@ import packet.response.ObjectPacket;
  * @author Karma Luitel
  * @version 4/13/25
  */
-public class CreateMessageHandler extends PacketHandler {
+public class CreateMessageHandler extends PacketHandler implements ICreateMessageHandler {
     public CreateMessageHandler() {
         super("/messagecreate/");
     }

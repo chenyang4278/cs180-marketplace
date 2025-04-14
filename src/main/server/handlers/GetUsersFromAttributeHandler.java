@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * @author Karma Luitel
  * @version 4/13/25
  */
-public class GetUsersFromAttributeHandler extends PacketHandler {
+public class GetUsersFromAttributeHandler extends PacketHandler implements IGetUsersFromAttributeHandler {
     public GetUsersFromAttributeHandler() {
         super("/usersattribute/");
     }

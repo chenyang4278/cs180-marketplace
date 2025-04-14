@@ -14,7 +14,7 @@ import packet.response.ObjectPacket;
  * @author Karma Luitel
  * @version 4/13/25
  */
-public class BuyListingHandler extends PacketHandler {
+public class BuyListingHandler extends PacketHandler implements IBuyListingHandler{
 
     final double EPSILON = 1e-9;
 

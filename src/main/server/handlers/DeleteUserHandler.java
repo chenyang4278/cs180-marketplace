@@ -17,7 +17,7 @@ import packet.response.SuccessPacket;
  * @author Karma Luitel
  * @version 4/13/25
  */
-public class DeleteUserHandler extends PacketHandler {
+public class DeleteUserHandler extends PacketHandler implements IDeleteUserHandler {
     public DeleteUserHandler() {
         super("/userdelete/");
     }

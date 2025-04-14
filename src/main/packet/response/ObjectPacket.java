@@ -14,7 +14,7 @@ import java.io.Serializable;
  *
  * @param <T> table class
  */
-public class ObjectPacket<T extends Table> extends SuccessPacket implements Serializable {
+public class ObjectPacket<T extends Table> extends SuccessPacket implements Serializable, IObjectPacket<T> {
     private T obj;
 
     public ObjectPacket(T obj) {

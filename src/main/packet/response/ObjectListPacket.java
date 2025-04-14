@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @param <T> table class
  */
-public class ObjectListPacket<T extends Table> extends SuccessPacket implements Serializable {
+public class ObjectListPacket<T extends Table> extends SuccessPacket implements Serializable, IObjectListPacket<T> {
     private ArrayList<T> objList;
 
     public ObjectListPacket(ArrayList<T> objList) {

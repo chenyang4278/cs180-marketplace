@@ -17,7 +17,7 @@ import packet.response.SuccessPacket;
  * @author Karma Luitel
  * @version 4/13/25
  */
-public class DeleteListingHandler extends PacketHandler {
+public class DeleteListingHandler extends PacketHandler implements IDeleteListingHandler {
     public DeleteListingHandler() {
         super("/listingdelete/");
     }

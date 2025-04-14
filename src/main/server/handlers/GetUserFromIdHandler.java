@@ -15,7 +15,7 @@ import packet.response.ObjectPacket;
  * @author Ayden Cline
  * @version 4/12/25
  */
-public class GetUserFromIdHandler extends PacketHandler {
+public class GetUserFromIdHandler extends PacketHandler implements IGetUserFromIdHandler {
     public GetUserFromIdHandler() {
         super("/users/:id");
     }

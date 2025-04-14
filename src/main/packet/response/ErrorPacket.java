@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @author Ayden Cline
  * @version 4/12/25
  */
-public class ErrorPacket extends Packet implements Serializable {
+public class ErrorPacket extends Packet implements Serializable, IErrorPacket {
     private String message;
 
     public ErrorPacket(String message) {
