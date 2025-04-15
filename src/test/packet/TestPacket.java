@@ -1,15 +1,15 @@
 package packet;
+import data.Session;
+import data.User;
+import database.DatabaseWriteException;
 import org.junit.Test;
+import server.handlers.HandlerUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * TestPacket Class
@@ -78,5 +78,22 @@ public class TestPacket {
         } catch (Exception e) {
             fail("Exception during test: " + e.getMessage());
         }
+    }
+
+    @Test
+    public void testGetUser() throws DatabaseWriteException {
+        Packet packet = new Packet();
+        packet.addHeader("Session-Token", "invalid token");
+        assertNull(packet.getUser());
+
+        User newUser = new User("username", "password");
+        newUser.save();
+
+        Session session = new Session(newUser.getId(), HandlerUtil.generateToken());
+        session.save();
+
+        packet = new Packet();
+        packet.addHeader("Session-Token", session.getToken());
+        assertEquals(newUser.getId(), packet.getUser().getId());
     }
 }

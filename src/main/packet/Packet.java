@@ -1,5 +1,9 @@
 package packet;
 
+import data.Session;
+import data.User;
+import database.DatabaseWrapper;
+import database.RowNotFoundException;
 import packet.response.ErrorPacket;
 
 import java.io.*;
@@ -18,6 +22,9 @@ import java.util.List;
 public class Packet implements IPacket, Serializable {
     private String path;
     private List<PacketHeader> headers;
+
+    private User user = null;
+    private boolean userCached = false;
 
     public Packet(String path, List<PacketHeader> headers) {
         this.path = path;
@@ -95,6 +102,41 @@ public class Packet implements IPacket, Serializable {
         } catch (ClassNotFoundException e) {
             throw new PacketParsingException("Invalid packet");
         }
+    }
+
+    /**
+     * Returns the user that sent this packet, if they're logged in.
+     *
+     * @return User or null
+     */
+    public User getUser() {
+        if (userCached) {
+            return user;
+        }
+
+        PacketHeader sessionHeader = getHeader("Session-Token");
+        if (sessionHeader == null) {
+            userCached = true;
+            user = null;
+            return null;
+        }
+
+        String token = sessionHeader.getValues().get(0);
+        List<Session> sessions = DatabaseWrapper.get().filterByColumn(Session.class, "token", token);
+        if (sessions.isEmpty()) {
+            userCached = true;
+            user = null;
+            return null;
+        }
+
+        try {
+            user = User.getById(sessions.get(0).getUserId());
+        } catch (RowNotFoundException ignored) {
+            user = null;
+        }
+
+        userCached = true;
+        return user;
     }
 
     @Override

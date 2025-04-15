@@ -1,5 +1,7 @@
 package packet;
 
+import data.User;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -15,6 +17,7 @@ public interface IPacket {
     List<PacketHeader> getHeaders();
     void setPath(String path);
     void setHeaders(List<PacketHeader> headers);
+    User getUser();
 
     void addHeader(String name, String value);
     PacketHeader getHeader(String name);
