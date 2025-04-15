@@ -36,12 +36,13 @@ public class Client {
             throws IOException, PacketParsingException, ErrorPacketException {
         Packet packet = new Packet(path, headers);
         packet.write(oStream);
-        try {
-            ObjectPacket<T> response = Packet.read(iStream);
-            return response.getObj();
-        } catch (ErrorPacketException e) {
-            System.err.println("Server error (object): " + e.getMessage());
-            throw e;
+        Packet response = Packet.read(iStream);
+        if (response instanceof ErrorPacket) {
+            ErrorPacket e = (ErrorPacket) response;
+            throw new ErrorPacketException(e.getMessage());
+        } else {
+            ObjectPacket<T> o = (ObjectPacket<T>) packet;
+            return o.getObj();
         }
     }
 
@@ -49,12 +50,13 @@ public class Client {
             throws IOException, PacketParsingException, ErrorPacketException {
         Packet packet = new Packet(path, headers);
         packet.write(oStream);
-        try {
-            ObjectListPacket<T> response = Packet.read(iStream);
-            return response.getObjList();
-        } catch (ErrorPacketException e) {
-            System.err.println("Server error (list): " + e.getMessage());
-            throw e;
+        Packet response = Packet.read(iStream);
+        if (response instanceof ErrorPacket) {
+            ErrorPacket e = (ErrorPacket) response;
+            throw new ErrorPacketException(e.getMessage());
+        } else {
+            ObjectListPacket<T> o = (ObjectListPacket<T>) packet;
+            return o.getObjList();
         }
     }
 
@@ -62,11 +64,13 @@ public class Client {
             throws IOException, PacketParsingException, ErrorPacketException {
         Packet packet = new Packet(path, headers);
         packet.write(oStream);
-        try {
-            return Packet.read(iStream);
-        } catch (ErrorPacketException e) {
-            System.err.println("Server error (success): " + e.getMessage());
-            throw e;
+        Packet response = Packet.read(iStream);
+        if (response instanceof ErrorPacket) {
+            ErrorPacket e = (ErrorPacket) response;
+            throw new ErrorPacketException(e.getMessage());
+        } else {
+            SuccessPacket o = (SuccessPacket) packet;
+            return o;
         }
     }
 
