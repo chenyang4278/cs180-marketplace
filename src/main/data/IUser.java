@@ -1,6 +1,5 @@
 package data;
 
-import java.util.ArrayList;
 /**
  * IUser
  * <p>

@@ -1,9 +1,5 @@
 package data;
 
-import database.*;
-
-import java.util.ArrayList;
-
 /**
  * User
  * <p>
@@ -28,9 +24,6 @@ public class User extends Table implements IUser {
     @TableField(field = "rating", index = 4)
     private double rating;
 
-    private ArrayList<Listing> listings;
-    private ArrayList<Message> inbox;
-
     // Required for Table
     public User() {
     }
@@ -40,9 +33,6 @@ public class User extends Table implements IUser {
         this.password = password;
         balance = 0.0;
         rating = 0.0;
-        listings = new ArrayList<>();
-        inbox = new ArrayList<>();
-
     }
 
     //getters and setters

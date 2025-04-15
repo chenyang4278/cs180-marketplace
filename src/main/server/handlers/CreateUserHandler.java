@@ -1,12 +1,10 @@
 package server.handlers;
 
-import database.DatabaseWrapper;
 import database.DatabaseWriteException;
 import database.RowNotFoundException;
 import data.User;
 import packet.Packet;
 import packet.PacketHandler;
-import packet.PacketHeader;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 

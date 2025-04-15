@@ -1,13 +1,7 @@
 package data;
-
-import database.DatabaseWrapper;
-import database.DatabaseWriteException;
-import database.RowNotFoundException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-
-import java.util.ArrayList;
 
 /**
  * TestUser

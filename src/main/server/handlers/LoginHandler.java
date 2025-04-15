@@ -6,14 +6,8 @@ import database.DatabaseWrapper;
 import database.DatabaseWriteException;
 import packet.Packet;
 import packet.PacketHandler;
-import packet.PacketHeader;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
-import packet.response.SuccessPacket;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 
 /**
