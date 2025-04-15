@@ -52,6 +52,9 @@ public class CreateMessageHandler extends PacketHandler implements ICreateMessag
             if (sid == rid) {
                 return new ErrorPacket("You cannot message yourself!");
             }
+            if (message.trim().isEmpty()) {
+                return new ErrorPacket("You cannot have an empty message!");
+            }
             Message m = new Message(sid, rid, message);
             try {
                 DatabaseWrapper.get().save(m);

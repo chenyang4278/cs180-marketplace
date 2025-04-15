@@ -56,6 +56,10 @@ public class CreateListingHandler extends PacketHandler implements ICreateListin
             return new ErrorPacket("Invalid listing price!");
         }
 
+        if (title.trim().isEmpty() || description.trim().isEmpty()) {
+            return new ErrorPacket("Title or description cannot be empty!");
+        }
+
         try {
             Listing listing = new Listing(user.getId(), user.getUsername(), title, description, dbPrice, image, false);
             listing.save();
