@@ -1,5 +1,9 @@
 package packet;
 
+import data.Session;
+import data.User;
+import database.DatabaseWrapper;
+import database.RowNotFoundException;
 import packet.response.ErrorPacket;
 
 import java.io.*;
@@ -18,6 +22,9 @@ import java.util.List;
 public class Packet implements IPacket, Serializable {
     private String path;
     private List<PacketHeader> headers;
+
+    private User user = null;
+    private boolean userCached = false;
 
     public Packet(String path, List<PacketHeader> headers) {
         this.path = path;
@@ -91,10 +98,77 @@ public class Packet implements IPacket, Serializable {
                 throw new ErrorPacketException(((ErrorPacket) packet).getMessage());
             }
 
+            // security
+            packet.user = null;
+            packet.userCached = false;
+
             return (T) packet;
         } catch (ClassNotFoundException e) {
             throw new PacketParsingException("Invalid packet");
         }
+    }
+
+    /**
+     * Returns the user that sent this packet, if they're logged in.
+     *
+     * @return User or null
+     */
+    public User getUser() {
+        if (userCached) {
+            return user;
+        }
+
+        PacketHeader sessionHeader = getHeader("Session-Token");
+        if (sessionHeader == null) {
+            userCached = true;
+            user = null;
+            return null;
+        }
+
+        String token = sessionHeader.getValues().get(0);
+        List<Session> sessions = DatabaseWrapper.get().filterByColumn(Session.class, "token", token);
+        if (sessions.isEmpty()) {
+            userCached = true;
+            user = null;
+            return null;
+        }
+
+        try {
+            user = User.getById(sessions.get(0).getUserId());
+        } catch (RowNotFoundException ignored) {
+            user = null;
+        }
+
+        userCached = true;
+        return user;
+    }
+
+    /**
+     * Get the first value of each header specified,
+     * or null if one of the headers does not exist or
+     * one of the header values is empty.
+     *
+     * @param keys list of header keys
+     * @return header values, taking the first from each header
+     */
+    public String[] getHeaderValues(String... keys) {
+        String[] values = new String[keys.length];
+
+        for (int i = 0; i < keys.length; i++) {
+            PacketHeader header = getHeader(keys[i]);
+            if (header == null) {
+                return null;
+            }
+
+            String value = header.getValues().get(0);
+            if (value.trim().isEmpty()) {
+                return null;
+            }
+
+            values[i] = value;
+        }
+
+        return values;
     }
 
     @Override
