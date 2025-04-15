@@ -18,10 +18,6 @@ import java.net.Socket;
  * @version 4/12/25
  */
 
-/* Handlers we need to implement:
- * editUser
- * editListing
- */
 public class ClientHandler implements Runnable, IClientHandler {
     public static PacketHandler[] handlers = new PacketHandler[] {
             new BuyListingHandler(),
@@ -30,6 +26,8 @@ public class ClientHandler implements Runnable, IClientHandler {
             new CreateUserHandler(),
             new DeleteListingHandler(),
             new DeleteUserHandler(),
+            new EditListingHandler(),
+            new EditUserHandler(),
             new GetListingsFromAttributeHandler(),
             new GetMessagesBetweenUsersHandler(),
             new GetUserFromIdHandler(),

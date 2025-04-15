@@ -129,6 +129,22 @@ public class DatabaseWrapper implements IDatabaseWrapper {
         Database db = getDbFor(cls);
         //Avoid a race condition where multiple objects are being edited at the same time
         synchronized (lock) {
+
+            //sychronized for loop since db.getHeaders() might be different for clients in rare case db is not initialized
+            //for loop run is also fairly constant (limited headers).
+            String[] headers = db.getHeaders();
+            boolean error = true;
+            for (int i = 0; i < headers.length; i++) {
+                if (headers[i].equals(column)) {
+                    error = false;
+                    break;
+                }
+            }
+
+            if (error) {
+                throw new DatabaseWriteException("Invalid header!");
+            }
+
             try {
                 db.update("id", String.valueOf(id), column, newValue);
             } catch (DatabaseNotFoundException e) {

@@ -87,6 +87,14 @@ public class TestDatabaseWrapper {
         assert tableFromDb != null;
         assert tableFromDb.getLongCount() == -101829192;
         assert Math.abs(tableFromDb.getDecimal() - 121.2189721211) < 0.000001;
+
+        try {
+            db.setById(TestingClass.class, table.getId(), "auwhdaa", "121.2189721211");
+            fail();
+        } catch (DatabaseWriteException e) {
+            assertTrue(true);
+        }
+
     }
 
     @Test
