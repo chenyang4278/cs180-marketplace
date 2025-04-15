@@ -106,45 +106,43 @@ public class TestEndpointHandlers {
     }
 
     @Test
-    public void testCreateListingHandler() {
+    public void testCreateListingHandler() throws DatabaseWriteException, RowNotFoundException {
         clearDb();
 
-        User u = new User("karma", "1234");
-        try {
-            DatabaseWrapper.get().save(u);
-        } catch (DatabaseWriteException e) {
-            throw new RuntimeException(e);
-        }
+        CreateListingHandler createListingHandler = new CreateListingHandler();
+
+        User user = new User("karma", "1234");
+        user.save();
+
+        Session session = new Session(user.getId(), HandlerUtil.generateToken());
+        session.save();
+
         ArrayList<PacketHeader> phl = new ArrayList<>();
-        phl.add(new PacketHeader("userId", "" + u.getId()));
         phl.add( new PacketHeader("title", "pokemon cards"));
         phl.add( new PacketHeader("description", "New and rare pokemon cards"));
         phl.add( new PacketHeader("price", "10"));
         phl.add( new PacketHeader("image", "null"));
-        CreateListingHandler cl = new CreateListingHandler();
-        ObjectPacket<Listing> e4 = (ObjectPacket<Listing>) cl.handle(new Packet("this dosent matter", phl), null);
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
+        ObjectPacket<Listing> e4 = (ObjectPacket<Listing>) createListingHandler.handle(new Packet("", phl), null);
         Listing l = e4.getObj();
-        try {
-            Listing l2 = DatabaseWrapper.get().getById(Listing.class, l.getId());
-            assertEquals(l.getId(), l2.getId());
-            assertEquals(l.getSellerId(), l2.getSellerId());
-            assertEquals(l.getTitle(), l2.getTitle());
-            assertEquals(l.getDescription(), l2.getDescription());
-            assertEquals(l.getPrice(), l2.getPrice(), 0.01);
-            assertEquals("pokemon cards", l2.getTitle());
-            assertEquals("New and rare pokemon cards", l2.getDescription());
-            assertEquals(10, l2.getPrice(), 0.01);
-        } catch (RowNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        Listing l2 = DatabaseWrapper.get().getById(Listing.class, l.getId());
+        assertEquals(l.getId(), l2.getId());
+        assertEquals(l.getSellerId(), l2.getSellerId());
+        assertEquals(l.getTitle(), l2.getTitle());
+        assertEquals(l.getDescription(), l2.getDescription());
+        assertEquals(l.getPrice(), l2.getPrice(), 0.01);
+        assertEquals("pokemon cards", l2.getTitle());
+        assertEquals("New and rare pokemon cards", l2.getDescription());
+        assertEquals(10, l2.getPrice(), 0.01);
 
         phl.clear();
-        phl.add(new PacketHeader("userId", "" + u.getId()));
         phl.add( new PacketHeader("title", "pokemon cards"));
         phl.add( new PacketHeader("description", "New and rare pokemon cards"));
         phl.add( new PacketHeader("price", "-10"));
         phl.add( new PacketHeader("image", "null"));
-        ErrorPacket e = (ErrorPacket) cl.handle(new Packet("this dosent matter", phl), null);
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        ErrorPacket e = (ErrorPacket) createListingHandler.handle(new Packet("", phl), null);
         assertEquals("Invalid listing price!", e.getMessage());
     }
 

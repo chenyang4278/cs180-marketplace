@@ -31,15 +31,22 @@ public class CreateListingHandler extends PacketHandler implements ICreateListin
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
+        User user = packet.getUser();
+        if (user == null) {
+            return new ErrorPacket("Not logged in");
+        }
 
-        String userId = packet.getHeader("userId").getValues().get(0);
-        String title = packet.getHeader("title").getValues().get(0);
-        String description = packet.getHeader("description").getValues().get(0);
-        String price = packet.getHeader("price").getValues().get(0);
-        String image = packet.getHeader("image").getValues().get(0);
+        String[] data = packet.getHeaderValues("title", "description", "price", "image");
+        if (data == null) {
+            return new ErrorPacket("Invalid data");
+        }
 
-        double dbPrice = 0;
-        int id = 0;
+        String title = data[0];
+        String description = data[1];
+        String price = data[2];
+        String image = data[3];
+
+        double dbPrice;
         try {
             dbPrice = Double.parseDouble(price);
             if (dbPrice < 0) {
@@ -50,22 +57,11 @@ public class CreateListingHandler extends PacketHandler implements ICreateListin
         }
 
         try {
-            id = Integer.parseInt(userId);
-        } catch (NumberFormatException e) {
-            return new ErrorPacket("Invalid user id!");
-        }
-
-        try {
-            User u = db.getById(User.class, id);
-            Listing l = new Listing(id, u.getUsername(), title, description, dbPrice, image, false);
-            try {
-                DatabaseWrapper.get().save(l);
-                return new ObjectPacket<Listing>(l);
-            } catch (DatabaseWriteException e) {
-                return new ErrorPacket("Database faliure in creating listing");
-            }
-        } catch (RowNotFoundException e) {
-            return new ErrorPacket("Database faliure in reading user");
+            Listing listing = new Listing(user.getId(), user.getUsername(), title, description, dbPrice, image, false);
+            listing.save();
+            return new ObjectPacket<Listing>(listing);
+        } catch (DatabaseWriteException ignored) {
+            return new ErrorPacket("Database failure in creating listing");
         }
     }
 }
