@@ -7,6 +7,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import database.Table;
+import database.Listing;
+import database.User;
 
 
 /**
@@ -22,6 +24,7 @@ public class Client {
     private Socket socket;
     private OutputStream oStream;
     private InputStream iStream;
+    private User currentUser;
 
     public Client(String host, int port) throws IOException {
         socket = new Socket(host, port);
@@ -61,5 +64,68 @@ public class Client {
             headers.add(new PacketHeader(keyValuePairs[i], keyValuePairs[i + 1]));
         }
         return headers;
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+    }
+
+    public boolean login(String username, String password) {
+        try {
+            List<PacketHeader> headers = createHeaders("username", username, "password", password);
+            User user = sendObjectPacketRequest("/login/", headers, User.class);
+            this.currentUser = user;
+            return true;
+        } catch (Exception e) {
+            System.out.println("Login failed: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean createUser(String username, String password) {
+        try {
+            List<PacketHeader> headers = createHeaders("username", username, "password", password);
+            User user = sendObjectPacketRequest("/usercreate/", headers, User.class);
+            this.currentUser = user;
+            return true;
+        } catch (Exception e) {
+            System.out.println("User creation failed: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public Listing createListing(String title, String description, double price, String image) {
+        try {
+            List<PacketHeader> headers = createHeaders(
+                    "username", currentUser.getUsername(),
+                    "title", title,
+                    "description", description,
+                    "price", String.valueOf(price),
+                    "image", image
+            );
+            return sendObjectPacketRequest("/listingcreate/", headers, Listing.class);
+        } catch (Exception e) {
+            System.out.println("Listing creation failed: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public boolean buyListing(int listingId) {
+        try {
+            List<PacketHeader> headers = createHeaders(
+                    "buyingId", String.valueOf(currentUser.getId()),
+                    "listingId", String.valueOf(listingId)
+            );
+            User updatedUser = sendObjectPacketRequest("/buylisting/", headers, User.class);
+            this.currentUser = updatedUser;
+            return true;
+        } catch (Exception e) {
+            System.out.println("Purchase failed: " + e.getMessage());
+            return false;
+        }
     }
 }
