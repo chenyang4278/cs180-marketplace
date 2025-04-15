@@ -149,6 +149,7 @@ public abstract class Table implements ITable {
     /**
      * Saves the object to the database
      * Call this method after making any changes to attributes.
+     * This method is only used server side, it is not used client side.
      *
      * @throws DatabaseWriteException
      */
@@ -158,6 +159,7 @@ public abstract class Table implements ITable {
 
     /**
      * Deletes the object from the database
+     * This method is only used server side, it is not used client side.
      *
      * @throws DatabaseWriteException
      */
