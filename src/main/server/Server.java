@@ -19,7 +19,7 @@ public class Server implements IServer {
     public static void main(String[] args) throws IOException {
         ExecutorService pool = Executors.newCachedThreadPool();
 
-        ServerSocket server = new ServerSocket(8727);
+        ServerSocket server = new ServerSocket(8080);
 
         while (true) {
             Socket socket = server.accept();

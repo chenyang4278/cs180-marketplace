@@ -34,9 +34,9 @@ public class Client {
         sessionToken = "";
     }
 
-    private User sendLoginPacketRequest(String path, List<PacketHeader> headers)
+    private User sendLoginPacketRequest(List<PacketHeader> headers)
             throws IOException, PacketParsingException, ErrorPacketException {
-        Packet packet = new Packet(path, headers);
+        Packet packet = new Packet("/login", headers);
         packet.write(oStream);
         Packet response = Packet.read(iStream);
         sessionToken = packet.getHeaderValues("Session-Token")[0];
@@ -98,7 +98,7 @@ public class Client {
     public boolean login(String username, String password) {
         try {
             List<PacketHeader> headers = createHeaders("username", username, "password", password);
-            User user = sendLoginPacketRequest("/login", headers);
+            User user = sendLoginPacketRequest(headers);
             this.currentUser = user;
             return true;
         } catch (Exception e) {
