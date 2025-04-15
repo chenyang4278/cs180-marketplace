@@ -137,7 +137,6 @@ public class TestEndpointHandlers {
         phl.add( new PacketHeader("price", "10"));
         phl.add( new PacketHeader("image", "null"));
         phl.add( new PacketHeader("Session-Token", session.getToken()));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
 
         ObjectPacket<Listing> e4 = (ObjectPacket<Listing>) createListingHandler.handle(new Packet("", phl), null);
         Listing l = e4.getObj();
@@ -157,10 +156,18 @@ public class TestEndpointHandlers {
         phl.add( new PacketHeader("price", "-10"));
         phl.add( new PacketHeader("image", "null"));
         phl.add( new PacketHeader("Session-Token", session.getToken()));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
 
         ErrorPacket e = (ErrorPacket) createListingHandler.handle(new Packet("", phl), null);
         assertEquals("Invalid listing price!", e.getMessage());
+
+        phl.clear();
+        phl.add( new PacketHeader("title",  ""));
+        phl.add( new PacketHeader("description", ""));
+        phl.add( new PacketHeader("price", "10"));
+        phl.add( new PacketHeader("image", "null"));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        ErrorPacket e2 = (ErrorPacket) createListingHandler.handle(new Packet("", phl), null);
+        assertEquals("Invalid data", e2.getMessage());
     }
 
     @Test
@@ -179,7 +186,7 @@ public class TestEndpointHandlers {
 
         ArrayList<PacketHeader> phl = new ArrayList<>();
         phl.add(new PacketHeader("senderId", "" + u1.getId()));
-        phl.add( new PacketHeader("recieverId", "" + u2.getId()));
+        phl.add( new PacketHeader("receiverId", "" + u2.getId()));
         phl.add( new PacketHeader("message", "hi, this is a message"));
         phl.add( new PacketHeader("Session-Token", session.getToken()));
 
@@ -198,12 +205,21 @@ public class TestEndpointHandlers {
 
         phl.clear();
         phl.add(new PacketHeader("senderId", "" + u1.getId()));
-        phl.add( new PacketHeader("recieverId", "" + u1.getId()));
+        phl.add( new PacketHeader("receiverId", "" + u1.getId()));
         phl.add( new PacketHeader("message", "hi, this is a message"));
         phl.add( new PacketHeader("Session-Token", session.getToken()));
 
         ErrorPacket e = (ErrorPacket) cl.handle(new Packet("this dosent matter", phl), null);
         assertEquals("You cannot message yourself!", e.getMessage());
+
+        phl.clear();
+        phl.add(new PacketHeader("senderId", "" + u1.getId()));
+        phl.add( new PacketHeader("receiverId", "" + u2.getId()));
+        phl.add( new PacketHeader("message", ""));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
+        ErrorPacket e2 = (ErrorPacket) cl.handle(new Packet("this dosent matter", phl), null);
+        assertEquals("Invalid data", e2.getMessage());
     }
 
     @Test
@@ -236,6 +252,14 @@ public class TestEndpointHandlers {
         packet = new Packet();
         packet.addHeader("username", "username");
         packet.addHeader("password", "my_password");
+        resp = createUserHandler.handle(packet, new String[0]);
+        TestUtility.assertErrorPacket(resp);
+
+        //empty values
+        new User("username", "password").save();
+        packet = new Packet();
+        packet.addHeader("username", "");
+        packet.addHeader("password", "");
         resp = createUserHandler.handle(packet, new String[0]);
         TestUtility.assertErrorPacket(resp);
 
@@ -421,7 +445,7 @@ public class TestEndpointHandlers {
 
         ArrayList<PacketHeader> phl = new ArrayList<>();
         phl.add(new PacketHeader("senderId", "" + u1.getId()));
-        phl.add(new PacketHeader("recieverId", "" + u2.getId()));
+        phl.add(new PacketHeader("receiverId", "" + u2.getId()));
         phl.add( new PacketHeader("Session-Token", session.getToken()));
 
         ObjectListPacket<Message> o = (ObjectListPacket<Message>) h.handle(new Packet("this dosent matter", phl), null);
@@ -433,7 +457,7 @@ public class TestEndpointHandlers {
 
         phl.clear();
         phl.add(new PacketHeader("senderId", "" + u2.getId()));
-        phl.add(new PacketHeader("recieverId", "" + u3.getId()));
+        phl.add(new PacketHeader("receiverId", "" + u3.getId()));
         phl.add( new PacketHeader("Session-Token", session.getToken()));
 
         ObjectListPacket<Message> o2 = (ObjectListPacket<Message>) h.handle(new Packet("this dosent matter", phl), null);
@@ -442,7 +466,7 @@ public class TestEndpointHandlers {
 
         phl.clear();
         phl.add(new PacketHeader("senderId", "" + u3.getId()));
-        phl.add(new PacketHeader("recieverId", "" + u2.getId()));
+        phl.add(new PacketHeader("receiverId", "" + u2.getId()));
         phl.add( new PacketHeader("Session-Token", session.getToken()));
 
         ObjectListPacket<Message> o3 = (ObjectListPacket<Message>) h.handle(new Packet("this dosent matter", phl), null);
@@ -451,7 +475,7 @@ public class TestEndpointHandlers {
 
         phl.clear();
         phl.add(new PacketHeader("senderId", "" + u3.getId()));
-        phl.add(new PacketHeader("recieverId", "" + u3.getId()));
+        phl.add(new PacketHeader("receiverId", "" + u3.getId()));
         phl.add( new PacketHeader("Session-Token", session.getToken()));
 
         ErrorPacket o4 = (ErrorPacket) h.handle(new Packet("this dosent matter", phl), null);

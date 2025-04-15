@@ -24,7 +24,7 @@ public class CreateMessageHandler extends PacketHandler implements ICreateMessag
     /*
      * Expected PacketHeaders:
      * senderId
-     * recieverId
+     * receiverId
      * message
      */
     @Override
@@ -35,9 +35,9 @@ public class CreateMessageHandler extends PacketHandler implements ICreateMessag
             return new ErrorPacket("Not logged in");
         }
 
-        String[] data = packet.getHeaderValues("senderId", "recieverId", "message");
+        String[] data = packet.getHeaderValues("senderId", "receiverId", "message");
         if (data == null) {
-            return new ErrorPacket("Invalid packet headers!");
+            return new ErrorPacket("Invalid data");
         }
 
         String ssid = data[0];
@@ -51,9 +51,6 @@ public class CreateMessageHandler extends PacketHandler implements ICreateMessag
             rid = Integer.parseInt(rsid);
             if (sid == rid) {
                 return new ErrorPacket("You cannot message yourself!");
-            }
-            if (message.trim().isEmpty()) {
-                return new ErrorPacket("You cannot have an empty message!");
             }
             Message m = new Message(sid, rid, message);
             try {

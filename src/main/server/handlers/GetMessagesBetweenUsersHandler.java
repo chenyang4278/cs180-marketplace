@@ -23,7 +23,7 @@ public class GetMessagesBetweenUsersHandler extends PacketHandler implements IGe
     /*
      * Expected PacketHeaders:
      * senderId - arg in index 0
-     * recieverId  - arg in index 0
+     * receiverId  - arg in index 0
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
@@ -31,7 +31,7 @@ public class GetMessagesBetweenUsersHandler extends PacketHandler implements IGe
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
-        String[] data = packet.getHeaderValues("senderId", "recieverId");
+        String[] data = packet.getHeaderValues("senderId", "receiverId");
         if (data == null) {
             return new ErrorPacket("Invalid packet headers!");
         }

@@ -38,10 +38,6 @@ public class CreateUserHandler extends PacketHandler implements ICreateUserHandl
         String username = data[0];
         String password = data[1];
 
-        if (username.trim().isEmpty() || password.trim().isEmpty()) {
-            return new ErrorPacket("Username or password cannot be empty!");
-        }
-
         try {
             db.getByColumn(User.class, "username", username);
             return new ErrorPacket("Username already exists!");
