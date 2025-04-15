@@ -6,9 +6,9 @@ import packet.response.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import database.Table;
-import database.Listing;
-import database.User;
+import data.Table;
+import data.Listing;
+import data.User;
 
 
 /**
@@ -32,24 +32,42 @@ public class Client {
         iStream = socket.getInputStream();
     }
 
-    public <T extends Table> T sendObjectPacketRequest(String path, List<PacketHeader> headers, Class<T> type) throws IOException, PacketParsingException, ErrorPacketException {
+    public <T extends Table> T sendObjectPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
+            throws IOException, PacketParsingException, ErrorPacketException {
         Packet packet = new Packet(path, headers);
         packet.write(oStream);
-        ObjectPacket<T> response = Packet.read(iStream);
-        return response.getObj();
+        try {
+            ObjectPacket<T> response = Packet.read(iStream);
+            return response.getObj();
+        } catch (ErrorPacketException e) {
+            System.err.println("Server error (object): " + e.getMessage());
+            throw e;
+        }
     }
 
-    public <T extends Table> List<T> sendObjectListPacketRequest(String path, List<PacketHeader> headers, Class<T> type) throws IOException, PacketParsingException, ErrorPacketException {
+    public <T extends Table> List<T> sendObjectListPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
+            throws IOException, PacketParsingException, ErrorPacketException {
         Packet packet = new Packet(path, headers);
         packet.write(oStream);
-        ObjectListPacket<T> response = Packet.read(iStream);
-        return response.getObjList();
+        try {
+            ObjectListPacket<T> response = Packet.read(iStream);
+            return response.getObjList();
+        } catch (ErrorPacketException e) {
+            System.err.println("Server error (list): " + e.getMessage());
+            throw e;
+        }
     }
 
-    public SuccessPacket sendSuccessPacketRequest(String path, List<PacketHeader> headers) throws IOException, PacketParsingException, ErrorPacketException {
+    public SuccessPacket sendSuccessPacketRequest(String path, List<PacketHeader> headers)
+            throws IOException, PacketParsingException, ErrorPacketException {
         Packet packet = new Packet(path, headers);
         packet.write(oStream);
-        return Packet.read(iStream);
+        try {
+            return Packet.read(iStream);
+        } catch (ErrorPacketException e) {
+            System.err.println("Server error (success): " + e.getMessage());
+            throw e;
+        }
     }
 
     public void close() throws IOException {
@@ -77,7 +95,7 @@ public class Client {
     public boolean login(String username, String password) {
         try {
             List<PacketHeader> headers = createHeaders("username", username, "password", password);
-            User user = sendObjectPacketRequest("/login/", headers, User.class);
+            User user = sendObjectPacketRequest("/user/login", headers, User.class);
             this.currentUser = user;
             return true;
         } catch (Exception e) {
@@ -89,7 +107,7 @@ public class Client {
     public boolean createUser(String username, String password) {
         try {
             List<PacketHeader> headers = createHeaders("username", username, "password", password);
-            User user = sendObjectPacketRequest("/usercreate/", headers, User.class);
+            User user = sendObjectPacketRequest("/user/create", headers, User.class);
             this.currentUser = user;
             return true;
         } catch (Exception e) {
@@ -107,7 +125,7 @@ public class Client {
                     "price", String.valueOf(price),
                     "image", image
             );
-            return sendObjectPacketRequest("/listingcreate/", headers, Listing.class);
+            return sendObjectPacketRequest("/listing/create", headers, Listing.class);
         } catch (Exception e) {
             System.out.println("Listing creation failed: " + e.getMessage());
             return null;
@@ -120,7 +138,7 @@ public class Client {
                     "buyingId", String.valueOf(currentUser.getId()),
                     "listingId", String.valueOf(listingId)
             );
-            User updatedUser = sendObjectPacketRequest("/buylisting/", headers, User.class);
+            User updatedUser = sendObjectPacketRequest("/listing/buy", headers, User.class);
             this.currentUser = updatedUser;
             return true;
         } catch (Exception e) {

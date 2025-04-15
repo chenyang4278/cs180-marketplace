@@ -4,9 +4,9 @@ import packet.PacketHeader;
 import packet.response.SuccessPacket;
 import packet.ErrorPacketException;
 import packet.PacketParsingException;
-import database.Table;
-import database.Listing;
-import database.User;
+import data.Table;
+import data.Listing;
+import data.User;
 
 import java.io.IOException;
 import java.util.List;
