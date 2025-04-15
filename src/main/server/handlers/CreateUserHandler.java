@@ -6,6 +6,7 @@ import database.RowNotFoundException;
 import data.User;
 import packet.Packet;
 import packet.PacketHandler;
+import packet.PacketHeader;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
@@ -19,7 +20,7 @@ import packet.response.ObjectPacket;
  */
 public class CreateUserHandler extends PacketHandler implements ICreateUserHandler {
     public CreateUserHandler() {
-        super("/usercreate/");
+        super("/users/create");
     }
 
     /*
@@ -29,20 +30,30 @@ public class CreateUserHandler extends PacketHandler implements ICreateUserHandl
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-        String username = packet.getHeader("username").getValues().get(0);
-        String password = packet.getHeader("password").getValues().get(0);
+        PacketHeader usernameHeader = packet.getHeader("username");
+        PacketHeader passwordHeader = packet.getHeader("password");
+        if (usernameHeader == null || passwordHeader == null) {
+            return new ErrorPacket("Invalid username or password");
+        }
+
+        String username = usernameHeader.getValues().get(0);
+        String password = passwordHeader.getValues().get(0);
+
+        if (username.isEmpty() || password.isEmpty()) {
+            return new ErrorPacket("Invalid username or password");
+        }
+
         try {
-            User user = db.getByColumn(User.class, "username", username);
+            db.getByColumn(User.class, "username", username);
             return new ErrorPacket("Username already exists!");
         } catch (RowNotFoundException ignored) {
-            User u = new User(username, password);
+            User user = new User(username, HandlerUtil.hashPassword(password));
             try {
-                DatabaseWrapper.get().save(u);
-                return new ObjectPacket<User>(u);
+                user.save();
+                return new ObjectPacket<User>(user);
             } catch (DatabaseWriteException e) {
-                return new ErrorPacket("Database faliure in creating user");
+                return new ErrorPacket("Database failure in creating user");
             }
-
         }
     }
 }

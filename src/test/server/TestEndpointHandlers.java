@@ -210,7 +210,7 @@ public class TestEndpointHandlers {
             assertEquals(u3.getUsername(), u2.getUsername());
             assertEquals(u3.getPassword(), u2.getPassword());
             assertEquals("karma", u2.getUsername());
-            assertEquals("password", u2.getPassword());
+            assertEquals(HandlerUtil.hashPassword("password"), u2.getPassword());
         } catch (RowNotFoundException e) {
             throw new RuntimeException(e);
         }
