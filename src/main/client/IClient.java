@@ -5,6 +5,8 @@ import packet.response.SuccessPacket;
 import packet.ErrorPacketException;
 import packet.PacketParsingException;
 import database.Table;
+import database.Listing;
+import database.User;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,4 +35,16 @@ public interface IClient {
     static List<PacketHeader> createHeaders(String... keyValuePairs) {
         return Client.createHeaders(keyValuePairs);
     }
+
+    User getCurrentUser();
+
+    void setCurrentUser(User user);
+
+    boolean login(String username, String password);
+
+    boolean createUser(String username, String password);
+
+    Listing createListing(String title, String description, double price, String image);
+
+    boolean buyListing(int listingId);
 }
