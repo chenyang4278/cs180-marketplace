@@ -40,7 +40,6 @@ public class TestEndpointHandlers {
     }
 
     private Session login() {
-        LoginHandler lh = new LoginHandler();
         User user = new User("testusername", HandlerUtil.hashPassword("my_password"));
         try {
             DatabaseWrapper.get().save(user);
