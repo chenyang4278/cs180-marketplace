@@ -25,24 +25,4 @@ public interface IUser {
     double getRating();
 
     void setRating(double rating);
-
-    ArrayList<Listing> getListings();
-
-    ArrayList<Message> getInbox();
-
-    void setInbox(ArrayList<Message> inbox);
-
-    void createListing(Listing item);
-
-    void removeListing(Listing item);
-
-    void sendMessage(String messageContent, int receiverId);
-
-    void removeMessage(Message message);
-
-    void updateBalance(double amount);
-
-    void updateRating(double rating);
-
-    void deleteAccount();
 }

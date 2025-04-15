@@ -134,7 +134,7 @@ public class Packet implements IPacket, Serializable {
         }
 
         try {
-            user = User.getById(sessions.get(0).getUserId());
+            user = DatabaseWrapper.get().getById(User.class, sessions.get(0).getUserId());
         } catch (RowNotFoundException ignored) {
             user = null;
         }

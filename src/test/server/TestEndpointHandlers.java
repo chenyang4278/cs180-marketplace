@@ -275,7 +275,7 @@ public class TestEndpointHandlers {
         assertEquals("my_username", respUser.getUsername());
 
         // check that password was hashed
-        User dbUser = User.getById(respUser.getId());
+        User dbUser = DatabaseWrapper.get().getById(User.class, respUser.getId());
         assertEquals(HandlerUtil.hashPassword("password"), dbUser.getPassword());
     }
 

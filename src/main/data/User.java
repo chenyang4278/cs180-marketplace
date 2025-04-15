@@ -36,12 +36,6 @@ public class User extends Table implements IUser {
     }
 
     public User(String username, String password) {
-        if (username == null || username.trim().isEmpty()) {
-            throw new IllegalArgumentException("Username cannot be empty");
-        }
-        if (password == null || password.trim().isEmpty()) {
-            throw new IllegalArgumentException("Password cannot be empty");
-        }
         this.username = username;
         this.password = password;
         balance = 0.0;
@@ -58,6 +52,7 @@ public class User extends Table implements IUser {
     }
 
     public void setUsername(String username) {
+
         this.username = username;
     }
 
@@ -67,6 +62,7 @@ public class User extends Table implements IUser {
     }
 
     public void setPassword(String password) {
+
         this.password = password;
     }
 
@@ -88,126 +84,5 @@ public class User extends Table implements IUser {
     public void setRating(double rating) {
 
         this.rating = rating;
-    }
-
-    public void setInbox(ArrayList<Message> inbox) {
-        this.inbox = inbox;
-    }
-
-    //will get listing array from database
-    public ArrayList<Listing> getListings() {
-        if (listings == null) {
-            listings = (ArrayList<Listing>) DatabaseWrapper.get().filterByColumn(Listing.class,
-                "seller_id", String.valueOf(this.getId()));
-        }
-        return listings;
-    }
-
-    //will get message array from database
-    public ArrayList<Message> getInbox() {
-        if (inbox == null) {
-            inbox = (ArrayList<Message>) DatabaseWrapper.get().filterByColumn(Message.class,
-                "receiver_id", String.valueOf(this.getId()));
-        }
-        return inbox;
-    }
-
-    //will add listing to class and database
-    public void createListing(Listing item) {
-        try {
-            item.save();
-            listings.add(item);
-        } catch (DatabaseWriteException e) {
-            System.out.println("Error adding listing: " + e.getMessage());
-        }
-
-    }
-
-    //will remove listing from class and database
-    public void removeListing(Listing item) {
-        try {
-            item.delete();
-            listings.remove(item);
-        } catch (DatabaseWriteException e) {
-            System.out.println("Error deleting account: " + e.getMessage());
-        }
-    }
-
-    //will add message to class and database
-    public void sendMessage(String messageContent, int receiverId) {
-        try {
-            Message message = new Message(this.getId(), receiverId, messageContent);
-            message.save();
-            inbox.add(message);
-        } catch (DatabaseWriteException e) {
-            System.out.println("Error sending message: " + e.getMessage());
-        }
-
-    }
-
-    //will remove message from class and database
-    public void removeMessage(Message message) {
-
-        try {
-            message.delete();
-            inbox.remove(message);
-        } catch (DatabaseWriteException e) {
-            System.out.println("Error sending message: " + e.getMessage());
-        }
-    }
-
-    //will actually update the balance in the database compared to just setting it
-    public void updateBalance(double amount) {
-        try {
-            balance += amount;
-            this.save();
-        } catch (DatabaseWriteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //will actually update the rating in the database compared to just setting it
-    public void updateRating(double newRating) {
-        try {
-            rating = newRating;
-            this.save();
-        } catch (DatabaseWriteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //will delete all listings, message and this user object from database
-    public void deleteAccount() {
-
-        try {
-            for (Listing listing : this.getListings()) {
-                listing.delete();
-            }
-
-            for (Message message : this.getInbox()) {
-                message.delete();
-            }
-
-            this.delete();
-
-            username = null;
-            password = null;
-            balance = 0.0;
-            rating = 0.0;
-            listings.clear();
-            inbox.clear();
-        } catch (DatabaseWriteException e) {
-            System.out.println("Error deleting account: " + e.getMessage());
-        }
-    }
-
-    //get a user by an id (static)
-    public static User getById(int userId) throws RowNotFoundException {
-        return DatabaseWrapper.get().getById(User.class, userId);
-    }
-
-    //get a user by an coloumn value (static)
-    public static ArrayList<User> getUsersByColumn(String column, String value) {
-        return new ArrayList<>(DatabaseWrapper.get().filterByColumn(User.class, column, value));
     }
 }

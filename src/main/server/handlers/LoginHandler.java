@@ -2,6 +2,7 @@ package server.handlers;
 
 import data.Session;
 import data.User;
+import database.DatabaseWrapper;
 import database.DatabaseWriteException;
 import packet.Packet;
 import packet.PacketHandler;
@@ -37,7 +38,8 @@ public class LoginHandler extends PacketHandler implements ILoginHandler {
         String password = data[1];
 
         // look for user by username
-        ArrayList<User> users = User.getUsersByColumn("username", username);
+        ArrayList<User> users = new ArrayList<>(DatabaseWrapper.get().filterByColumn(User.class,
+                "username", username));
         if (users.isEmpty()) {
             return new ErrorPacket("Invalid username or password");
         }
