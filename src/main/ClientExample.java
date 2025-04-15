@@ -34,7 +34,7 @@ public class ClientExample {
         PacketHeader ph2 = new PacketHeader("password", "123456");
         headers.add(ph1);
         headers.add(ph2);
-        new Packet("/usercreate/", headers).write(os);
+        new Packet("/users/create", headers).write(os);
         ObjectPacket<User> packet = Packet.read(is);
         User u = packet.getObj();
         System.out.println(u.getId());
@@ -46,7 +46,7 @@ public class ClientExample {
         headers.add(new PacketHeader("price", "1.10"));
         headers.add(new PacketHeader("image", "null"));
 
-        new Packet("/listingcreate/", headers).write(os);
+        new Packet("/listing/create", headers).write(os);
         ObjectPacket<Listing> packet2 = Packet.read(is);
         Listing l = packet2.getObj();
         //would now add listing to user obj

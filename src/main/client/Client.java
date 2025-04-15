@@ -119,7 +119,7 @@ public class Client {
     public boolean login(String username, String password) {
         try {
             List<PacketHeader> headers = createHeaders("username", username, "password", password);
-            User user = sendLoginPacketRequest("/user/login", headers);
+            User user = sendLoginPacketRequest("/login", headers);
             this.currentUser = user;
             return true;
         } catch (Exception e) {
@@ -162,7 +162,7 @@ public class Client {
                     "buyingId", String.valueOf(currentUser.getId()),
                     "listingId", String.valueOf(listingId)
             );
-            User updatedUser = sendObjectPacketRequest("/listing/buy", headers, User.class);
+            User updatedUser = sendObjectPacketRequest("/buy", headers, User.class);
             this.currentUser = updatedUser;
             return true;
         } catch (Exception e) {

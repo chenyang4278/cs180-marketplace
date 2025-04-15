@@ -21,7 +21,7 @@ public class BuyListingHandler extends PacketHandler implements IBuyListingHandl
     final double EPSILON = 1e-9;
 
     public BuyListingHandler() {
-        super("/buy/listing");
+        super("/buy");
     }
 
     /*
