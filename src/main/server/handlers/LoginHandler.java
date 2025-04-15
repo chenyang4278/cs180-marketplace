@@ -28,15 +28,13 @@ public class LoginHandler extends PacketHandler implements ILoginHandler {
 
     @Override
     public Packet handle(Packet packet, String[] args) {
-        // get login credentials
-        PacketHeader usernameHeader = packet.getHeader("username");
-        PacketHeader passwordHeader = packet.getHeader("password");
-        if (usernameHeader == null || passwordHeader == null) {
+        String[] data = packet.getHeaderValues("username", "password");
+        if (data == null) {
             return new ErrorPacket("Invalid username or password");
         }
 
-        String username = usernameHeader.getValues().get(0);
-        String password = passwordHeader.getValues().get(0);
+        String username = data[0];
+        String password = data[1];
 
         // look for user by username
         ArrayList<User> users = User.getUsersByColumn("username", username);

@@ -139,6 +139,34 @@ public class Packet implements IPacket, Serializable {
         return user;
     }
 
+    /**
+     * Get the first value of each header specified,
+     * or null if one of the headers does not exist or
+     * one of the header values is empty.
+     *
+     * @param keys list of header keys
+     * @return header values, taking the first from each header
+     */
+    public String[] getHeaderValues(String... keys) {
+        String[] values = new String[keys.length];
+
+        for (int i = 0; i < keys.length; i++) {
+            PacketHeader header = getHeader(keys[i]);
+            if (header == null) {
+                return null;
+            }
+
+            String value = header.getValues().get(0);
+            if (value.trim().isEmpty()) {
+                return null;
+            }
+
+            values[i] = value;
+        }
+
+        return values;
+    }
+
     @Override
     public String getPath() {
         return path;

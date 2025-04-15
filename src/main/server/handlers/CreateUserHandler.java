@@ -30,18 +30,13 @@ public class CreateUserHandler extends PacketHandler implements ICreateUserHandl
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-        PacketHeader usernameHeader = packet.getHeader("username");
-        PacketHeader passwordHeader = packet.getHeader("password");
-        if (usernameHeader == null || passwordHeader == null) {
+        String[] data = packet.getHeaderValues("username", "password");
+        if (data == null) {
             return new ErrorPacket("Invalid username or password");
         }
 
-        String username = usernameHeader.getValues().get(0);
-        String password = passwordHeader.getValues().get(0);
-
-        if (username.isEmpty() || password.isEmpty()) {
-            return new ErrorPacket("Invalid username or password");
-        }
+        String username = data[0];
+        String password = data[1];
 
         try {
             db.getByColumn(User.class, "username", username);
