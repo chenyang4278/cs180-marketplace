@@ -19,12 +19,8 @@ import java.net.Socket;
  */
 
 /* Handlers we need to implement:
- * login (username + password) - will retrieve a user object
- * Some possible extras
  * editUser
  * editListing
- *
- * TODO: Testcases for handlers
  */
 public class ClientHandler implements Runnable, IClientHandler {
     public static PacketHandler[] handlers = new PacketHandler[] {
@@ -37,7 +33,8 @@ public class ClientHandler implements Runnable, IClientHandler {
             new GetListingsFromAttributeHandler(),
             new GetMessagesBetweenUsersHandler(),
             new GetUserFromIdHandler(),
-            new GetUsersFromAttributeHandler()
+            new GetUsersFromAttributeHandler(),
+            new LoginHandler()
     };
 
     private Socket socket;

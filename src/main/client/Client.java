@@ -39,7 +39,7 @@ public class Client {
         Packet packet = new Packet("/login", headers);
         packet.write(oStream);
         Packet response = Packet.read(iStream);
-        sessionToken = packet.getHeaderValues("Session-Token")[0];
+        sessionToken = response.getHeaderValues("Session-Token")[0];
         ObjectPacket<User> o = (ObjectPacket<User>) response;
         return o.getObj();
     }
