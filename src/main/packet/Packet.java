@@ -98,6 +98,10 @@ public class Packet implements IPacket, Serializable {
                 throw new ErrorPacketException(((ErrorPacket) packet).getMessage());
             }
 
+            // security
+            packet.user = null;
+            packet.userCached = false;
+
             return (T) packet;
         } catch (ClassNotFoundException e) {
             throw new PacketParsingException("Invalid packet");
