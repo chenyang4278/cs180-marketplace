@@ -46,8 +46,8 @@ public class ClientHandler implements Runnable, IClientHandler {
     }
 
     public void run() {
-        try {
-            while (true) {
+        while (true) {
+            try {
                 Packet packet = readPacket();
 
                 System.out.println("Received packet for path " + packet.getPath());
@@ -69,17 +69,17 @@ public class ClientHandler implements Runnable, IClientHandler {
                 } else {
                     sendPacket(handler.handle(packet, args));
                 }
-            }
-        } catch (PacketParsingException e) {
-            try {
-                sendPacket(new ErrorPacket("Bad packet formatting: " + e.getMessage()));
-            } catch (IOException e2) {
+            } catch (PacketParsingException e) {
+                try {
+                    sendPacket(new ErrorPacket("Bad packet formatting: " + e.getMessage()));
+                } catch (IOException e2) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                System.out.println("Connection closed");
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        } catch (IOException e) {
-            System.out.println("Connection closed");
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
