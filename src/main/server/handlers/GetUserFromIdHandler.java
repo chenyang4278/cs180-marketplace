@@ -17,7 +17,7 @@ import packet.response.ObjectPacket;
  */
 public class GetUserFromIdHandler extends PacketHandler implements IGetUserFromIdHandler {
     public GetUserFromIdHandler() {
-        super("/users/:id");
+        super("/user/:id");
     }
 
     @Override

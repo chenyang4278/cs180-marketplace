@@ -8,6 +8,7 @@ import database.RowNotFoundException;
 import packet.Packet;
 import packet.PacketHandler;
 import packet.response.ErrorPacket;
+import packet.response.ObjectPacket;
 import packet.response.SuccessPacket;
 
 /**
@@ -60,7 +61,11 @@ public class EditListingHandler extends PacketHandler implements IEditListingHan
             id = Integer.parseInt(sid);
             try {
                 DatabaseWrapper.get().setById(Listing.class, id, attribute, attributeVal);
-                return new SuccessPacket();
+                try {
+                    return new ObjectPacket<Listing>(DatabaseWrapper.get().getById(Listing.class, id));
+                } catch (RowNotFoundException e) {
+                    return new ErrorPacket("Listing not found!");
+                }
             } catch (DatabaseWriteException e) {
                 return new ErrorPacket(e.getMessage());
             }

@@ -358,10 +358,11 @@ public class TestEndpointHandlers {
             p.addHeader("attribute", "sold");
             p.addHeader("attributeVal", "true");
             p.addHeader("Session-Token", session.getToken());
-            ee.handle(p, null);
+            ObjectPacket<Listing> ll = ( ObjectPacket<Listing>) ee.handle(p, null);
 
             Listing l2 = DatabaseWrapper.get().getById(Listing.class, l.getId());
             assertTrue(l2.isSold());
+            assertTrue(ll.getObj().isSold());
 
             p = new Packet();
             p.addHeader("listingId", "" + l.getId());
@@ -408,10 +409,11 @@ public class TestEndpointHandlers {
             p.addHeader("attribute", "username");
             p.addHeader("attributeVal", "karma12");
             p.addHeader("Session-Token", session.getToken());
-            ee.handle(p, null);
+            ObjectPacket<User> uu = (ObjectPacket<User>) ee.handle(p, null);
 
             User u2 = DatabaseWrapper.get().getById(User.class, u.getId());
             assertEquals("karma12", u2.getUsername());
+            assertEquals("karma12", uu.getObj().getUsername());
 
             p = new Packet();
             p.addHeader("userId", "" + u.getId());

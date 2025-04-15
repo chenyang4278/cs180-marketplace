@@ -7,6 +7,7 @@ import database.RowNotFoundException;
 import packet.Packet;
 import packet.PacketHandler;
 import packet.response.ErrorPacket;
+import packet.response.ObjectPacket;
 import packet.response.SuccessPacket;
 
 /**
@@ -53,7 +54,11 @@ public class EditUserHandler extends PacketHandler implements IEditUserHandler {
             id = Integer.parseInt(sid);
             try {
                 DatabaseWrapper.get().setById(User.class, id, attribute, attributeVal);
-                return new SuccessPacket();
+                try {
+                    return new ObjectPacket<User>(DatabaseWrapper.get().getById(User.class, id));
+                } catch (RowNotFoundException e) {
+                    return new ErrorPacket("User not found!");
+                }
             } catch (DatabaseWriteException e) {
                 return new ErrorPacket(e.getMessage());
             }

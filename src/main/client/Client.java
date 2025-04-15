@@ -149,4 +149,32 @@ public class Client {
             return false;
         }
     }
+
+    public boolean setUserBalance(double newBalance) {
+        try {
+            List<PacketHeader> headers = createHeaders(
+                    "userId", String.valueOf(currentUser.getId()),
+                    "attribute", "balance",
+                    "attributeVal", String.valueOf(newBalance)
+            );
+            User updatedUser = sendObjectPacketRequest("/user/edit", headers, User.class);
+            this.currentUser = updatedUser;
+            return true;
+        } catch (Exception e) {
+            System.out.println("Balance update failed: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean updateUser() {
+        try {
+            ArrayList<PacketHeader> headers = new ArrayList<>();
+            User updatedUser = sendObjectPacketRequest("/user/" + currentUser.getId(), headers, User.class);
+            this.currentUser = updatedUser;
+            return true;
+        } catch (Exception e) {
+            System.out.println("User update failed: " + e.getMessage());
+            return false;
+        }
+    }
 }
