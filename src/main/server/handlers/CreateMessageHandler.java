@@ -1,6 +1,7 @@
 package server.handlers;
 
 import data.Message;
+import data.User;
 import database.*;
 import packet.Packet;
 import packet.PacketHandler;
@@ -17,7 +18,7 @@ import packet.response.ObjectPacket;
  */
 public class CreateMessageHandler extends PacketHandler implements ICreateMessageHandler {
     public CreateMessageHandler() {
-        super("/messagecreate/");
+        super("/message/create");
     }
 
     /*
@@ -28,9 +29,21 @@ public class CreateMessageHandler extends PacketHandler implements ICreateMessag
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-        String ssid = packet.getHeader("senderId").getValues().get(0);
-        String rsid = packet.getHeader("recieverId").getValues().get(0);
-        String message = packet.getHeader("message").getValues().get(0);
+
+        User user = packet.getUser();
+        if (user == null) {
+            return new ErrorPacket("Not logged in");
+        }
+
+        String[] data = packet.getHeaderValues("senderId", "recieverId", "message");
+        if (data == null) {
+            return new ErrorPacket("Invalid packet headers!");
+        }
+
+        String ssid = data[0];
+        String rsid = data[1];
+        String message = data[2];
+
         int sid = 0;
         int rid = 0;
         try {
@@ -44,7 +57,7 @@ public class CreateMessageHandler extends PacketHandler implements ICreateMessag
                 DatabaseWrapper.get().save(m);
                 return new ObjectPacket<Message>(m);
             } catch (DatabaseWriteException e) {
-                return new ErrorPacket("Database faliure in creating message");
+                return new ErrorPacket("Database failure in creating message");
             }
         } catch (NumberFormatException e) {
             return new ErrorPacket("Invalid ids!");

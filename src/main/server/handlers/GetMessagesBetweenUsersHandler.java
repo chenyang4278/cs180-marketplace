@@ -1,6 +1,7 @@
 package server.handlers;
 
 import data.Message;
+import data.User;
 import packet.Packet;
 import packet.PacketHandler;
 import packet.response.ErrorPacket;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
  * @version 4/13/25
  */
 public class GetMessagesBetweenUsersHandler extends PacketHandler implements IGetMessagesBetweenUsersHandler {
-    public GetMessagesBetweenUsersHandler() { super("/getmessages/"); }
+    public GetMessagesBetweenUsersHandler() { super("/get/messages"); }
 
     /*
      * Expected PacketHeaders:
@@ -26,8 +27,18 @@ public class GetMessagesBetweenUsersHandler extends PacketHandler implements IGe
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-        String ssid = packet.getHeader("senderId").getValues().get(0);
-        String rsid = packet.getHeader("recieverId").getValues().get(0);
+        User user = packet.getUser();
+        if (user == null) {
+            return new ErrorPacket("Not logged in");
+        }
+        String[] data = packet.getHeaderValues("senderId", "recieverId");
+        if (data == null) {
+            return new ErrorPacket("Invalid packet headers!");
+        }
+
+        String ssid = data[0];
+        String rsid = data[1];
+
         int sid = 0;
         int rid = 0;
         try {

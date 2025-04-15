@@ -18,7 +18,7 @@ import packet.response.ObjectPacket;
  */
 public class CreateListingHandler extends PacketHandler implements ICreateListingHandler {
     public CreateListingHandler() {
-        super("/listingcreate/");
+        super("/listing/create");
     }
 
     /*

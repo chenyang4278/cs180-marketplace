@@ -21,7 +21,7 @@ public class BuyListingHandler extends PacketHandler implements IBuyListingHandl
     final double EPSILON = 1e-9;
 
     public BuyListingHandler() {
-        super("/buylisting/");
+        super("/buy/listing");
     }
 
     /*
@@ -34,8 +34,19 @@ public class BuyListingHandler extends PacketHandler implements IBuyListingHandl
 
     @Override
     public Packet handle(Packet packet, String[] args) {
-        String bsid = packet.getHeader("buyingId").getValues().get(0);
-        String lsid = packet.getHeader("listingId").getValues().get(0);
+        User user = packet.getUser();
+        if (user == null) {
+            return new ErrorPacket("Not logged in");
+        }
+
+        String[] data = packet.getHeaderValues("buyingId", "listingId");
+        if (data == null) {
+            return new ErrorPacket("Invalid packet headers!");
+        }
+
+        String bsid = data[0];
+        String lsid = data[1];
+
         int bid = 0;
         int lid = 0;
         try {

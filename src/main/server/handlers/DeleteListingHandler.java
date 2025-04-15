@@ -1,5 +1,6 @@
 package server.handlers;
 
+import data.User;
 import database.DatabaseWrapper;
 import database.DatabaseWriteException;
 import data.Listing;
@@ -19,7 +20,7 @@ import packet.response.SuccessPacket;
  */
 public class DeleteListingHandler extends PacketHandler implements IDeleteListingHandler {
     public DeleteListingHandler() {
-        super("/listingdelete/");
+        super("/listing/delete");
     }
 
     /*
@@ -28,7 +29,16 @@ public class DeleteListingHandler extends PacketHandler implements IDeleteListin
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-        String sid = packet.getHeader("listingId").getValues().get(0);
+        User user = packet.getUser();
+        if (user == null) {
+            return new ErrorPacket("Not logged in");
+        }
+        String[] data = packet.getHeaderValues("listingId");
+        if (data == null) {
+            return new ErrorPacket("Invalid packet headers!");
+        }
+        String sid = data[0];
+
         int id = 0;
         try {
             id = Integer.parseInt(sid);
@@ -38,7 +48,7 @@ public class DeleteListingHandler extends PacketHandler implements IDeleteListin
                     DatabaseWrapper.get().delete(l);
                     return new SuccessPacket();
                 } catch (DatabaseWriteException e) {
-                    return new ErrorPacket("Database delete faliure!");
+                    return new ErrorPacket("Database delete failure!");
                 }
             } catch (RowNotFoundException ignored) {
                 return new ErrorPacket("Listing does not exist!");

@@ -22,9 +22,14 @@ public class GetUserFromIdHandler extends PacketHandler implements IGetUserFromI
 
     @Override
     public Packet handle(Packet packet, String[] args) {
+        User user = packet.getUser();
+        if (user == null) {
+            return new ErrorPacket("Not logged in");
+        }
+
         try {
-            User user = db.getByColumn(User.class, "id", args[0]);
-            return new ObjectPacket<>(user);
+            User u = db.getByColumn(User.class, "id", args[0]);
+            return new ObjectPacket<>(u);
         } catch (RowNotFoundException ignored) {
             return new ErrorPacket("User not found");
         }

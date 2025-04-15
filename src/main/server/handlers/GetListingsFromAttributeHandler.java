@@ -1,8 +1,10 @@
 package server.handlers;
 
 import data.Listing;
+import data.User;
 import packet.Packet;
 import packet.PacketHandler;
+import packet.response.ErrorPacket;
 import packet.response.ObjectListPacket;
 
 import java.util.ArrayList;
@@ -16,17 +18,27 @@ import java.util.ArrayList;
  * @version 4/13/25
  */
 public class GetListingsFromAttributeHandler extends PacketHandler implements IGetListingsFromAttributeHandler {
-    public GetListingsFromAttributeHandler() { super("/listingsattribute/"); }
+    public GetListingsFromAttributeHandler() { super("/listings/attribute"); }
 
     /* For example, an attribute would be "username", an attribute val would be "karma"
      * Expected PacketHeaders:
      * attribute - arg in index 0
-     * attributeval  - arg in index 0
+     * attributeVal  - arg in index 0
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-        String attribute = packet.getHeader("attribute").getValues().get(0);
-        String attributeVal = packet.getHeader("attributeval").getValues().get(0);
+        User user = packet.getUser();
+        if (user == null) {
+            return new ErrorPacket("Not logged in");
+        }
+        String[] data = packet.getHeaderValues("attribute", "attributeVal");
+        if (data == null) {
+            return new ErrorPacket("Invalid packet headers!");
+        }
+
+        String attribute = data[0];
+        String attributeVal = data[1];
+
         ArrayList<Listing> listings = (ArrayList<Listing>) db.filterByColumn(Listing.class, attribute, attributeVal);
         return new ObjectListPacket<Listing>(listings);
     }

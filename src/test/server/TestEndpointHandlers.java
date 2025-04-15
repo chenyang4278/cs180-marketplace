@@ -39,9 +39,24 @@ public class TestEndpointHandlers {
         }
     }
 
+    private Session login() {
+        LoginHandler lh = new LoginHandler();
+        User user = new User("testusername", HandlerUtil.hashPassword("my_password"));
+        try {
+            DatabaseWrapper.get().save(user);
+            Session session = new Session(user.getId(), HandlerUtil.generateToken());
+            DatabaseWrapper.get().save(session);
+            return session;
+        } catch (DatabaseWriteException e) {
+            e.printStackTrace(); // should never happen
+        }
+        return null;
+    }
+
     @Test
     public void testBuyListingHandler() {
         clearDb();
+        Session session = login();
         try {
             User u = new User("karma", "pass");
             User s = new User("ayden", "pass");
@@ -61,6 +76,7 @@ public class TestEndpointHandlers {
             ArrayList<PacketHeader> phl = new ArrayList<>();
             phl.add(new PacketHeader("buyingId", "" + u.getId()));
             phl.add( new PacketHeader("listingId", "" + l.getId()));
+            phl.add( new PacketHeader("Session-Token", session.getToken()));
             ObjectPacket<User> op = (ObjectPacket<User>) bl.handle(new Packet("this dosent matter", phl), null);
 
             assertEquals(op.getObj().getId(), u.getId());
@@ -75,6 +91,7 @@ public class TestEndpointHandlers {
             phl.clear();
             phl.add(new PacketHeader("buyingId", "" + u.getId()));
             phl.add( new PacketHeader("listingId", "" + l2.getId()));
+            phl.add( new PacketHeader("Session-Token", session.getToken()));
             ErrorPacket e = (ErrorPacket) bl.handle(new Packet("this dosent matter", phl), null);
             assertEquals("Item already has already been sold!", e.getMessage());
 
@@ -85,18 +102,21 @@ public class TestEndpointHandlers {
             phl.clear();
             phl.add(new PacketHeader("buyingId", "" + u.getId()));
             phl.add( new PacketHeader("listingId", "" + l3.getId()));
+            phl.add( new PacketHeader("Session-Token", session.getToken()));
             ErrorPacket e2 = (ErrorPacket) bl.handle(new Packet("this dosent matter", phl), null);
             assertEquals("User does not have enough balance to buy this item!", e2.getMessage());
 
             phl.clear();
             phl.add(new PacketHeader("buyingId", "adwawd"));
             phl.add( new PacketHeader("listingId", "awdawd"));
+            phl.add( new PacketHeader("Session-Token", session.getToken()));
             ErrorPacket e3 = (ErrorPacket) bl.handle(new Packet("this dosent matter", phl), null);
             assertEquals("Invalid ids!", e3.getMessage()); // same code for all invalid ids
 
             phl.clear();
             phl.add(new PacketHeader("buyingId", "-10"));
             phl.add( new PacketHeader("listingId", "-29"));
+            phl.add( new PacketHeader("Session-Token", session.getToken()));
             ErrorPacket e4 = (ErrorPacket) bl.handle(new Packet("this dosent matter", phl), null);
             assertEquals("Could not find user or listing!", e4.getMessage());
 
@@ -108,20 +128,15 @@ public class TestEndpointHandlers {
     @Test
     public void testCreateListingHandler() throws DatabaseWriteException, RowNotFoundException {
         clearDb();
-
+        Session session = login();
         CreateListingHandler createListingHandler = new CreateListingHandler();
-
-        User user = new User("karma", "1234");
-        user.save();
-
-        Session session = new Session(user.getId(), HandlerUtil.generateToken());
-        session.save();
 
         ArrayList<PacketHeader> phl = new ArrayList<>();
         phl.add( new PacketHeader("title", "pokemon cards"));
         phl.add( new PacketHeader("description", "New and rare pokemon cards"));
         phl.add( new PacketHeader("price", "10"));
         phl.add( new PacketHeader("image", "null"));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
         phl.add( new PacketHeader("Session-Token", session.getToken()));
 
         ObjectPacket<Listing> e4 = (ObjectPacket<Listing>) createListingHandler.handle(new Packet("", phl), null);
@@ -142,6 +157,8 @@ public class TestEndpointHandlers {
         phl.add( new PacketHeader("price", "-10"));
         phl.add( new PacketHeader("image", "null"));
         phl.add( new PacketHeader("Session-Token", session.getToken()));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
         ErrorPacket e = (ErrorPacket) createListingHandler.handle(new Packet("", phl), null);
         assertEquals("Invalid listing price!", e.getMessage());
     }
@@ -149,6 +166,7 @@ public class TestEndpointHandlers {
     @Test
     public void testCreateMessageHandler() {
         clearDb();
+        Session session = login();
 
         User u1 = new User("karma", "1234");
         User u2 = new User("ayden", "123467");
@@ -163,6 +181,8 @@ public class TestEndpointHandlers {
         phl.add(new PacketHeader("senderId", "" + u1.getId()));
         phl.add( new PacketHeader("recieverId", "" + u2.getId()));
         phl.add( new PacketHeader("message", "hi, this is a message"));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
         CreateMessageHandler cl = new CreateMessageHandler();
         ObjectPacket<Message> ol = (ObjectPacket<Message>) cl.handle(new Packet("this dosent matter", phl), null);
         Message m = ol.getObj();
@@ -180,6 +200,8 @@ public class TestEndpointHandlers {
         phl.add(new PacketHeader("senderId", "" + u1.getId()));
         phl.add( new PacketHeader("recieverId", "" + u1.getId()));
         phl.add( new PacketHeader("message", "hi, this is a message"));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
         ErrorPacket e = (ErrorPacket) cl.handle(new Packet("this dosent matter", phl), null);
         assertEquals("You cannot message yourself!", e.getMessage());
     }
@@ -236,6 +258,7 @@ public class TestEndpointHandlers {
     @Test
     public void testDeleteListingHandler() {
         clearDb();
+        Session session = login();
 
         Listing l = new Listing(10, "karma", "a keyboard",
                 "idk", 50.00, "null",
@@ -244,6 +267,8 @@ public class TestEndpointHandlers {
             DatabaseWrapper.get().save(l );
             ArrayList<PacketHeader> phl = new ArrayList<>();
             phl.add(new PacketHeader("listingId", "" + l.getId()));
+            phl.add( new PacketHeader("Session-Token", session.getToken()));
+
             DeleteListingHandler dl = new DeleteListingHandler();
             SuccessPacket ol = (SuccessPacket) dl.handle(new Packet("this dosent matter", phl), null);
             try {
@@ -255,6 +280,8 @@ public class TestEndpointHandlers {
 
             phl.clear();
             phl.add(new PacketHeader("listingId", "-10"));
+            phl.add( new PacketHeader("Session-Token", session.getToken()));
+
             ErrorPacket e = (ErrorPacket) dl.handle(new Packet("this dosent matter", phl), null);
             assertEquals("Listing does not exist!", e.getMessage());
         } catch (DatabaseWriteException e) {
@@ -265,12 +292,15 @@ public class TestEndpointHandlers {
     @Test
     public void testDeleteUserHandler() {
         clearDb();
+        Session session = login();
 
         User u1 = new User("karma", "1234");
         try {
             DatabaseWrapper.get().save(u1);
             ArrayList<PacketHeader> phl = new ArrayList<>();
             phl.add(new PacketHeader("userId", "" + u1.getId()));
+            phl.add( new PacketHeader("Session-Token", session.getToken()));
+
             DeleteUserHandler dl = new DeleteUserHandler();
             SuccessPacket ol = (SuccessPacket) dl.handle(new Packet("this dosent matter", phl), null);
             try {
@@ -282,6 +312,8 @@ public class TestEndpointHandlers {
 
             phl.clear();
             phl.add(new PacketHeader("userId", "-10"));
+            phl.add( new PacketHeader("Session-Token", session.getToken()));
+
             ErrorPacket e = (ErrorPacket) dl.handle(new Packet("this dosent matter", phl), null);
             assertEquals("User does not exist!", e.getMessage());
         } catch (DatabaseWriteException e) {
@@ -292,6 +324,7 @@ public class TestEndpointHandlers {
     @Test
     public void testGetListingsFromAttributeHandler() {
         clearDb();
+        Session session = login();
 
         Listing l = new Listing(0, "ayden", "a keyboard",
                 "idk", 50.00, "null",
@@ -325,21 +358,27 @@ public class TestEndpointHandlers {
 
         ArrayList<PacketHeader> phl = new ArrayList<>();
         phl.add(new PacketHeader("attribute", "sellerId"));
-        phl.add(new PacketHeader("attributeval", "1"));
+        phl.add(new PacketHeader("attributeVal", "1"));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
         GetListingsFromAttributeHandler h = new GetListingsFromAttributeHandler();
         ObjectListPacket<Listing> o = (ObjectListPacket<Listing>) h.handle(new Packet("this dosent matter", phl), null);
         assertEquals(3, o.getObjList().size());
 
         phl.clear();
         phl.add(new PacketHeader("attribute", "sellerName"));
-        phl.add(new PacketHeader("attributeval", "idk"));
+        phl.add(new PacketHeader("attributeVal", "idk"));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
         ObjectListPacket<Listing> o2 = (ObjectListPacket<Listing>) h.handle(new Packet("this dosent matter", phl), null);
         assertEquals(1, o2.getObjList().size());
         assertEquals("a 4 keyboard", o2.getObjList().get(0).getTitle());
 
         phl.clear();
         phl.add(new PacketHeader("attribute", "image"));
-        phl.add(new PacketHeader("attributeval", "null"));
+        phl.add(new PacketHeader("attributeVal", "null"));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
         ObjectListPacket<Listing> o3 = (ObjectListPacket<Listing>) h.handle(new Packet("this dosent matter", phl), null);
         assertEquals(6, o3.getObjList().size());
     }
@@ -347,6 +386,8 @@ public class TestEndpointHandlers {
     @Test
     public void testGetMessagesBetweenUsersHandler() {
         clearDb();
+        Session session = login();
+
         User u1 = new User("karma", "verysecretpassword");
         User u2 = new User("ayden", "extrasecretpassword");
         User u3 = new User("chen", "extrasecretpassword");
@@ -381,6 +422,8 @@ public class TestEndpointHandlers {
         ArrayList<PacketHeader> phl = new ArrayList<>();
         phl.add(new PacketHeader("senderId", "" + u1.getId()));
         phl.add(new PacketHeader("recieverId", "" + u2.getId()));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
         ObjectListPacket<Message> o = (ObjectListPacket<Message>) h.handle(new Packet("this dosent matter", phl), null);
         assertEquals(2, o.getObjList().size());
 
@@ -391,6 +434,8 @@ public class TestEndpointHandlers {
         phl.clear();
         phl.add(new PacketHeader("senderId", "" + u2.getId()));
         phl.add(new PacketHeader("recieverId", "" + u3.getId()));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
         ObjectListPacket<Message> o2 = (ObjectListPacket<Message>) h.handle(new Packet("this dosent matter", phl), null);
         assertEquals(1, o2.getObjList().size());
         assertEquals("this is a another message from u2 to u3", o2.getObjList().get(0).getMessage());
@@ -398,6 +443,8 @@ public class TestEndpointHandlers {
         phl.clear();
         phl.add(new PacketHeader("senderId", "" + u3.getId()));
         phl.add(new PacketHeader("recieverId", "" + u2.getId()));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
         ObjectListPacket<Message> o3 = (ObjectListPacket<Message>) h.handle(new Packet("this dosent matter", phl), null);
         assertEquals(1, o2.getObjList().size());
         assertEquals("this is a another message from u3 to u2", o3.getObjList().get(0).getMessage());
@@ -405,6 +452,8 @@ public class TestEndpointHandlers {
         phl.clear();
         phl.add(new PacketHeader("senderId", "" + u3.getId()));
         phl.add(new PacketHeader("recieverId", "" + u3.getId()));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
         ErrorPacket o4 = (ErrorPacket) h.handle(new Packet("this dosent matter", phl), null);
         assertEquals("You cannot message yourself!", o4.getMessage());
     }
@@ -412,11 +461,15 @@ public class TestEndpointHandlers {
     @Test
     public void testGetUserFromIdHandler() {
         clearDb();
+        Session session = login();
+
         User u = new User("karma", "verysecretpassword");
         try {
             DatabaseWrapper.get().save(u);
             GetUserFromIdHandler h = new GetUserFromIdHandler();
-            ObjectPacket<User> userP = (ObjectPacket) h.handle(null, new String[] {u.getId() + ""});
+            Packet p = new Packet();
+            p.addHeader("Session-Token", session.getToken());
+            ObjectPacket<User> userP = (ObjectPacket) h.handle(p, new String[] {u.getId() + ""});
             assertEquals(u.getUsername(), userP.getObj().getUsername());
             assertEquals(u.getPassword(), userP.getObj().getPassword());
         } catch (DatabaseWriteException e) {
@@ -427,6 +480,7 @@ public class TestEndpointHandlers {
     @Test
     public void testGetUsersFromAttributeHandler() {
         clearDb();
+        Session session = login();
 
         User u1 = new User("karma", "1234");
         User u2 = new User("karma1", "1awd234");
@@ -448,7 +502,9 @@ public class TestEndpointHandlers {
 
         ArrayList<PacketHeader> phl = new ArrayList<>();
         phl.add(new PacketHeader("attribute", "username"));
-        phl.add(new PacketHeader("attributeval", "karma"));
+        phl.add(new PacketHeader("attributeVal", "karma"));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
         GetUsersFromAttributeHandler h = new GetUsersFromAttributeHandler();
         ObjectListPacket<User> o = (ObjectListPacket<User>) h.handle(new Packet("this dosent matter", phl), null);
         assertEquals(1, o.getObjList().size());
@@ -456,20 +512,26 @@ public class TestEndpointHandlers {
 
         phl.clear();
         phl.add(new PacketHeader("attribute", "password"));
-        phl.add(new PacketHeader("attributeval", "1awd234"));
+        phl.add(new PacketHeader("attributeVal", "1awd234"));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
         ObjectListPacket<User> o2 = (ObjectListPacket<User>) h.handle(new Packet("this dosent matter", phl), null);
         assertEquals(1, o2.getObjList().size());
         assertEquals("1awd234", o2.getObjList().get(0).getPassword());
 
         phl.clear();
         phl.add(new PacketHeader("attribute", "password"));
-        phl.add(new PacketHeader("attributeval", "1234"));
+        phl.add(new PacketHeader("attributeVal", "1234"));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
         ObjectListPacket<User> o3 = (ObjectListPacket<User>) h.handle(new Packet("this dosent matter", phl), null);
         assertEquals(3, o3.getObjList().size());
 
         phl.clear();
         phl.add(new PacketHeader("attribute", "password"));
-        phl.add(new PacketHeader("attributeval", "12222234"));
+        phl.add(new PacketHeader("attributeVal", "12222234"));
+        phl.add( new PacketHeader("Session-Token", session.getToken()));
+
         ObjectListPacket<User> o4 = (ObjectListPacket<User>) h.handle(new Packet("this dosent matter", phl), null);
         assertEquals(0, o4.getObjList().size());
     }

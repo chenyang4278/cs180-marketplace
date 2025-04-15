@@ -19,7 +19,7 @@ import packet.response.SuccessPacket;
  */
 public class DeleteUserHandler extends PacketHandler implements IDeleteUserHandler {
     public DeleteUserHandler() {
-        super("/userdelete/");
+        super("/user/delete");
     }
 
     /*
@@ -28,7 +28,16 @@ public class DeleteUserHandler extends PacketHandler implements IDeleteUserHandl
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-        String sid = packet.getHeader("userId").getValues().get(0);
+        User user = packet.getUser();
+        if (user == null) {
+            return new ErrorPacket("Not logged in");
+        }
+        String[] data = packet.getHeaderValues("userId");
+        if (data == null) {
+            return new ErrorPacket("Invalid packet headers!");
+        }
+        String sid = data[0];
+
         int id = 0;
         try {
             id = Integer.parseInt(sid);
@@ -38,7 +47,7 @@ public class DeleteUserHandler extends PacketHandler implements IDeleteUserHandl
                     DatabaseWrapper.get().delete(u);
                     return new SuccessPacket();
                 } catch (DatabaseWriteException e) {
-                    return new ErrorPacket("Database delete faliure!");
+                    return new ErrorPacket("Database delete failure!");
                 }
             } catch (RowNotFoundException ignored) {
                 return new ErrorPacket("User does not exist!");
