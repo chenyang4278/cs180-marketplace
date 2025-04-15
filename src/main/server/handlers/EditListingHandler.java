@@ -9,7 +9,6 @@ import packet.Packet;
 import packet.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
-import packet.response.SuccessPacket;
 
 /**
  * EditListingHandler
