@@ -34,7 +34,7 @@ public class ClientExample {
         PacketHeader ph2 = new PacketHeader("password", "123456");
         headers.add(ph1);
         headers.add(ph2);
-        new Packet("/users/create", headers).write(os);
+        new Packet("/user/create", headers).write(os);
         ObjectPacket<User> packet = Packet.read(is);
         User u = packet.getObj();
         System.out.println(u.getId());

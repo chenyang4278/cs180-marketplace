@@ -39,14 +39,9 @@ public class Client {
         Packet packet = new Packet(path, headers);
         packet.write(oStream);
         Packet response = Packet.read(iStream);
-        if (response instanceof ErrorPacket) {
-            ErrorPacket e = (ErrorPacket) response;
-            throw new ErrorPacketException(e.getMessage());
-        } else {
-            sessionToken = packet.getHeaderValues("Session-Token")[0];
-            ObjectPacket<User> o = (ObjectPacket<User>) packet;
-            return o.getObj();
-        }
+        sessionToken = packet.getHeaderValues("Session-Token")[0];
+        ObjectPacket<User> o = (ObjectPacket<User>) response;
+        return o.getObj();
     }
 
     private <T extends Table> T sendObjectPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
@@ -55,13 +50,8 @@ public class Client {
         packet.addHeader("Session-Token", sessionToken);
         packet.write(oStream);
         Packet response = Packet.read(iStream);
-        if (response instanceof ErrorPacket) {
-            ErrorPacket e = (ErrorPacket) response;
-            throw new ErrorPacketException(e.getMessage());
-        } else {
-            ObjectPacket<T> o = (ObjectPacket<T>) packet;
-            return o.getObj();
-        }
+        ObjectPacket<T> o = (ObjectPacket<T>) response;
+        return o.getObj();
     }
 
     private <T extends Table> List<T> sendObjectListPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
@@ -70,13 +60,8 @@ public class Client {
         packet.addHeader("Session-Token", sessionToken);
         packet.write(oStream);
         Packet response = Packet.read(iStream);
-        if (response instanceof ErrorPacket) {
-            ErrorPacket e = (ErrorPacket) response;
-            throw new ErrorPacketException(e.getMessage());
-        } else {
-            ObjectListPacket<T> o = (ObjectListPacket<T>) packet;
-            return o.getObjList();
-        }
+        ObjectListPacket<T> o = (ObjectListPacket<T>) response;
+        return o.getObjList();
     }
 
     private SuccessPacket sendSuccessPacketRequest(String path, List<PacketHeader> headers)
@@ -85,13 +70,7 @@ public class Client {
         packet.addHeader("Session-Token", sessionToken);
         packet.write(oStream);
         Packet response = Packet.read(iStream);
-        if (response instanceof ErrorPacket) {
-            ErrorPacket e = (ErrorPacket) response;
-            throw new ErrorPacketException(e.getMessage());
-        } else {
-            SuccessPacket o = (SuccessPacket) packet;
-            return o;
-        }
+        return (SuccessPacket) response;
     }
 
     private void close() throws IOException {
