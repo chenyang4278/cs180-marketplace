@@ -1,6 +1,8 @@
-package server.handlers;
+package server;
 
+import org.junit.Assert;
 import org.junit.Test;
+import server.handlers.HandlerUtil;
 
 import static org.junit.Assert.*;
 
@@ -8,7 +10,7 @@ public class TestHandlerUtil {
     @Test
     public void testHex() {
         byte[] bytes = new byte[] {(byte) 0xFF, 0x0A, 0x3B, 0x28, (byte) 0xA3, 0x00, 0x45, (byte) 0xB2};
-        assertEquals("ff0a3b28a30045b2", HandlerUtil.hex(bytes));
+        Assert.assertEquals("ff0a3b28a30045b2", HandlerUtil.hex(bytes));
     }
 
     @Test

@@ -2,6 +2,7 @@ package server;
 
 import data.Listing;
 import data.Message;
+import data.Session;
 import database.DatabaseWrapper;
 import database.DatabaseWriteException;
 import data.User;
@@ -17,6 +18,7 @@ import server.handlers.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -32,19 +34,9 @@ public class TestEndpointHandlers {
 
     private void clearDb() {
         // start on a clean slate
-        File f = new File("id.csv");
-        f.delete();
-        File f0 = new File("User.csv");
-        f0.delete();
-        File f1 = new File("Listing.csv");
-        f1.delete();
-        File f2 = new File("Message.csv");
-        f2.delete();
-    }
-
-    @Test
-    public void testLoginHandler() {
-        //TODO - Ayden needs to implement the handler.
+        for (String file : new String[] { "id.csv", "User.csv", "Listing.csv", "Message.csv", "Session.csv" }) {
+            new File(file).delete();
+        }
     }
 
     @Test
@@ -195,27 +187,52 @@ public class TestEndpointHandlers {
     }
 
     @Test
-    public void testCreateUserHandler() {
+    public void testCreateUserHandler() throws DatabaseWriteException, RowNotFoundException {
         clearDb();
 
-        User u1 = new User("karma", "1234");
-        ArrayList<PacketHeader> phl = new ArrayList<>();
-        phl.add(new PacketHeader("username", "karma" ));
-        phl.add( new PacketHeader("password", "password"));
-        CreateUserHandler cl = new CreateUserHandler();
-        ObjectPacket<User> ol = (ObjectPacket<User>) cl.handle(new Packet("this dosent matter", phl), null);
-        User u2 = ol.getObj();
-        try {
-            User u3 = DatabaseWrapper.get().getById(User.class, u2.getId());
-            assertEquals(u3.getUsername(), u2.getUsername());
-            assertEquals(u3.getPassword(), u2.getPassword());
-            assertEquals("karma", u2.getUsername());
-            assertEquals(HandlerUtil.hashPassword("password"), u2.getPassword());
-        } catch (RowNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        ErrorPacket e = (ErrorPacket) cl.handle(new Packet("this dosent matter", phl), null);
-        assertEquals("Username already exists!", e.getMessage());
+        CreateUserHandler createUserHandler = new CreateUserHandler();
+
+        // invalid headers
+        Packet packet = new Packet();
+        Packet resp = createUserHandler.handle(packet, new String[0]);
+        TestUtility.assertErrorPacket(resp);
+
+        // invalid password
+        packet = new Packet();
+        packet.addHeader("username", "my_username");
+        packet.addHeader("password", "");
+        resp = createUserHandler.handle(packet, new String[0]);
+        TestUtility.assertErrorPacket(resp);
+
+        // invalid username
+        packet = new Packet();
+        packet.addHeader("username", "");
+        packet.addHeader("password", "my_password");
+        resp = createUserHandler.handle(packet, new String[0]);
+        TestUtility.assertErrorPacket(resp);
+
+        // duplicate username
+        new User("username", "password").save();
+        packet = new Packet();
+        packet.addHeader("username", "username");
+        packet.addHeader("password", "my_password");
+        resp = createUserHandler.handle(packet, new String[0]);
+        TestUtility.assertErrorPacket(resp);
+
+        // valid packet
+        packet = new Packet();
+        packet.addHeader("username", "my_username");
+        packet.addHeader("password", "password");
+        resp = createUserHandler.handle(packet, new String[0]);
+        TestUtility.assertNotErrorPacket(resp);
+
+        // check returned user
+        User respUser = ((ObjectPacket<User>) resp).getObj();
+        assertEquals("my_username", respUser.getUsername());
+
+        // check that password was hashed
+        User dbUser = User.getById(respUser.getId());
+        assertEquals(HandlerUtil.hashPassword("password"), dbUser.getPassword());
     }
 
     @Test
@@ -457,6 +474,58 @@ public class TestEndpointHandlers {
         phl.add(new PacketHeader("attributeval", "12222234"));
         ObjectListPacket<User> o4 = (ObjectListPacket<User>) h.handle(new Packet("this dosent matter", phl), null);
         assertEquals(0, o4.getObjList().size());
+    }
 
+    @Test
+    public void testLoginHandler() throws DatabaseWriteException {
+        clearDb();
+
+        LoginHandler loginHandler = new LoginHandler();
+
+        // invalid packet (no headers)
+        Packet packet = new Packet();
+        Packet resp = loginHandler.handle(packet, new String[0]);
+        TestUtility.assertErrorPacket(resp);
+
+        // invalid header values
+        packet = new Packet();
+        packet.addHeader("username", "invalid username");
+        packet.addHeader("password", "invalid password");
+        resp = loginHandler.handle(packet, new String[0]);
+        TestUtility.assertErrorPacket(resp);
+
+        User user = new User("username", HandlerUtil.hashPassword("my_password"));
+        user.save();
+
+        // invalid password for user
+        packet = new Packet();
+        packet.addHeader("username", user.getUsername());
+        packet.addHeader("password", "invalid password");
+        resp = loginHandler.handle(packet, new String[0]);
+        TestUtility.assertErrorPacket(resp);
+
+        // valid login
+        packet = new Packet();
+        packet.addHeader("username", user.getUsername());
+        packet.addHeader("password", "my_password");
+        resp = loginHandler.handle(packet, new String[0]);
+        TestUtility.assertNotErrorPacket(resp);
+
+        // check returned user
+        User respUser = ((ObjectPacket<User>) resp).getObj();
+        assertEquals(user.getId(), respUser.getId());
+        assertEquals(user.getUsername(), respUser.getUsername());
+
+        // check returned session token
+        PacketHeader header = resp.getHeader("Session-Token");
+        assertNotNull(header);
+
+        String token = header.getValues().get(0);
+
+        List<Session> sessions = DatabaseWrapper.get().filterByColumn(Session.class, "token", token);
+        assertEquals(1, sessions.size());
+
+        Session session = sessions.get(0);
+        assertEquals(session.getUserId(), user.getId());
     }
 }

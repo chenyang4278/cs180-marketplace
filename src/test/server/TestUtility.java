@@ -1,4 +1,4 @@
-package server.handlers;
+package server;
 
 import packet.Packet;
 import packet.response.ErrorPacket;
