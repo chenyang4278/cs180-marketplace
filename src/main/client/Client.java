@@ -9,6 +9,7 @@ import java.util.*;
 import data.Table;
 import data.Listing;
 import data.User;
+import data.Message;
 
 //will add other functions tmr
 /**
@@ -207,6 +208,34 @@ public class Client {
             return sendObjectListPacketRequest("/listing/search", headers, Listing.class);
         } catch (Exception e) {
             System.out.println("Search failed: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public boolean sendMessage(int fromId, int toId, String body) {
+        try {
+            List<PacketHeader> headers = createHeaders(
+                    "senderId", String.valueOf(fromId),
+                    "recipientId", String.valueOf(toId),
+                    "messageBody", body
+            );
+            sendSuccessPacketRequest("/message/create", headers);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Send message failed: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public List<Message> getMessagesWithUser(int otherUserId) {
+        try {
+            List<PacketHeader> headers = createHeaders(
+                    "user1Id", String.valueOf(currentUser.getId()),
+                    "user2Id", String.valueOf(otherUserId)
+            );
+            return sendObjectListPacketRequest("/message/between", headers, Message.class);
+        } catch (Exception e) {
+            System.out.println("Message retrieval failed: " + e.getMessage());
             return new ArrayList<>();
         }
     }
