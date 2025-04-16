@@ -41,3 +41,100 @@ Vocareum submission: Ayden Cline
 - Testing associated with the Listing class mostly entails making sure the setters and getters return the right values when they are being used.
 - All of this allows for the other classes, such as user or databaseWrapper classes, use the methods that are created in this listing class.
 - Image support will be implemented through getImage() and setImage().
+### SuccessPacket.java
+- Ayden Cline
+### ErrorPacket.java
+- Ayden Cline
+### ObjectPacket.java
+- Ayden Cline
+### ObjectListPacket.java
+- Karma Luitel
+- This class extends SuccessPacket to account for having a list of objects that extend Table. This allows a list to be send from the client to server.
+- Testing associated with this class is done in TestResponsePacket - just test the getters and setters.
+- This class is used by various handlers such as GetListingsFromAttributeHandler, GetMessagesBetweenUsersHandler, GetUsersFromAttributeHandler, and Client to handle sending data in a list format.
+### BuyListingHandler.java
+- Karma Luitel
+- This class handles the calculations and database operations for a user buying a listing.
+- It implements the handle method from the abstract PacketHandler class (its parent).
+- All handler classes use Packet or subclasses of Packet to handle data transmission. 
+- Testing for all handler classes is done in TestEndpointHandlers - with error tests for buying something with an invalid balance or buying an already sold item.
+- Handlers are utilized by Client.java to perform database operations from the client over the server.
+### CreateListingHandler.java
+- Karma Luitel
+- This class handles the creation of a new listing, with checks for invalid listing prices.
+- It implements the handle method from the abstract PacketHandler class (its parent).
+- All handler classes use Packet or subclasses of Packet to handle data transmission.
+- Testing for all handler classes is done in TestEndpointHandlers - with error tests for an invalid listing price.
+- Handlers are utilized by Client.java to perform database operations from the client over the server.
+### CreateMessageHandler.java
+- Karma Luitel
+- This class handles the creation of a new message between two users.
+- It implements the handle method from the abstract PacketHandler class (its parent).
+- All handler classes use Packet or subclasses of Packet to handle data transmission.
+- Testing for all handler classes is done in TestEndpointHandlers.
+- Handlers are utilized by Client.java to perform database operations from the client over the server.
+### CreateUserHandler.java
+- Karma Luitel
+- This class handles the creation of a new user - with checks for a username overlap.
+- It implements the handle method from the abstract PacketHandler class (its parent).
+- All handler classes use Packet or subclasses of Packet to handle data transmission.
+- Testing for all handler classes is done in TestEndpointHandlers - with error tests for a username overlap.
+- Handlers are utilized by Client.java to perform database operations from the client over the server.
+### DeleteListingHandler.java
+- Karma Luitel
+- This class handles the deletion of a listing.
+- It implements the handle method from the abstract PacketHandler class (its parent).
+- All handler classes use Packet or subclasses of Packet to handle data transmission.
+- Testing for all handler classes is done in TestEndpointHandlers.
+- Handlers are utilized by Client.java to perform database operations from the client over the server.
+### DeleteUserHandler.java
+- Karma Luitel
+- - This class handles the deletion of a user.
+- It implements the handle method from the abstract PacketHandler class (its parent).
+- All handler classes use Packet or subclasses of Packet to handle data transmission.
+- Testing for all handler classes is done in TestEndpointHandlers.
+- Handlers are utilized by Client.java to perform database operations from the client over the server.
+### EditListingHandler.java
+- Karma Luitel
+- This class handles the editing of a property of a listing, with specific checks for specific properties.
+- It implements the handle method from the abstract PacketHandler class (its parent).
+- All handler classes use Packet or subclasses of Packet to handle data transmission.
+- Testing for all handler classes is done in TestEndpointHandlers. Has error tests for specific and invalid properties.
+- Handlers are utilized by Client.java to perform database operations from the client over the server.
+### EditUserHandler.java
+- Karma Luitel
+- This class handles the editing of a property of a user, with specific checks for specific properties.
+- It implements the handle method from the abstract PacketHandler class (its parent).
+- All handler classes use Packet or subclasses of Packet to handle data transmission.
+- Testing for all handler classes is done in TestEndpointHandlers. Has error tests for specific and invalid properties.
+- Handlers are utilized by Client.java to perform database operations from the client over the server.
+### GetListingsFromAttributeHandler.java
+- Karma Luitel
+- This class handles getting a list of listings based on an attribute. For example, to get a list of listing with price 100, you would use this class with attribute "price" and attribute value "100".
+- It implements the handle method from the abstract PacketHandler class (its parent).
+- All handler classes use Packet or subclasses of Packet to handle data transmission.
+- Testing for all handler classes is done in TestEndpointHandlers.
+- Handlers are utilized by Client.java to perform database operations from the client over the server.
+### GetMessagesBetweenUsersHandler.java
+- Karma Luitel
+- This class handles getting a list of all messages sent from one user to another user.
+- It implements the handle method from the abstract PacketHandler class (its parent).
+- All handler classes use Packet or subclasses of Packet to handle data transmission.
+- Testing for all handler classes is done in TestEndpointHandlers.
+- Handlers are utilized by Client.java to perform database operations from the client over the server.
+### GetUserFromIdHandler.java
+- Karma Luitel
+- This class handles getting a user from its id value.
+- It implements the handle method from the abstract PacketHandler class (its parent).
+- All handler classes use Packet or subclasses of Packet to handle data transmission.
+- Testing for all handler classes is done in TestEndpointHandlers.
+- Handlers are utilized by Client.java to perform database operations from the client over the server.
+### GetUsersFromAttributeHandler.java
+- Karma Luitel
+- This class handles getting a list of users based on an attribute. For example, to get a list of users with username "john", you would use this class with attribute "username" and attribute value "john" (would be a list of size 1).
+- It implements the handle method from the abstract PacketHandler class (its parent).
+- All handler classes use Packet or subclasses of Packet to handle data transmission.
+- Testing for all handler classes is done in TestEndpointHandlers.
+- Handlers are utilized by Client.java to perform database operations from the client over the server.
+### LoginHandler.java
+- Ayden Cline

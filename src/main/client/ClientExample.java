@@ -6,6 +6,7 @@ import packet.PacketParsingException;
 
 import java.io.IOException;
 
+//TODO: Remove this class?
 public class ClientExample {
     public static void main(String[] args) throws IOException, PacketParsingException, ErrorPacketException {
         Client c = new Client("localhost", 8080);
