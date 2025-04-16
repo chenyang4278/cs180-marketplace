@@ -76,6 +76,28 @@ public class TestDatabaseWrapper {
     }
 
     @Test
+    public void testSetById() throws DatabaseWriteException, RowNotFoundException {
+        TestingClass table = getTables()[0];
+
+        DatabaseWrapper db = DatabaseWrapper.get();
+        db.setById(TestingClass.class, table.getId(), "long_count", "-101829192");
+        db.setById(TestingClass.class, table.getId(), "decimal", "121.2189721211");
+
+        TestingClass tableFromDb = db.getById(TestingClass.class, table.getId());
+        assert tableFromDb != null;
+        assert tableFromDb.getLongCount() == -101829192;
+        assert Math.abs(tableFromDb.getDecimal() - 121.2189721211) < 0.000001;
+
+        try {
+            db.setById(TestingClass.class, table.getId(), "auwhdaa", "121.2189721211");
+            fail();
+        } catch (DatabaseWriteException e) {
+            assertTrue(true);
+        }
+
+    }
+
+    @Test
     public void testUpdate() throws RowNotFoundException, DatabaseWriteException {
         TestingClass table = getTables()[0];
         table.setName("updated hi");

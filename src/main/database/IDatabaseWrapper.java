@@ -15,6 +15,8 @@ import java.util.List;
 public interface IDatabaseWrapper {
     <T extends Table> T getByColumn(Class<T> cls, String column, String value) throws RowNotFoundException;
 
+    <T extends Table> void setById(Class<T> cls, int id, String column, String value) throws DatabaseWriteException;
+
     <T extends Table> List<T> filterByColumn(Class<T> cls, String column, String value);
 
     <T extends Table> T getById(Class<T> cls, int id) throws RowNotFoundException;

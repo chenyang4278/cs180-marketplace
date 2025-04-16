@@ -115,6 +115,45 @@ public class DatabaseWrapper implements IDatabaseWrapper {
     }
 
     /**
+     * Set a value of an instance of a class from one of its columns
+     *
+     * @param cls    the class to get an instance of
+     * @param id  the id value of the object being edited
+     * @param column the column name
+     * @param newValue  the new value of the column
+     * @param <T>    type that extends Table
+     * @throws DatabaseWriteException thrown if a matching row is not found
+     */
+    public <T extends Table> void setById(Class<T> cls,
+                                           int id, String column, String newValue) throws DatabaseWriteException {
+        Database db = getDbFor(cls);
+        //Avoid a race condition where multiple objects are being edited at the same time
+        synchronized (lock) {
+
+            //sychronized for loop since db.getHeaders() might be different for clients in rare case db is not initialized
+            //for loop run is also fairly constant (limited headers).
+            String[] headers = db.getHeaders();
+            boolean error = true;
+            for (int i = 0; i < headers.length; i++) {
+                if (headers[i].equals(column)) {
+                    error = false;
+                    break;
+                }
+            }
+
+            if (error) {
+                throw new DatabaseWriteException("Invalid header!");
+            }
+
+            try {
+                db.update("id", String.valueOf(id), column, newValue);
+            } catch (DatabaseNotFoundException e) {
+                throw new DatabaseWriteException("Failed to update value");
+            }
+        }
+    }
+
+    /**
      * Get a list of instances of a class, filtering by a column
      *
      * @param cls    the class to get instances of

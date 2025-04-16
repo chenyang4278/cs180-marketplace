@@ -18,7 +18,7 @@ import packet.response.ObjectPacket;
  */
 public class CreateUserHandler extends PacketHandler implements ICreateUserHandler {
     public CreateUserHandler() {
-        super("/users/create");
+        super("/user/create");
     }
 
     /*

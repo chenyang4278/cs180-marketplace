@@ -40,7 +40,6 @@ public class TestEndpointHandlers {
     }
 
     private Session login() {
-        LoginHandler lh = new LoginHandler();
         User user = new User("testusername", HandlerUtil.hashPassword("my_password"));
         try {
             DatabaseWrapper.get().save(user);
@@ -341,6 +340,108 @@ public class TestEndpointHandlers {
             ErrorPacket e = (ErrorPacket) dl.handle(new Packet("this dosent matter", phl), null);
             assertEquals("User does not exist!", e.getMessage());
         } catch (DatabaseWriteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testEditListingHandler() {
+        clearDb();
+        Session session = login();
+        Listing l = new Listing(0, "ayden", "a keyboard",
+                "idk", 50.00, "null", false);
+        try {
+            DatabaseWrapper.get().save(l);
+            EditListingHandler ee = new EditListingHandler();
+            Packet p = new Packet();
+            p.addHeader("listingId", "" + l.getId());
+            p.addHeader("attribute", "sold");
+            p.addHeader("attributeVal", "true");
+            p.addHeader("Session-Token", session.getToken());
+            ObjectPacket<Listing> ll = ( ObjectPacket<Listing>) ee.handle(p, null);
+
+            Listing l2 = DatabaseWrapper.get().getById(Listing.class, l.getId());
+            assertTrue(l2.isSold());
+            assertTrue(ll.getObj().isSold());
+
+            p = new Packet();
+            p.addHeader("listingId", "" + l.getId());
+            p.addHeader("attribute", "price");
+            p.addHeader("attributeVal", "20.1");
+            p.addHeader("Session-Token", session.getToken());
+            ee.handle(p, null);
+
+            Listing l3 = DatabaseWrapper.get().getById(Listing.class, l.getId());
+            assertEquals(20.1, l3.getPrice(), 0.01);
+
+            p = new Packet();
+            p.addHeader("listingId", "" + l.getId());
+            p.addHeader("attribute", "aiawd");
+            p.addHeader("attributeVal", "20.1");
+            p.addHeader("Session-Token", session.getToken());
+            Packet p2 = ee.handle(p, null);
+            TestUtility.assertErrorPacket(p2);
+
+            p = new Packet();
+            p.addHeader("listingId", "" + l.getId());
+            p.addHeader("attribute", "price");
+            p.addHeader("attributeVal", "thisisnotanumber");
+            p.addHeader("Session-Token", session.getToken());
+            Packet p3 = ee.handle(p, null);
+            TestUtility.assertErrorPacket(p3);
+
+        } catch (DatabaseWriteException | RowNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testEditUserHandler() {
+        clearDb();
+        Session session = login();
+
+        User u = new User("kar21ma", "1234532");
+        try {
+            DatabaseWrapper.get().save(u);
+            EditUserHandler ee = new EditUserHandler();
+            Packet p = new Packet();
+            p.addHeader("userId", "" + u.getId());
+            p.addHeader("attribute", "username");
+            p.addHeader("attributeVal", "karma12");
+            p.addHeader("Session-Token", session.getToken());
+            ObjectPacket<User> uu = (ObjectPacket<User>) ee.handle(p, null);
+
+            User u2 = DatabaseWrapper.get().getById(User.class, u.getId());
+            assertEquals("karma12", u2.getUsername());
+            assertEquals("karma12", uu.getObj().getUsername());
+
+            p = new Packet();
+            p.addHeader("userId", "" + u.getId());
+            p.addHeader("attribute", "balance");
+            p.addHeader("attributeVal", "1000");
+            p.addHeader("Session-Token", session.getToken());
+            ee.handle(p, null);
+
+            User u3 = DatabaseWrapper.get().getById(User.class, u.getId());
+            assertEquals(1000, u3.getBalance(), 0.01);
+
+            p = new Packet();
+            p.addHeader("userId", "" + u.getId());
+            p.addHeader("attribute", "awdawda");
+            p.addHeader("attributeVal", "1000");
+            p.addHeader("Session-Token", session.getToken());
+            Packet p2 = ee.handle(p, null);
+            TestUtility.assertErrorPacket(p2);
+
+            p = new Packet();
+            p.addHeader("userId", "" + u.getId());
+            p.addHeader("attribute", "username");
+            p.addHeader("attributeVal", "testusername");
+            p.addHeader("Session-Token", session.getToken());
+            Packet p3 = ee.handle(p, null);
+            TestUtility.assertErrorPacket(p3);
+
+        } catch (DatabaseWriteException | RowNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
