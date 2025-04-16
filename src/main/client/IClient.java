@@ -22,6 +22,11 @@ import java.util.List;
  */
 public interface IClient {
 
+    User getUser();
+
+    User sendLoginPacketRequest(List<PacketHeader> headers)
+            throws IOException, PacketParsingException, ErrorPacketException;
+
     <T extends Table> T sendObjectPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
             throws IOException, PacketParsingException, ErrorPacketException;
 
@@ -33,13 +38,9 @@ public interface IClient {
 
     void close() throws IOException;
 
-    static List<PacketHeader> createHeaders(String... keyValuePairs) {
-        return Client.createHeaders(keyValuePairs);
-    }
+    int getCurrentUserId();
 
-    User getCurrentUser();
-
-    void setCurrentUser(User user);
+    void setCurrentUserId(int id);
 
     boolean login(String username, String password);
 
@@ -50,8 +51,6 @@ public interface IClient {
     boolean buyListing(int listingId);
 
     boolean setUserBalance(double newBalance);
-
-    boolean updateUser();
 
     boolean deleteUser();
 
