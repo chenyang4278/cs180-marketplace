@@ -177,4 +177,27 @@ public class Client {
             return false;
         }
     }
+
+    public boolean deleteUser() {
+        try {
+            List<PacketHeader> headers = createHeaders("userId", String.valueOf(currentUser.getId()));
+            sendSuccessPacketRequest("/user/delete", headers);
+            this.currentUser = null;
+            return true;
+        } catch (Exception e) {
+            System.out.println("Account deletion failed: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean deleteListing(int listingId) {
+        try {
+            List<PacketHeader> headers = createHeaders("listingId", String.valueOf(listingId));
+            sendSuccessPacketRequest("/listing/delete", headers);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Listing deletion failed: " + e.getMessage());
+            return false;
+        }
+    }
 }
