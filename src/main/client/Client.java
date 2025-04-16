@@ -200,4 +200,14 @@ public class Client {
             return false;
         }
     }
+
+    public List<Listing> searchListingsByAttribute(String key, String value) {
+        try {
+            List<PacketHeader> headers = createHeaders(key, value);
+            return sendObjectListPacketRequest("/listing/search", headers, Listing.class);
+        } catch (Exception e) {
+            System.out.println("Search failed: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
 }
