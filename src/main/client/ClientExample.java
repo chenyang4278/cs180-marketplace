@@ -19,10 +19,9 @@ public class ClientExample {
         c2.setUserBalance(500);
 
         c2.buyListing(l.getId());
-        c.updateUser();
 
-        System.out.println(c2.getCurrentUser().getBalance());
-        System.out.println(c.getCurrentUser().getBalance());
+        System.out.println(c2.getUser().getBalance());
+        System.out.println(c.getUser().getBalance());
 
         //should error
         Client c3 = new Client("localhost", 8080);
