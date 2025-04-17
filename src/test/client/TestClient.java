@@ -69,19 +69,10 @@ public class TestClient {
 
     @Test
     public void testClose() throws IOException {
-
         Client client = new Client("localhost", 12345);
         client.close();
-        try {
-            client.sendObjectPacketRequest("test", new ArrayList<PacketHeader>(), null);
-        } catch (PacketParsingException e) {
-            assertFalse(true);
-        } catch (ErrorPacketException e) {
-            assertFalse(true);
-        } catch (IOException e) {
-            assertTrue(true);
-        } 
-
+        boolean b = client.createUser("test", "1234");
+        assertFalse(b);
     }
 
     @Test
