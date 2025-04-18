@@ -1,6 +1,6 @@
 package data;
 
-public class Session extends Table {
+public class Session extends Table implements ISession {
     @TableField(field = "user_id", index = 1)
     private int userId;
 

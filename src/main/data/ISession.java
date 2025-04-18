@@ -3,6 +3,6 @@ package data;
 public interface ISession {
     int getUserId();
     String getToken();
-    void setUserId(String userId);
+    void setUserId(int userId);
     void setToken(String token);
 }

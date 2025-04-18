@@ -3,6 +3,8 @@ package packet;
 /**
  * ErrorPacketException
  *
+ * Thrown when an error packet is sent.
+ *
  * @author Ayden Cline
  * @version 4/12/25
  */
