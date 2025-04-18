@@ -24,18 +24,6 @@ public interface IClient {
 
     User getUser();
 
-    User sendLoginPacketRequest(List<PacketHeader> headers)
-            throws IOException, PacketParsingException, ErrorPacketException;
-
-    <T extends Table> T sendObjectPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
-            throws IOException, PacketParsingException, ErrorPacketException;
-
-    <T extends Table> List<T> sendObjectListPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
-            throws IOException, PacketParsingException, ErrorPacketException;
-
-    SuccessPacket sendSuccessPacketRequest(String path, List<PacketHeader> headers)
-            throws IOException, PacketParsingException, ErrorPacketException;
-
     void close() throws IOException;
 
     int getCurrentUserId();

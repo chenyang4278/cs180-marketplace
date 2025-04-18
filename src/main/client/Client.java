@@ -46,7 +46,7 @@ public class Client implements IClient {
         }
     }
 
-    public User sendLoginPacketRequest(List<PacketHeader> headers)
+    private User sendLoginPacketRequest(List<PacketHeader> headers)
             throws IOException, PacketParsingException, ErrorPacketException {
         Packet packet = new Packet("/login", headers);
         packet.write(oStream);
@@ -56,7 +56,7 @@ public class Client implements IClient {
         return o.getObj();
     }
 
-    public <T extends Table> T sendObjectPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
+    private <T extends Table> T sendObjectPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
             throws IOException, PacketParsingException, ErrorPacketException {
         Packet packet = new Packet(path, headers);
         packet.addHeader("Session-Token", sessionToken);
@@ -66,7 +66,7 @@ public class Client implements IClient {
         return o.getObj();
     }
 
-    public <T extends Table> List<T> sendObjectListPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
+    private <T extends Table> List<T> sendObjectListPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
             throws IOException, PacketParsingException, ErrorPacketException {
         Packet packet = new Packet(path, headers);
         packet.addHeader("Session-Token", sessionToken);
@@ -76,7 +76,7 @@ public class Client implements IClient {
         return o.getObjList();
     }
 
-    public SuccessPacket sendSuccessPacketRequest(String path, List<PacketHeader> headers)
+    private SuccessPacket sendSuccessPacketRequest(String path, List<PacketHeader> headers)
             throws IOException, PacketParsingException, ErrorPacketException {
         Packet packet = new Packet(path, headers);
         packet.addHeader("Session-Token", sessionToken);
