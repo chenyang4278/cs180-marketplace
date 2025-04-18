@@ -18,16 +18,15 @@ import packet.response.ObjectPacket;
  */
 public class CreateListingHandler extends PacketHandler implements ICreateListingHandler {
     public CreateListingHandler() {
-        super("/listing/create");
+        super("/listings/create");
     }
 
     /*
      * Expected PacketHeaders:
-     * userId - arg in index 0
-     * title - arg in index 0
-     * description - arg in index 0
-     * price - arg in index 0
-     * image - arg in index 0
+     * title
+     * description
+     * price
+     * image
      */
     @Override
     public Packet handle(Packet packet, String[] args) {

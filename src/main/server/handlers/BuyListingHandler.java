@@ -21,17 +21,12 @@ public class BuyListingHandler extends PacketHandler implements IBuyListingHandl
     final double EPSILON = 1e-9;
 
     public BuyListingHandler() {
-        super("/buy");
+        super("listings/:id/buy");
     }
 
     /*
-     * Expected PacketHeaders:
-     * buyingId - who is buying
-     * listingId - which listing is being bought
-     *
      * Will return a new user object with updated data.
      */
-
     @Override
     public Packet handle(Packet packet, String[] args) {
         User user = authenticate(packet);
@@ -39,43 +34,32 @@ public class BuyListingHandler extends PacketHandler implements IBuyListingHandl
             return new ErrorPacket("Not logged in");
         }
 
-        String[] data = packet.getHeaderValues("buyingId", "listingId");
-        if (data == null) {
-            return new ErrorPacket("Invalid packet headers!");
-        }
-
-        String bsid = data[0];
-        String lsid = data[1];
-
-        int bid = 0;
-        int lid = 0;
         try {
-            bid = Integer.parseInt(bsid);
-            lid = Integer.parseInt(lsid);
-            try {
-                User u = db.getById(User.class, bid);
-                Listing l = db.getById(Listing.class, lid);
-                User s = db.getById(User.class, l.getSellerId());
-                if (l.isSold()) {
-                    return new ErrorPacket("Item already has already been sold!");
-                }
-                if (u.getBalance() < l.getPrice() + EPSILON) {
-                    return new ErrorPacket("User does not have enough balance to buy this item!");
-                }
-                u.setBalance(u.getBalance() - l.getPrice());
-                s.setBalance(s.getBalance() + l.getPrice());
-                l.setSold(true);
-                try {
-                    db.save(u);
-                    db.save(s);
-                    db.save(l);
-                    return new ObjectPacket<User>(u);
-                } catch (DatabaseWriteException e) {
-                    return new ErrorPacket("Database update error!");
-                }
-            } catch (RowNotFoundException e) {
-                return new ErrorPacket("Could not find user or listing!");
+            Listing listing = db.getById(Listing.class, Integer.parseInt(args[0]));
+
+            if (listing.isSold()) {
+                return new ErrorPacket("Item already has already been sold!");
             }
+          
+            if (user.getBalance() < listing.getPrice() + EPSILON) {
+                return new ErrorPacket("User does not have enough balance to buy this item!");
+            }
+
+            user.setBalance(user.getBalance() - listing.getPrice());
+            user.save();
+
+            User seller = db.getById(User.class, listing.getSellerId());
+            seller.setBalance(seller.getBalance() + listing.getPrice());
+            seller.save();
+
+            listing.setSold(true);
+            listing.save();
+
+            return new ObjectPacket<User>(user);
+        } catch (DatabaseWriteException e) {
+            return new ErrorPacket("Database update error!");
+        } catch (RowNotFoundException e) {
+            return new ErrorPacket("Could not find user or listing!");
         } catch (NumberFormatException e) {
             return new ErrorPacket("Invalid ids!");
         }

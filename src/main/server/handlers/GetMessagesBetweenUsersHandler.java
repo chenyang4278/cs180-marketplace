@@ -9,6 +9,9 @@ import packet.response.ErrorPacket;
 import packet.response.ObjectListPacket;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * GetMessagesBetweenUsersHandler
@@ -19,12 +22,11 @@ import java.util.ArrayList;
  * @version 4/13/25
  */
 public class GetMessagesBetweenUsersHandler extends PacketHandler implements IGetMessagesBetweenUsersHandler {
-    public GetMessagesBetweenUsersHandler() { super("/get/messages"); }
+    public GetMessagesBetweenUsersHandler() { super("/messages"); }
 
     /*
      * Expected PacketHeaders:
-     * senderId - arg in index 0
-     * receiverId  - arg in index 0
+     * otherUserId  - arg in index 0
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
@@ -32,30 +34,38 @@ public class GetMessagesBetweenUsersHandler extends PacketHandler implements IGe
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
-        String[] data = packet.getHeaderValues("senderId", "receiverId");
+
+        String[] data = packet.getHeaderValues("otherUserId");
         if (data == null) {
             return new ErrorPacket("Invalid packet headers!");
         }
 
-        String ssid = data[0];
-        String rsid = data[1];
-
-        int sid = 0;
-        int rid = 0;
         try {
-            sid = Integer.parseInt(ssid);
-            rid = Integer.parseInt(rsid);
-            if (sid == rid) {
-                return new ErrorPacket("You cannot message yourself!");
+            int otherUserId = Integer.parseInt(data[0]);
+            if (otherUserId == user.getId()) {
+                return new ErrorPacket("No messages between you and yourself");
             }
-            ArrayList<Message> messagesI = (ArrayList<Message>) db.filterByColumn(Message.class, "senderId", "" + sid);
-            ArrayList<Message> messagesF = new ArrayList<>();
-            for (Message m : messagesI) {
-                if (m.getReceiverId() == rid) {
-                    messagesF.add(m);
-                }
-            }
-            return new ObjectListPacket<Message>(messagesF);
+
+            List<Message> sentMessages = db.filterByColumn(
+                Message.class,
+                "senderId",
+                "" + user.getId()
+            );
+            List<Message> receivedMessages = db.filterByColumn(
+                Message.class,
+                "receiverId",
+                "" + user.getId()
+            );
+
+            // filter out messages between the two users
+            // and return sorted by timestamp in order of recent to oldest
+            ArrayList<Message> messages = (ArrayList<Message>) Stream.concat(
+                sentMessages.stream().filter((msg) -> msg.getReceiverId() == otherUserId),
+                receivedMessages.stream().filter((msg) -> msg.getSenderId() == otherUserId)
+            ).sorted((msg1, msg2) -> (int) (msg2.getTimestamp() - msg1.getTimestamp()))
+                .collect(Collectors.toList());
+
+            return new ObjectListPacket<Message>(messages);
         } catch (NumberFormatException e) {
             return new ErrorPacket("Invalid ids!");
         }

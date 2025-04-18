@@ -18,47 +18,37 @@ import packet.response.ObjectPacket;
  */
 public class CreateMessageHandler extends PacketHandler implements ICreateMessageHandler {
     public CreateMessageHandler() {
-        super("/message/create");
+        super("/messages/create");
     }
 
     /*
      * Expected PacketHeaders:
-     * senderId
      * receiverId
      * message
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-
         User user = authenticate(packet);
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
 
-        String[] data = packet.getHeaderValues("senderId", "receiverId", "message");
+        String[] data = packet.getHeaderValues("receiverId", "message");
         if (data == null) {
             return new ErrorPacket("Invalid data");
         }
 
-        String ssid = data[0];
-        String rsid = data[1];
-        String message = data[2];
-
-        int sid = 0;
-        int rid = 0;
         try {
-            sid = Integer.parseInt(ssid);
-            rid = Integer.parseInt(rsid);
-            if (sid == rid) {
+            int receiverId = Integer.parseInt(data[0]);
+            if (user.getId() == receiverId) {
                 return new ErrorPacket("You cannot message yourself!");
             }
-            Message m = new Message(sid, rid, message);
-            try {
-                db.save(m);
-                return new ObjectPacket<Message>(m);
-            } catch (DatabaseWriteException e) {
-                return new ErrorPacket("Database failure in creating message");
-            }
+            Message msg = new Message(user.getId(), receiverId, data[1]);
+            db.save(msg);
+
+            return new ObjectPacket<Message>(msg);
+        } catch (DatabaseWriteException e) {
+            return new ErrorPacket("Database failure in creating message");
         } catch (NumberFormatException e) {
             return new ErrorPacket("Invalid ids!");
         }

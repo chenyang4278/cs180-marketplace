@@ -18,7 +18,7 @@ import packet.response.ObjectPacket;
  */
 public class GetUserFromIdHandler extends PacketHandler implements IGetUserFromIdHandler {
     public GetUserFromIdHandler() {
-        super("/user/:id");
+        super("/users/:id");
     }
 
     @Override
@@ -29,10 +29,12 @@ public class GetUserFromIdHandler extends PacketHandler implements IGetUserFromI
         }
 
         try {
-            User u = db.getByColumn(User.class, "id", args[0]);
-            return new ObjectPacket<>(u);
+            User requestedUser = db.getById(User.class, Integer.parseInt(args[0]));
+            return new ObjectPacket<>(requestedUser);
         } catch (RowNotFoundException ignored) {
             return new ErrorPacket("User not found");
+        } catch (NumberFormatException ignored) {
+            return new ErrorPacket("Invalid user id");
         }
     }
 }

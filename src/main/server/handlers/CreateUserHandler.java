@@ -19,13 +19,13 @@ import packet.response.ObjectPacket;
  */
 public class CreateUserHandler extends PacketHandler implements ICreateUserHandler {
     public CreateUserHandler() {
-        super("/user/create");
+        super("/users/create");
     }
 
     /*
-     * Expected PacketHeaders:
-     * username - arg in index 0
-     * password - arg in index 0
+     * Expected headers:
+     * username
+     * password
      */
     @Override
     public Packet handle(Packet packet, String[] args) {

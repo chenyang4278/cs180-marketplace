@@ -18,12 +18,11 @@ import packet.response.ObjectPacket;
  * @version 4/13/25
  */
 public class EditUserHandler extends PacketHandler implements IEditUserHandler {
-    public EditUserHandler() { super("/user/edit"); }
+    public EditUserHandler() { super("/users/:id/edit"); }
 
     /* For example, an attribute would be "username", an attribute val would be "karma"
      * Expected PacketHeaders:
      *
-     * userId
      * attribute - arg in index 0
      * attributeVal  - arg in index 0
      */
@@ -33,14 +32,18 @@ public class EditUserHandler extends PacketHandler implements IEditUserHandler {
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
-        String[] data = packet.getHeaderValues("userId", "attribute", "attributeVal");
+
+        String[] data = packet.getHeaderValues("attribute", "attributeVal");
         if (data == null) {
             return new ErrorPacket("Invalid packet headers!");
         }
 
-        String sid = data[0];
-        String attribute = data[1];
-        String attributeVal = data[2];
+        String attribute = data[0];
+        String attributeVal = data[1];
+
+        if (attribute.equals("id")) {
+            return new ErrorPacket("Cannot edit id");
+        }
 
         if (attribute.equals("username")) {
             try {
@@ -48,19 +51,20 @@ public class EditUserHandler extends PacketHandler implements IEditUserHandler {
                 return new ErrorPacket("Username already exists!");
             } catch (RowNotFoundException e) { e.getMessage(); }
         }
-        int id = 0;
+
         try {
-            id = Integer.parseInt(sid);
-            try {
-                db.setById(User.class, id, attribute, attributeVal);
-                try {
-                    return new ObjectPacket<User>(db.getById(User.class, id));
-                } catch (RowNotFoundException e) {
-                    return new ErrorPacket("User not found!");
-                }
-            } catch (DatabaseWriteException e) {
-                return new ErrorPacket(e.getMessage());
+            int id = Integer.parseInt(args[0]);
+            User userToUpdate = db.getById(User.class, id);
+            if (userToUpdate.getId() != user.getId()) {
+                return new ErrorPacket("No permission to edit another user");
             }
+
+            db.setById(User.class, id, attribute, attributeVal);
+            return new ObjectPacket<User>(db.getById(User.class, id));
+        } catch (RowNotFoundException e) {
+            return new ErrorPacket("User not found!");
+        } catch (DatabaseWriteException e) {
+            return new ErrorPacket(e.getMessage());
         } catch (NumberFormatException e) {
             return new ErrorPacket("Invalid id!");
         }

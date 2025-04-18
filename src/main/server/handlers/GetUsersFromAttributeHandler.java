@@ -33,6 +33,7 @@ public class GetUsersFromAttributeHandler extends PacketHandler implements IGetU
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
+
         String[] data = packet.getHeaderValues("attribute", "attributeVal");
         if (data == null) {
             return new ErrorPacket("Invalid packet headers!");

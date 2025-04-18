@@ -19,12 +19,11 @@ import packet.response.ObjectPacket;
  * @version 4/13/25
  */
 public class EditListingHandler extends PacketHandler implements IEditListingHandler {
-    public EditListingHandler() { super("/listing/edit"); }
+    public EditListingHandler() { super("/listings/:id/edit"); }
 
     /* For example, an attribute would be "username", an attribute val would be "karma"
-     * Expected PacketHeaders:
+     * Expected headers:
      *
-     * listingId
      * attribute - arg in index 0
      * attributeVal  - arg in index 0
      */
@@ -34,14 +33,18 @@ public class EditListingHandler extends PacketHandler implements IEditListingHan
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
-        String[] data = packet.getHeaderValues("listingId", "attribute", "attributeVal");
+
+        String[] data = packet.getHeaderValues("attribute", "attributeVal");
         if (data == null) {
             return new ErrorPacket("Invalid packet headers!");
         }
 
-        String sid = data[0];
-        String attribute = data[1];
-        String attributeVal = data[2];
+        String attribute = data[0];
+        String attributeVal = data[1];
+
+        if (attribute.equals("id")) {
+            return new ErrorPacket("Cannot edit id");
+        }
 
         if (attribute.equals("price")) {
             double dbPrice;
@@ -55,19 +58,19 @@ public class EditListingHandler extends PacketHandler implements IEditListingHan
             }
         }
 
-        int id = 0;
         try {
-            id = Integer.parseInt(sid);
-            try {
-                db.setById(Listing.class, id, attribute, attributeVal);
-                try {
-                    return new ObjectPacket<Listing>(db.getById(Listing.class, id));
-                } catch (RowNotFoundException e) {
-                    return new ErrorPacket("Listing not found!");
-                }
-            } catch (DatabaseWriteException e) {
-                return new ErrorPacket(e.getMessage());
+            int id = Integer.parseInt(args[0]);
+            Listing listing = db.getById(Listing.class, id);
+            if (listing.getSellerId() != user.getId()) {
+                return new ErrorPacket("Cannot edit another user's listing");
             }
+
+            db.setById(Listing.class, id, attribute, attributeVal);
+            return new ObjectPacket<Listing>(db.getById(Listing.class, id));
+        } catch (RowNotFoundException e) {
+            return new ErrorPacket("Listing not found!");
+        } catch (DatabaseWriteException e) {
+            return new ErrorPacket(e.getMessage());
         } catch (NumberFormatException e) {
             return new ErrorPacket("Invalid id!");
         }

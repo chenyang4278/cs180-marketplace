@@ -64,24 +64,39 @@ public class Database implements IDatabase {
     }
 
     private String[] dataLineToArray(String line) {
-        String element = "";
-        String[] parsed = new String[headers.length];
-        int parseIdx = 0;
-        for (int i = 0; i < line.length() - 1; i++) {
-            if (line.charAt(i) == '"' && line.charAt(i + 1) == '"') {
-                element += '"';
-                i++;
-            } else if (line.charAt(i) == '"' && line.charAt(i + 1) == ',') {
-                parsed[parseIdx] = element;
-                element = "";
-                parseIdx++;
-                i++;
-            } else if (line.charAt(i) != '"') {
-                element += line.charAt(i);
+        String[] row = new String[headers.length];
+
+        int rowI = 0;
+        boolean inQuotes = false;
+        int quoteStart = 0;
+        for (int i = 0; i < line.length(); i++) {
+            char chr = line.charAt(i);
+
+            if (!inQuotes) {
+                if (chr == '\"') {
+                    inQuotes = true;
+                    quoteStart = i + 1;
+                } else if (chr == ',') {
+                    row[rowI] = line.substring(quoteStart, i - 1)
+                        .replaceAll("\"\"", "\"");
+                    rowI++;
+                }
+
+                continue;
+            }
+
+            if (chr == '\"') {
+                if (i + 1 == line.length() || line.charAt(i + 1) != '\"') {
+                    inQuotes = false;
+                } else {
+                    i++;
+                }
             }
         }
-        parsed[parseIdx] = element;
-        return parsed;
+        row[rowI] = line.substring(quoteStart, line.length() - 1)
+            .replaceAll("\"\"", "\"");
+
+        return row;
     }
 
     //Writes (appends) an array of string values to file.

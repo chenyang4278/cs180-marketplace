@@ -20,43 +20,29 @@ import packet.response.SuccessPacket;
  */
 public class DeleteListingHandler extends PacketHandler implements IDeleteListingHandler {
     public DeleteListingHandler() {
-        super("/listing/delete");
+        super("/listings/:id/delete");
     }
 
-    /*
-     * Expected PacketHeaders:
-     * listingId - arg in index 0
-     */
     @Override
     public Packet handle(Packet packet, String[] args) {
         User user = authenticate(packet);
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
-        String[] data = packet.getHeaderValues("listingId");
-        if (data == null) {
-            return new ErrorPacket("Invalid packet headers!");
-        }
-        String sid = data[0];
 
-        int id = 0;
         try {
-            id = Integer.parseInt(sid);
-            try {
-                Listing l = db.getById(Listing.class, id);
-                try {
-                    db.delete(l);
-                    return new SuccessPacket();
-                } catch (DatabaseWriteException e) {
-                    return new ErrorPacket("Database delete failure!");
-                }
-            } catch (RowNotFoundException ignored) {
-                return new ErrorPacket("Listing does not exist!");
+            Listing listing = db.getById(Listing.class, Integer.parseInt(args[0]));
+            if (listing.getSellerId() != user.getId()) {
+                return new ErrorPacket("Cannot delete another user's listing");
             }
+            db.delete(listing);
+            return new SuccessPacket();
+        } catch (DatabaseWriteException e) {
+            return new ErrorPacket("Database delete failure!");
+        } catch (RowNotFoundException ignored) {
+            return new ErrorPacket("Listing does not exist!");
         } catch (NumberFormatException e) {
             return new ErrorPacket("Invalid listing id!");
         }
-
-
     }
 }
