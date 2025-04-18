@@ -40,15 +40,13 @@ Vocareum submission:
 ### User.java
 - Chen Yang
 - The User class is used to represent a user in the system. It stores and manages the user's details like their username, password, balance, and rating. The class also helps with managing the user's listings and messages.
-- When a user is created, the User class requires a username and a password. It checks if these values are valid (not empty or null) and throws an error if they are. The class also allows you to update the user's balance and rating using the updateBalance() and updateRating() methods.
-- Users can create listings for things they want to sell using the createListing() method and remove listings using the removeListing() method. They can also send and remove messages using sendMessage() and removeMessage().
-- The deleteAccount() method lets users delete their accounts, including their listings and messages. After the account is deleted, everything related to that user is cleared out, including their username, password, balance, rating, and all of their listings and inbox messages.
+- When a user is created, the User class requires a username and a password. Getters and setters are employed to update its fields (username, password, balance, and rating).
 - The User class works closely with the Listing and Message classes, which store the actual items users want to sell and the messages they send. The DatabaseWrapper class is used to save and get all the user's data from the database.
 - Testing for the User class makes sure that a user can be created with a valid username and password, that the balance and rating can be updated, and that listings and messages can be added and removed. It also checks that deleting the account works correctly and removes everything associated with the user.
 ### Listing.java
 - Benny Huang
 - The listing class sets and gets the values needed to create a lsting. It utilizes the "IListing" interface to create a set of methods that relate to listings. The class also extends the "Table" class, which allows Listing to use "id" that are obtained from methods like "getId()" and "setId()."
-- Methods associated with the Listing class include: getListingId(), setListingId(), getSellerId(), setSellerId(), getSellerName(), setSellerName(String sellerName), getTitle(), setTitle(), getDescription(), setDescription(), getPrice(), setPrice(), isSold(), setSold(), toString().
+- Methods associated with the Listing class include: getSellerId(), setSellerId(), getSellerName(), setSellerName(String sellerName), getTitle(), setTitle(), getDescription(), setDescription(), getPrice(), setPrice(), isSold(), setSold(), toString().
 - Testing associated with the Listing class mostly entails making sure the setters and getters return the right values when they are being used.
 - All of this allows for the other classes, such as user or databaseWrapper classes, use the methods that are created in this listing class.
 - Image support will be implemented through getImage() and setImage().
