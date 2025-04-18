@@ -5,7 +5,7 @@ import database.DatabaseWrapper;
 import database.DatabaseWriteException;
 import database.RowNotFoundException;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
@@ -44,7 +44,7 @@ public class EditUserHandler extends PacketHandler implements IEditUserHandler {
 
         if (attribute.equals("username")) {
             try {
-                DatabaseWrapper.get().getByColumn(User.class, "username", attributeVal);
+                db.getByColumn(User.class, "username", attributeVal);
                 return new ErrorPacket("Username already exists!");
             } catch (RowNotFoundException e) { e.getMessage(); }
         }
@@ -52,9 +52,9 @@ public class EditUserHandler extends PacketHandler implements IEditUserHandler {
         try {
             id = Integer.parseInt(sid);
             try {
-                DatabaseWrapper.get().setById(User.class, id, attribute, attributeVal);
+                db.setById(User.class, id, attribute, attributeVal);
                 try {
-                    return new ObjectPacket<User>(DatabaseWrapper.get().getById(User.class, id));
+                    return new ObjectPacket<User>(db.getById(User.class, id));
                 } catch (RowNotFoundException e) {
                     return new ErrorPacket("User not found!");
                 }

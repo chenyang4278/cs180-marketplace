@@ -2,8 +2,6 @@ package packet;
 
 import data.Session;
 import data.User;
-import database.DatabaseWrapper;
-import database.RowNotFoundException;
 import packet.response.ErrorPacket;
 
 import java.io.*;
@@ -113,35 +111,35 @@ public class Packet implements IPacket, Serializable {
      *
      * @return User or null
      */
-    public User getUser() {
-        if (userCached) {
-            return user;
-        }
-
-        PacketHeader sessionHeader = getHeader("Session-Token");
-        if (sessionHeader == null) {
-            userCached = true;
-            user = null;
-            return null;
-        }
-
-        String token = sessionHeader.getValues().get(0);
-        List<Session> sessions = DatabaseWrapper.get().filterByColumn(Session.class, "token", token);
-        if (sessions.isEmpty()) {
-            userCached = true;
-            user = null;
-            return null;
-        }
-
-        try {
-            user = DatabaseWrapper.get().getById(User.class, sessions.get(0).getUserId());
-        } catch (RowNotFoundException ignored) {
-            user = null;
-        }
-
-        userCached = true;
-        return user;
-    }
+//    public User getUser() {
+//        if (userCached) {
+//            return user;
+//        }
+//
+//        PacketHeader sessionHeader = getHeader("Session-Token");
+//        if (sessionHeader == null) {
+//            userCached = true;
+//            user = null;
+//            return null;
+//        }
+//
+//        String token = sessionHeader.getValues().get(0);
+//        List<Session> sessions = DatabaseWrapper.get().filterByColumn(Session.class, "token", token);
+//        if (sessions.isEmpty()) {
+//            userCached = true;
+//            user = null;
+//            return null;
+//        }
+//
+//        try {
+//            user = DatabaseWrapper.get().getById(User.class, sessions.get(0).getUserId());
+//        } catch (RowNotFoundException ignored) {
+//            user = null;
+//        }
+//
+//        userCached = true;
+//        return user;
+//    }
 
     /**
      * Get the first value of each header specified,

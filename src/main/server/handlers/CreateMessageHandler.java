@@ -4,7 +4,7 @@ import data.Message;
 import data.User;
 import database.*;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
@@ -54,7 +54,7 @@ public class CreateMessageHandler extends PacketHandler implements ICreateMessag
             }
             Message m = new Message(sid, rid, message);
             try {
-                DatabaseWrapper.get().save(m);
+                db.save(m);
                 return new ObjectPacket<Message>(m);
             } catch (DatabaseWriteException e) {
                 return new ErrorPacket("Database failure in creating message");

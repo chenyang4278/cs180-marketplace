@@ -6,7 +6,7 @@ import database.DatabaseWriteException;
 import data.Listing;
 import database.RowNotFoundException;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.SuccessPacket;
 
@@ -45,7 +45,7 @@ public class DeleteListingHandler extends PacketHandler implements IDeleteListin
             try {
                 Listing l = db.getById(Listing.class, id);
                 try {
-                    DatabaseWrapper.get().delete(l);
+                    db.delete(l);
                     return new SuccessPacket();
                 } catch (DatabaseWriteException e) {
                     return new ErrorPacket("Database delete failure!");

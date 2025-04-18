@@ -4,7 +4,7 @@ import data.Listing;
 import data.User;
 import database.*;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
@@ -66,9 +66,9 @@ public class BuyListingHandler extends PacketHandler implements IBuyListingHandl
                 s.setBalance(s.getBalance() + l.getPrice());
                 l.setSold(true);
                 try {
-                    DatabaseWrapper.get().save(u);
-                    DatabaseWrapper.get().save(s);
-                    DatabaseWrapper.get().save(l);
+                    db.save(u);
+                    db.save(s);
+                    db.save(l);
                     return new ObjectPacket<User>(u);
                 } catch (DatabaseWriteException e) {
                     return new ErrorPacket("Database update error!");

@@ -4,7 +4,7 @@ import data.Listing;
 import data.User;
 import database.*;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
@@ -58,7 +58,7 @@ public class CreateListingHandler extends PacketHandler implements ICreateListin
 
         try {
             Listing listing = new Listing(user.getId(), user.getUsername(), title, description, dbPrice, image, false);
-            DatabaseWrapper.get().save(listing);
+            db.save(listing);
             return new ObjectPacket<Listing>(listing);
         } catch (DatabaseWriteException ignored) {
             return new ErrorPacket("Database failure in creating listing");

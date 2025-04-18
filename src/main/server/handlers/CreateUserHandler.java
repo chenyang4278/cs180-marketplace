@@ -5,7 +5,7 @@ import database.DatabaseWriteException;
 import database.RowNotFoundException;
 import data.User;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
@@ -43,7 +43,7 @@ public class CreateUserHandler extends PacketHandler implements ICreateUserHandl
         } catch (RowNotFoundException ignored) {
             User user = new User(username, HandlerUtil.hashPassword(password));
             try {
-                DatabaseWrapper.get().save(user);
+                db.save(user);
                 return new ObjectPacket<User>(user);
             } catch (DatabaseWriteException e) {
                 return new ErrorPacket("Database failure in creating user");

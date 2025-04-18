@@ -2,8 +2,9 @@ package server.handlers;
 
 import data.Message;
 import data.User;
+import database.DatabaseWrapper;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectListPacket;
 

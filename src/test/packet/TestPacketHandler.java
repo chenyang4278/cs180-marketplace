@@ -1,5 +1,6 @@
 package packet;
 import org.junit.Test;
+import server.PacketHandler;
 
 import static org.junit.Assert.*;
 

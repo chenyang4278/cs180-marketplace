@@ -5,7 +5,7 @@ import data.User;
 import database.DatabaseWrapper;
 import database.DatabaseWriteException;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class LoginHandler extends PacketHandler implements ILoginHandler {
         String password = data[1];
 
         // look for user by username
-        ArrayList<User> users = new ArrayList<>(DatabaseWrapper.get().filterByColumn(User.class,
+        ArrayList<User> users = new ArrayList<>(db.filterByColumn(User.class,
                 "username", username));
         if (users.isEmpty()) {
             return new ErrorPacket("Invalid username or password");
@@ -48,7 +48,7 @@ public class LoginHandler extends PacketHandler implements ILoginHandler {
         // save session and return new session token
         try {
             for (Session session : db.filterByColumn(Session.class, "user_id", Integer.toString(user.getId()))) {
-                DatabaseWrapper.get().delete(session);
+                db.delete(session);
             }
 
             // make sure duplicate token isn't added
@@ -60,7 +60,7 @@ public class LoginHandler extends PacketHandler implements ILoginHandler {
             } while (!db.filterByColumn(Session.class, "token", token).isEmpty());
 
             Session session = new Session(user.getId(), token);
-            DatabaseWrapper.get().save(session);
+            db.save(session);
 
             Packet resp = new ObjectPacket<User>(user);
             resp.addHeader("Session-Token", session.getToken());

@@ -1,6 +1,7 @@
-package packet;
+package server;
 
 import database.DatabaseWrapper;
+import packet.IPacketHandler;
 
 /**
  * PacketHandler
@@ -16,7 +17,6 @@ public abstract class PacketHandler implements IPacketHandler {
 
     public PacketHandler(String path) {
         this.path = path;
-
         db = DatabaseWrapper.get();
     }
 

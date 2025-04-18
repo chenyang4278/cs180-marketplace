@@ -5,7 +5,7 @@ import data.User;
 import database.DatabaseWriteException;
 import database.RowNotFoundException;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.SuccessPacket;
 
@@ -44,7 +44,7 @@ public class DeleteUserHandler extends PacketHandler implements IDeleteUserHandl
             try {
                 User u = db.getById(User.class, id);
                 try {
-                    DatabaseWrapper.get().delete(u);
+                    db.delete(u);
                     return new SuccessPacket();
                 } catch (DatabaseWriteException e) {
                     return new ErrorPacket("Database delete failure!");

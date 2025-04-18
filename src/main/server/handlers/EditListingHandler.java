@@ -6,7 +6,7 @@ import database.DatabaseWrapper;
 import database.DatabaseWriteException;
 import database.RowNotFoundException;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
@@ -59,9 +59,9 @@ public class EditListingHandler extends PacketHandler implements IEditListingHan
         try {
             id = Integer.parseInt(sid);
             try {
-                DatabaseWrapper.get().setById(Listing.class, id, attribute, attributeVal);
+                db.setById(Listing.class, id, attribute, attributeVal);
                 try {
-                    return new ObjectPacket<Listing>(DatabaseWrapper.get().getById(Listing.class, id));
+                    return new ObjectPacket<Listing>(db.getById(Listing.class, id));
                 } catch (RowNotFoundException e) {
                     return new ErrorPacket("Listing not found!");
                 }
