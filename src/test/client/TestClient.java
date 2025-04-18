@@ -255,13 +255,13 @@ public class TestClient {
         c2.createUser("Bob", "pass");
         c2.login("Bob", "pass");
 
-        assertTrue(c1.sendMessage(c1.getUser().getId(), c2.getUser().getId(), "Hi Bob!"));
+        assertTrue(c1.sendMessage(c2.getUser().getId(), "Hi Bob!"));
 
         List<Message> history = c2.getMessagesWithUser(c1.getUser().getId());
         assertEquals(1, history.size());
         assertEquals("Hi Bob!", history.get(0).getMessage());
 
-        assertTrue(c2.sendMessage(c2.getUser().getId(), c1.getUser().getId(), "What's up Alice?"));
+        assertTrue(c2.sendMessage(c1.getUser().getId(), "What's up Alice?"));
         history = c1.getMessagesWithUser(c2.getUser().getId());
         assertEquals(2, history.size());
         

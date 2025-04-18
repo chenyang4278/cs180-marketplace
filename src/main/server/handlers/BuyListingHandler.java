@@ -46,14 +46,14 @@ public class BuyListingHandler extends PacketHandler implements IBuyListingHandl
             }
 
             user.setBalance(user.getBalance() - listing.getPrice());
-            user.save();
+            db.save(user);
 
             User seller = db.getById(User.class, listing.getSellerId());
             seller.setBalance(seller.getBalance() + listing.getPrice());
-            seller.save();
+            db.save(seller);
 
             listing.setSold(true);
-            listing.save();
+            db.save(listing);
 
             return new ObjectPacket<User>(user);
         } catch (DatabaseWriteException e) {
