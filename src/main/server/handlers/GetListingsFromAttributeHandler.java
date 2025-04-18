@@ -31,6 +31,7 @@ public class GetListingsFromAttributeHandler extends PacketHandler implements IG
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
+
         String[] data = packet.getHeaderValues("attribute", "attributeVal");
         if (data == null) {
             return new ErrorPacket("Invalid packet headers!");
