@@ -31,113 +31,116 @@ import static org.junit.Assert.*;
  * @version 4/13/25
  */
 public class TestEndpointHandlers {
+    private static class SessionInfo {
+        private Session session;
+        private User user;
+
+        public SessionInfo(Session session, User user) {
+            this.session = session;
+            this.user = user;
+        }
+
+        public Packet makePacket() {
+            Packet packet = new Packet("");
+            packet.addHeader("Session-Token", session.getToken());
+            return packet;
+        }
+    }
+
+    private static SessionInfo sessionInfo;
 
     private void clearDb() {
         // start on a clean slate
         for (String file : new String[] { "id.csv", "User.csv", "Listing.csv", "Message.csv", "Session.csv" }) {
             new File(file).delete();
         }
+        sessionInfo = null;
     }
 
-    private Session login() {
-        User user = new User("testusername", HandlerUtil.hashPassword("my_password"));
-        try {
-            DatabaseWrapper.get().save(user);
-            Session session = new Session(user.getId(), HandlerUtil.generateToken());
-            DatabaseWrapper.get().save(session);
-            return session;
-        } catch (DatabaseWriteException e) {
-            e.printStackTrace(); // should never happen
-        }
-        return null;
-    }
-
-    @Test
-    public void testBuyListingHandler() {
-        clearDb();
-        Session session = login();
-        try {
-            User u = new User("karma", "pass");
-            User s = new User("ayden", "pass");
-            s.setBalance(20);
-            u.setBalance(100);
-            DatabaseWrapper.get().save(u);
-            DatabaseWrapper.get().save(s);
-            Listing l = new Listing(s.getId(), s.getUsername(), "a keyboard",
-                    "idk", 50.00, "null",
-                    false);
-            Listing l2 = new Listing(s.getId(), s.getUsername(), "a sold keyboard",
-                    "idk", 50.00, "null",
-                    true);
-            DatabaseWrapper.get().save(l);
-            DatabaseWrapper.get().save(l2);
-            BuyListingHandler bl = new BuyListingHandler();
-            ArrayList<PacketHeader> phl = new ArrayList<>();
-            phl.add(new PacketHeader("buyingId", "" + u.getId()));
-            phl.add( new PacketHeader("listingId", "" + l.getId()));
-            phl.add( new PacketHeader("Session-Token", session.getToken()));
-            ObjectPacket<User> op = (ObjectPacket<User>) bl.handle(new Packet("this dosent matter", phl), null);
-
-            assertEquals(op.getObj().getId(), u.getId());
-            assertTrue(op.getObj().getBalance() < 99);
+    private SessionInfo getSession() {
+        if (sessionInfo == null) {
             try {
-                User s2 = DatabaseWrapper.get().getById(User.class, s.getId());
-                assertTrue(DatabaseWrapper.get().getById(Listing.class, l.getId()).isSold());
-                assertTrue(s2.getBalance() > 21);
-            } catch (RowNotFoundException e) {
-                e.printStackTrace();
+                User user = new User("testusername", HandlerUtil.hashPassword("my_password"));
+                user.setBalance(80);
+                user.save();
+                Session session = new Session(user.getId(), HandlerUtil.generateToken());
+                session.save();
+                sessionInfo = new SessionInfo(session, user);
+            } catch (DatabaseWriteException e) {
+                throw new RuntimeException(e);
             }
-            phl.clear();
-            phl.add(new PacketHeader("buyingId", "" + u.getId()));
-            phl.add( new PacketHeader("listingId", "" + l2.getId()));
-            phl.add( new PacketHeader("Session-Token", session.getToken()));
-            ErrorPacket e = (ErrorPacket) bl.handle(new Packet("this dosent matter", phl), null);
-            assertEquals("Item already has already been sold!", e.getMessage());
-
-            Listing l3 = new Listing(s.getId(), s.getUsername(), "a keyboard",
-                    "idk", 500.00, "null", false);
-            DatabaseWrapper.get().save(l3);
-
-            phl.clear();
-            phl.add(new PacketHeader("buyingId", "" + u.getId()));
-            phl.add( new PacketHeader("listingId", "" + l3.getId()));
-            phl.add( new PacketHeader("Session-Token", session.getToken()));
-            ErrorPacket e2 = (ErrorPacket) bl.handle(new Packet("this dosent matter", phl), null);
-            assertEquals("User does not have enough balance to buy this item!", e2.getMessage());
-
-            phl.clear();
-            phl.add(new PacketHeader("buyingId", "adwawd"));
-            phl.add( new PacketHeader("listingId", "awdawd"));
-            phl.add( new PacketHeader("Session-Token", session.getToken()));
-            ErrorPacket e3 = (ErrorPacket) bl.handle(new Packet("this dosent matter", phl), null);
-            assertEquals("Invalid ids!", e3.getMessage()); // same code for all invalid ids
-
-            phl.clear();
-            phl.add(new PacketHeader("buyingId", "-10"));
-            phl.add( new PacketHeader("listingId", "-29"));
-            phl.add( new PacketHeader("Session-Token", session.getToken()));
-            ErrorPacket e4 = (ErrorPacket) bl.handle(new Packet("this dosent matter", phl), null);
-            assertEquals("Could not find user or listing!", e4.getMessage());
-
-        } catch (DatabaseWriteException e) {
-            e.printStackTrace();
         }
+
+        return sessionInfo;
     }
 
     @Test
-    public void testCreateListingHandler() throws DatabaseWriteException, RowNotFoundException {
+    public void testBuyListingHandler() throws DatabaseWriteException, RowNotFoundException {
         clearDb();
-        Session session = login();
+        SessionInfo sessionInfo = getSession();
+        BuyListingHandler handler = new BuyListingHandler();
+        DatabaseWrapper db = DatabaseWrapper.get();
+
+        User seller = new User("ayden", "pass");
+        seller.setBalance(20);
+        seller.save();
+
+        Listing listing = new Listing(seller.getId(), seller.getUsername(), "a keyboard",
+                "idk", 50.00, "null",
+                false);
+        listing.save();
+
+        // test successful buy
+        Packet packet = sessionInfo.makePacket();
+        ObjectPacket<User> updatedUser = (ObjectPacket<User>) handler.handle(
+            packet,
+            new String[] { "" + listing.getId() }
+        );
+        // check updated user
+        assertEquals(updatedUser.getObj().getId(), sessionInfo.user.getId());
+        assertTrue(updatedUser.getObj().getBalance() < 99);
+        // check updated seller
+        User updatedSeller = db.getById(User.class, seller.getId());
+        assertTrue(db.getById(Listing.class, listing.getId()).isSold());
+        assertTrue(updatedSeller.getBalance() > 21);
+
+        // test trying to buy an already sold item
+        packet = sessionInfo.makePacket();
+        ErrorPacket err = (ErrorPacket) handler.handle(packet, new String[] { "" + listing.getId() });
+        assertEquals("Item already has already been sold!", err.getMessage());
+
+        Listing listing2 = new Listing(seller.getId(), seller.getUsername(), "a keyboard",
+                "idk", 500.00, "null", false);
+        listing2.save();
+
+        // test not enough balance
+        packet = sessionInfo.makePacket();
+        ErrorPacket e2 = (ErrorPacket) handler.handle(packet, new String[] { "" + listing2.getId() });
+        assertEquals("User does not have enough balance to buy this item!", e2.getMessage());
+
+        packet = sessionInfo.makePacket();
+        ErrorPacket e3 = (ErrorPacket) handler.handle(packet, new String[] { "invalid id" });
+        assertEquals("Invalid ids!", e3.getMessage()); // same code for all invalid ids
+
+        packet = sessionInfo.makePacket();
+        ErrorPacket e4 = (ErrorPacket) handler.handle(packet, new String[] { "-29" });
+        assertEquals("Could not find user or listing!", e4.getMessage());
+    }
+
+    @Test
+    public void testCreateListingHandler() throws RowNotFoundException {
+        clearDb();
+        SessionInfo sessionInfo = getSession();
         CreateListingHandler createListingHandler = new CreateListingHandler();
 
-        ArrayList<PacketHeader> phl = new ArrayList<>();
-        phl.add( new PacketHeader("title", "pokemon cards"));
-        phl.add( new PacketHeader("description", "New and rare pokemon cards"));
-        phl.add( new PacketHeader("price", "10"));
-        phl.add( new PacketHeader("image", "null"));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        Packet packet = sessionInfo.makePacket();
+        packet.addHeader("title", "pokemon cards");
+        packet.addHeader("description", "New and rare pokemon cards");
+        packet.addHeader("price", "10");
+        packet.addHeader("image", "null");
 
-        ObjectPacket<Listing> e4 = (ObjectPacket<Listing>) createListingHandler.handle(new Packet("", phl), null);
+        // successfully create listing
+        ObjectPacket<Listing> e4 = (ObjectPacket<Listing>) createListingHandler.handle(packet, null);
         Listing l = e4.getObj();
         Listing l2 = DatabaseWrapper.get().getById(Listing.class, l.getId());
         assertEquals(l.getId(), l2.getId());
@@ -149,75 +152,61 @@ public class TestEndpointHandlers {
         assertEquals("New and rare pokemon cards", l2.getDescription());
         assertEquals(10, l2.getPrice(), 0.01);
 
-        phl.clear();
-        phl.add( new PacketHeader("title", "pokemon cards"));
-        phl.add( new PacketHeader("description", "New and rare pokemon cards"));
-        phl.add( new PacketHeader("price", "-10"));
-        phl.add( new PacketHeader("image", "null"));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        // invalid price
+        packet = sessionInfo.makePacket();
+        packet.addHeader("title", "pokemon cards");
+        packet.addHeader("description", "New and rare pokemon cards");
+        packet.addHeader("price", "-10");
+        packet.addHeader("image", "null");
 
-        ErrorPacket e = (ErrorPacket) createListingHandler.handle(new Packet("", phl), null);
+        ErrorPacket e = (ErrorPacket) createListingHandler.handle(packet, null);
         assertEquals("Invalid listing price!", e.getMessage());
 
-        phl.clear();
-        phl.add( new PacketHeader("title",  ""));
-        phl.add( new PacketHeader("description", ""));
-        phl.add( new PacketHeader("price", "10"));
-        phl.add( new PacketHeader("image", "null"));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
-        ErrorPacket e2 = (ErrorPacket) createListingHandler.handle(new Packet("", phl), null);
+        // invalid data
+        packet = sessionInfo.makePacket();
+        packet.addHeader("title",  "");
+        packet.addHeader("description", "");
+        packet.addHeader("price", "10");
+        packet.addHeader("image", "null");
+
+        ErrorPacket e2 = (ErrorPacket) createListingHandler.handle(packet, null);
         assertEquals("Invalid data", e2.getMessage());
     }
 
     @Test
-    public void testCreateMessageHandler() {
+    public void testCreateMessageHandler() throws DatabaseWriteException {
         clearDb();
-        Session session = login();
+        SessionInfo sessionInfo = getSession();
+        CreateMessageHandler handler = new CreateMessageHandler();
 
-        User u1 = new User("karma", "1234");
-        User u2 = new User("ayden", "123467");
-        try {
-            DatabaseWrapper.get().save(u1);
-            DatabaseWrapper.get().save(u2);
-        } catch (DatabaseWriteException e) {
-            throw new RuntimeException(e);
-        }
+        User receiver = new User("ayden", "123467");
+        receiver.save();
 
-        ArrayList<PacketHeader> phl = new ArrayList<>();
-        phl.add(new PacketHeader("senderId", "" + u1.getId()));
-        phl.add( new PacketHeader("receiverId", "" + u2.getId()));
-        phl.add( new PacketHeader("message", "hi, this is a message"));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        // successfully create message
+        Packet packet = sessionInfo.makePacket();
+        packet.addHeader("receiverId", "" + receiver.getId());
+        packet.addHeader("message", "hi, this is a message");
 
-        CreateMessageHandler cl = new CreateMessageHandler();
-        ObjectPacket<Message> ol = (ObjectPacket<Message>) cl.handle(new Packet("this dosent matter", phl), null);
-        Message m = ol.getObj();
-        try {
-            Message m2 = DatabaseWrapper.get().getById(Message.class, m.getId());
-            assertEquals(m.getSenderId(), m2.getSenderId());
-            assertEquals(m.getReceiverId(), m2.getReceiverId());
-            assertEquals(m.getMessage(), m2.getMessage());
-            assertEquals("hi, this is a message", m2.getMessage());
-        } catch (RowNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        ObjectPacket<Message> resp = (ObjectPacket<Message>) handler.handle(packet, null);
+        Message msg = resp.getObj();
+        assertEquals(sessionInfo.user.getId(), msg.getSenderId());
+        assertEquals(receiver.getId(), msg.getReceiverId());
+        assertEquals("hi, this is a message", msg.getMessage());
 
-        phl.clear();
-        phl.add(new PacketHeader("senderId", "" + u1.getId()));
-        phl.add( new PacketHeader("receiverId", "" + u1.getId()));
-        phl.add( new PacketHeader("message", "hi, this is a message"));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        // error sending message to self
+        packet = sessionInfo.makePacket();
+        packet.addHeader("receiverId", "" + sessionInfo.user.getId());
+        packet.addHeader("message", "hi, this is a message");
 
-        ErrorPacket e = (ErrorPacket) cl.handle(new Packet("this dosent matter", phl), null);
-        assertEquals("You cannot message yourself!", e.getMessage());
+        ErrorPacket err = (ErrorPacket) handler.handle(packet, null);
+        assertEquals("You cannot message yourself!", err.getMessage());
 
-        phl.clear();
-        phl.add(new PacketHeader("senderId", "" + u1.getId()));
-        phl.add( new PacketHeader("receiverId", "" + u2.getId()));
-        phl.add( new PacketHeader("message", ""));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        // empty message error
+        packet = sessionInfo.makePacket();
+        packet.addHeader("receiverId", "" + receiver.getId());
+        packet.addHeader("message", "");
 
-        ErrorPacket e2 = (ErrorPacket) cl.handle(new Packet("this dosent matter", phl), null);
+        ErrorPacket e2 = (ErrorPacket) handler.handle(packet, null);
         assertEquals("Invalid data", e2.getMessage());
     }
 
@@ -254,7 +243,7 @@ public class TestEndpointHandlers {
         resp = createUserHandler.handle(packet, new String[0]);
         TestUtility.assertErrorPacket(resp);
 
-        //empty values
+        // empty values
         new User("username", "password").save();
         packet = new Packet();
         packet.addHeader("username", "");
@@ -279,386 +268,329 @@ public class TestEndpointHandlers {
     }
 
     @Test
-    public void testDeleteListingHandler() {
+    public void testDeleteListingHandler() throws DatabaseWriteException {
         clearDb();
-        Session session = login();
+        SessionInfo sessionInfo = getSession();
+        DeleteListingHandler handler = new DeleteListingHandler();
 
-        Listing l = new Listing(10, "karma", "a keyboard",
-                "idk", 50.00, "null",
-                false);
-        try {
-            DatabaseWrapper.get().save(l );
-            ArrayList<PacketHeader> phl = new ArrayList<>();
-            phl.add(new PacketHeader("listingId", "" + l.getId()));
-            phl.add( new PacketHeader("Session-Token", session.getToken()));
-
-            DeleteListingHandler dl = new DeleteListingHandler();
-            SuccessPacket ol = (SuccessPacket) dl.handle(new Packet("this dosent matter", phl), null);
-            try {
-                DatabaseWrapper.get().getById(Listing.class, l.getId());
-                assertTrue(false);
-            } catch (RowNotFoundException e) {
-                assertTrue(true);
-            }
-
-            phl.clear();
-            phl.add(new PacketHeader("listingId", "-10"));
-            phl.add( new PacketHeader("Session-Token", session.getToken()));
-
-            ErrorPacket e = (ErrorPacket) dl.handle(new Packet("this dosent matter", phl), null);
-            assertEquals("Listing does not exist!", e.getMessage());
-        } catch (DatabaseWriteException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Test
-    public void testDeleteUserHandler() {
-        clearDb();
-        Session session = login();
-
-        User u1 = new User("karma", "1234");
-        try {
-            DatabaseWrapper.get().save(u1);
-            ArrayList<PacketHeader> phl = new ArrayList<>();
-            phl.add(new PacketHeader("userId", "" + u1.getId()));
-            phl.add( new PacketHeader("Session-Token", session.getToken()));
-
-            DeleteUserHandler dl = new DeleteUserHandler();
-            SuccessPacket ol = (SuccessPacket) dl.handle(new Packet("this dosent matter", phl), null);
-            try {
-                DatabaseWrapper.get().getById(User.class, u1.getId());
-                assertTrue(false);
-            } catch (RowNotFoundException e) {
-                assertTrue(true);
-            }
-
-            phl.clear();
-            phl.add(new PacketHeader("userId", "-10"));
-            phl.add( new PacketHeader("Session-Token", session.getToken()));
-
-            ErrorPacket e = (ErrorPacket) dl.handle(new Packet("this dosent matter", phl), null);
-            assertEquals("User does not exist!", e.getMessage());
-        } catch (DatabaseWriteException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Test
-    public void testEditListingHandler() {
-        clearDb();
-        Session session = login();
-        Listing l = new Listing(0, "ayden", "a keyboard",
+        Listing listing = new Listing(sessionInfo.user.getId(), "karma", "a keyboard",
                 "idk", 50.00, "null", false);
+        listing.save();
+
+        // successfully delete
+        Packet packet = sessionInfo.makePacket();
+        Packet resp = handler.handle(packet, new String[] { "" + listing.getId() });
+        TestUtility.assertNotErrorPacket(resp);
         try {
-            DatabaseWrapper.get().save(l);
-            EditListingHandler ee = new EditListingHandler();
-            Packet p = new Packet();
-            p.addHeader("listingId", "" + l.getId());
-            p.addHeader("attribute", "sold");
-            p.addHeader("attributeVal", "true");
-            p.addHeader("Session-Token", session.getToken());
-            ObjectPacket<Listing> ll = ( ObjectPacket<Listing>) ee.handle(p, null);
-
-            Listing l2 = DatabaseWrapper.get().getById(Listing.class, l.getId());
-            assertTrue(l2.isSold());
-            assertTrue(ll.getObj().isSold());
-
-            p = new Packet();
-            p.addHeader("listingId", "" + l.getId());
-            p.addHeader("attribute", "price");
-            p.addHeader("attributeVal", "20.1");
-            p.addHeader("Session-Token", session.getToken());
-            ee.handle(p, null);
-
-            Listing l3 = DatabaseWrapper.get().getById(Listing.class, l.getId());
-            assertEquals(20.1, l3.getPrice(), 0.01);
-
-            p = new Packet();
-            p.addHeader("listingId", "" + l.getId());
-            p.addHeader("attribute", "aiawd");
-            p.addHeader("attributeVal", "20.1");
-            p.addHeader("Session-Token", session.getToken());
-            Packet p2 = ee.handle(p, null);
-            TestUtility.assertErrorPacket(p2);
-
-            p = new Packet();
-            p.addHeader("listingId", "" + l.getId());
-            p.addHeader("attribute", "price");
-            p.addHeader("attributeVal", "thisisnotanumber");
-            p.addHeader("Session-Token", session.getToken());
-            Packet p3 = ee.handle(p, null);
-            TestUtility.assertErrorPacket(p3);
-
-        } catch (DatabaseWriteException | RowNotFoundException e) {
-            throw new RuntimeException(e);
+            DatabaseWrapper.get().getById(Listing.class, listing.getId());
+            fail("Listing was not deleted as expected");
+        } catch (RowNotFoundException ignored) {
+            assertTrue(true);
         }
+
+        // invalid id
+        packet = sessionInfo.makePacket();
+        ErrorPacket err = (ErrorPacket) handler.handle(packet, new String[] { "" + listing.getId() });
+        assertEquals("Listing does not exist!", err.getMessage());
     }
 
     @Test
-    public void testEditUserHandler() {
+    public void testDeleteUserHandler() throws DatabaseWriteException {
         clearDb();
-        Session session = login();
+        DeleteUserHandler handler = new DeleteUserHandler();
 
-        User u = new User("kar21ma", "1234532");
+        User user = new User("karma", "1234");
+        user.save();
+
+        Session session = new Session(user.getId(), HandlerUtil.generateToken());
+        session.save();
+
+        String[] args = new String[] { "" + user.getId() };
+
+        // successfully delete user
+        Packet packet = new Packet();
+        packet.addHeader("Session-Token", session.getToken());
+        handler.handle(packet, args);
         try {
-            DatabaseWrapper.get().save(u);
-            EditUserHandler ee = new EditUserHandler();
-            Packet p = new Packet();
-            p.addHeader("userId", "" + u.getId());
-            p.addHeader("attribute", "username");
-            p.addHeader("attributeVal", "karma12");
-            p.addHeader("Session-Token", session.getToken());
-            ObjectPacket<User> uu = (ObjectPacket<User>) ee.handle(p, null);
-
-            User u2 = DatabaseWrapper.get().getById(User.class, u.getId());
-            assertEquals("karma12", u2.getUsername());
-            assertEquals("karma12", uu.getObj().getUsername());
-
-            p = new Packet();
-            p.addHeader("userId", "" + u.getId());
-            p.addHeader("attribute", "balance");
-            p.addHeader("attributeVal", "1000");
-            p.addHeader("Session-Token", session.getToken());
-            ee.handle(p, null);
-
-            User u3 = DatabaseWrapper.get().getById(User.class, u.getId());
-            assertEquals(1000, u3.getBalance(), 0.01);
-
-            p = new Packet();
-            p.addHeader("userId", "" + u.getId());
-            p.addHeader("attribute", "awdawda");
-            p.addHeader("attributeVal", "1000");
-            p.addHeader("Session-Token", session.getToken());
-            Packet p2 = ee.handle(p, null);
-            TestUtility.assertErrorPacket(p2);
-
-            p = new Packet();
-            p.addHeader("userId", "" + u.getId());
-            p.addHeader("attribute", "username");
-            p.addHeader("attributeVal", "testusername");
-            p.addHeader("Session-Token", session.getToken());
-            Packet p3 = ee.handle(p, null);
-            TestUtility.assertErrorPacket(p3);
-
-        } catch (DatabaseWriteException | RowNotFoundException e) {
-            throw new RuntimeException(e);
+            DatabaseWrapper.get().getById(User.class, user.getId());
+            fail("User was not deleted as expected");
+        } catch (RowNotFoundException e) {
+            assertTrue(true);
         }
+
+        // try to delete user that does not exist
+        ErrorPacket e = (ErrorPacket) handler.handle(packet, args);
+        assertEquals("User does not exist!", e.getMessage());
     }
 
     @Test
-    public void testGetListingsFromAttributeHandler() {
+    public void testEditListingHandler() throws DatabaseWriteException, RowNotFoundException {
         clearDb();
-        Session session = login();
+        SessionInfo sessionInfo = getSession();
+        EditListingHandler handler = new EditListingHandler();
+        DatabaseWrapper db = DatabaseWrapper.get();
 
-        Listing l = new Listing(0, "ayden", "a keyboard",
-                "idk", 50.00, "null",
-                false);
-        Listing l2 = new Listing(1, "karma", "a sold keyboard",
-                "idk", 20.00, "null",
-                true);
-        Listing l3 = new Listing(1, "karma", "a 2 keyboard",
-                "idk", 20.00, "null",
-                true);
-        Listing l4 = new Listing(2, "chen", "a 3 keyboard",
-                "idk", 50.00, "null",
-                true);
-        Listing l5 = new Listing(3, "idk", "a 4 keyboard",
-                "idk", 50.00, "null",
-                true);
-        Listing l6 = new Listing(1, "karma", "a 5 keyboard",
-                "idk", 50.00, "null",
-                true);
+        Listing listing = new Listing(sessionInfo.user.getId(), sessionInfo.user.getUsername(), "a keyboard",
+                "idk", 50.00, "null", false);
+        listing.save();
 
-        try {
-            DatabaseWrapper.get().save(l);
-            DatabaseWrapper.get().save(l2);
-            DatabaseWrapper.get().save(l3);
-            DatabaseWrapper.get().save(l4);
-            DatabaseWrapper.get().save(l5);
-            DatabaseWrapper.get().save(l6);
-        } catch (DatabaseWriteException e) {
-            throw new RuntimeException(e);
+        String[] args = new String[] { "" + listing.getId() };
+
+        // successfully edit sold
+        Packet packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "sold");
+        packet.addHeader("attributeVal", "true");
+        Packet resp = handler.handle(packet, args);
+        TestUtility.assertNotErrorPacket(resp);
+
+        ObjectPacket<Listing> objResp = (ObjectPacket<Listing>) resp;
+        assertTrue(objResp.getObj().isSold());
+        Listing dbListing = db.getById(Listing.class, listing.getId());
+        assertTrue(dbListing.isSold());
+
+        // successfully edit price
+        packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "price");
+        packet.addHeader("attributeVal", "20.1");
+        resp = handler.handle(packet, args);
+        TestUtility.assertNotErrorPacket(resp);
+
+        dbListing = DatabaseWrapper.get().getById(Listing.class, listing.getId());
+        assertEquals(20.1, dbListing.getPrice(), 0.01);
+
+        // invalid attribute
+        packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "aiawd");
+        packet.addHeader("attributeVal", "20.1");
+        TestUtility.assertErrorPacket(handler.handle(packet, args));
+
+        // invalid price
+        packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "price");
+        packet.addHeader("attributeVal", "thisisnotanumber");
+        Packet p3 = handler.handle(packet, args);
+        TestUtility.assertErrorPacket(p3);
+    }
+
+    @Test
+    public void testEditUserHandler() throws RowNotFoundException, DatabaseWriteException {
+        clearDb();
+        SessionInfo sessionInfo = getSession();
+        EditUserHandler handler = new EditUserHandler();
+
+        String[] args = new String[] { "" + sessionInfo.user.getId() };
+
+        // edit username
+        Packet packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "username");
+        packet.addHeader("attributeVal", "karma12");
+        ObjectPacket<User> resp = (ObjectPacket<User>) handler.handle(packet, args);
+
+        User dbUser = DatabaseWrapper.get().getById(User.class, sessionInfo.user.getId());
+        assertEquals("karma12", dbUser.getUsername());
+        assertEquals("karma12", resp.getObj().getUsername());
+
+        // edit balance
+        packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "balance");
+        packet.addHeader("attributeVal", "1000");
+        handler.handle(packet, args);
+
+        dbUser = DatabaseWrapper.get().getById(User.class, sessionInfo.user.getId());
+        assertEquals(1000, dbUser.getBalance(), 0.01);
+
+        // invalid attribute
+        packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "awdawda");
+        packet.addHeader("attributeVal", "1000");
+        TestUtility.assertErrorPacket(handler.handle(packet, args));
+
+        // duplicate username error
+        new User("duplicate username", "").save();
+
+        packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "username");
+        packet.addHeader("attributeVal", "duplicate username");
+        Packet p3 = handler.handle(packet, args);
+        TestUtility.assertErrorPacket(p3);
+    }
+
+    @Test
+    public void testGetListingsFromAttributeHandler() throws DatabaseWriteException {
+        clearDb();
+        SessionInfo sessionInfo = getSession();
+        GetListingsFromAttributeHandler handler = new GetListingsFromAttributeHandler();
+
+        Listing[] listings = new Listing[] {
+            new Listing(0, "ayden", "a keyboard",
+                "idk", 50.00, "null", false),
+            new Listing(1, "karma", "a sold keyboard",
+                "idk", 20.00, "null", true),
+            new Listing(1, "karma", "a 2 keyboard",
+                "idk", 20.00, "null", true),
+            new Listing(2, "chen", "a 3 keyboard",
+                "idk", 50.00, "null", true),
+            new Listing(3, "idk", "a 4 keyboard",
+                "idk", 50.00, "null", true),
+            new Listing(1, "karma", "a 5 keyboard",
+                "idk", 50.00, "null", true)
+        };
+        for (Listing listing : listings) {
+            listing.save();
         }
 
-        ArrayList<PacketHeader> phl = new ArrayList<>();
-        phl.add(new PacketHeader("attribute", "sellerId"));
-        phl.add(new PacketHeader("attributeVal", "1"));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        Packet packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "sellerId");
+        packet.addHeader("attributeVal", "1");
 
-        GetListingsFromAttributeHandler h = new GetListingsFromAttributeHandler();
-        ObjectListPacket<Listing> o = (ObjectListPacket<Listing>) h.handle(new Packet("this dosent matter", phl), null);
+        ObjectListPacket<Listing> o = (ObjectListPacket<Listing>) handler.handle(packet, null);
         assertEquals(3, o.getObjList().size());
 
-        phl.clear();
-        phl.add(new PacketHeader("attribute", "sellerName"));
-        phl.add(new PacketHeader("attributeVal", "idk"));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "sellerName");
+        packet.addHeader("attributeVal", "idk");
 
-        ObjectListPacket<Listing> o2 = (ObjectListPacket<Listing>) h.handle(new Packet("this dosent matter", phl), null);
+        ObjectListPacket<Listing> o2 = (ObjectListPacket<Listing>) handler.handle(packet, null);
         assertEquals(1, o2.getObjList().size());
         assertEquals("a 4 keyboard", o2.getObjList().get(0).getTitle());
 
-        phl.clear();
-        phl.add(new PacketHeader("attribute", "image"));
-        phl.add(new PacketHeader("attributeVal", "null"));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "image");
+        packet.addHeader("attributeVal", "null");
 
-        ObjectListPacket<Listing> o3 = (ObjectListPacket<Listing>) h.handle(new Packet("this dosent matter", phl), null);
+        ObjectListPacket<Listing> o3 = (ObjectListPacket<Listing>) handler.handle(packet, null);
         assertEquals(6, o3.getObjList().size());
     }
 
     @Test
-    public void testGetMessagesBetweenUsersHandler() {
+    public void testGetMessagesBetweenUsersHandler() throws DatabaseWriteException, InterruptedException {
         clearDb();
-        Session session = login();
+        SessionInfo sessionInfo = getSession();
+        GetMessagesBetweenUsersHandler handler = new GetMessagesBetweenUsersHandler();
 
-        User u1 = new User("karma", "verysecretpassword");
-        User u2 = new User("ayden", "extrasecretpassword");
-        User u3 = new User("chen", "extrasecretpassword");
-        try {
-            DatabaseWrapper.get().save(u1);
-            DatabaseWrapper.get().save(u2);
-            DatabaseWrapper.get().save(u3);
-        } catch (DatabaseWriteException e) {
-            throw new RuntimeException(e);
-        }
-        Message m1 = new Message(u1.getId(), u2.getId(), "this is a message from u1 to u2");
-        //wait before creating next message, this may error very rarely
-        for (int i = 0; i < 1000000000; i+=2) {
-            i--;
-        }
-        Message m2 = new Message(u1.getId(), u2.getId(), "this is a another message from u1 to u2");
-        Message m3 = new Message(u1.getId(), u3.getId(), "this is a message from u1 to u3");
-        Message m4 = new Message(u3.getId(), u2.getId(), "this is a another message from u3 to u2");
-        Message m5 = new Message(u2.getId(), u3.getId(), "this is a another message from u2 to u3");
-        try {
-            DatabaseWrapper.get().save(m1);
-            DatabaseWrapper.get().save(m2);
-            DatabaseWrapper.get().save(m3);
-            DatabaseWrapper.get().save(m4);
-            DatabaseWrapper.get().save(m5);
-        } catch (DatabaseWriteException e) {
-            throw new RuntimeException(e);
+        User user1 = new User("karma", "verysecretpassword");
+        user1.save();
+        User user2 = new User("ayden", "extrasecretpassword");
+        user2.save();
+
+        Message[] messages = new Message[5] ;
+        // add delay so that the timestamps are spaced out
+        messages[0] = new Message(user1.getId(), sessionInfo.user.getId(), "this is a message from u1 to me");
+        Thread.sleep(100);
+        messages[1] = new Message(sessionInfo.user.getId(), user2.getId(), "this is a message from me to u2");
+        Thread.sleep(100);
+        messages[2] = new Message(user2.getId(), sessionInfo.user.getId(), "this is a message from u2 to me");
+        Thread.sleep(100);
+        messages[3] = new Message(sessionInfo.user.getId(), user1.getId(), "this is a message from me to u1");
+        Thread.sleep(100);
+        messages[4] = new Message(sessionInfo.user.getId(), user2.getId(), "this is another message from me to u2");
+        for (Message msg : messages) {
+            msg.save();
         }
 
-        GetMessagesBetweenUsersHandler h = new GetMessagesBetweenUsersHandler();
+        // check messages between me and user 1
+        Packet packet = sessionInfo.makePacket();
+        packet.addHeader("otherUserId", "" + user1.getId());
 
-        ArrayList<PacketHeader> phl = new ArrayList<>();
-        phl.add(new PacketHeader("senderId", "" + u1.getId()));
-        phl.add(new PacketHeader("receiverId", "" + u2.getId()));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        Packet resp = handler.handle(packet, null);
+        TestUtility.assertNotErrorPacket(resp);
+        ObjectListPacket<Message> user1Inbox = (ObjectListPacket<Message>) resp;
+        assertEquals(2, user1Inbox.getObjList().size());
+        assertTrue(user1Inbox.getObjList().get(0).getTimestamp() >= user1Inbox.getObjList().get(1).getTimestamp());
+        assertEquals("this is a message from me to u1", user1Inbox.getObjList().get(0).getMessage());
+        assertEquals("this is a message from u1 to me", user1Inbox.getObjList().get(1).getMessage());
 
-        ObjectListPacket<Message> o = (ObjectListPacket<Message>) h.handle(new Packet("this dosent matter", phl), null);
-        assertEquals(2, o.getObjList().size());
+        // check messages between me and user 2
+        packet = sessionInfo.makePacket();
+        packet.addHeader("otherUserId", "" + user2.getId());
 
-        //TODO Fix this?
-        //dependent on wait before creating next message, this may error very, very rarely
-        assertTrue(o.getObjList().get(0).getTimestamp() < o.getObjList().get(1).getTimestamp());
-
-        phl.clear();
-        phl.add(new PacketHeader("senderId", "" + u2.getId()));
-        phl.add(new PacketHeader("receiverId", "" + u3.getId()));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
-
-        ObjectListPacket<Message> o2 = (ObjectListPacket<Message>) h.handle(new Packet("this dosent matter", phl), null);
-        assertEquals(1, o2.getObjList().size());
-        assertEquals("this is a another message from u2 to u3", o2.getObjList().get(0).getMessage());
-
-        phl.clear();
-        phl.add(new PacketHeader("senderId", "" + u3.getId()));
-        phl.add(new PacketHeader("receiverId", "" + u2.getId()));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
-
-        ObjectListPacket<Message> o3 = (ObjectListPacket<Message>) h.handle(new Packet("this dosent matter", phl), null);
-        assertEquals(1, o2.getObjList().size());
-        assertEquals("this is a another message from u3 to u2", o3.getObjList().get(0).getMessage());
-
-        phl.clear();
-        phl.add(new PacketHeader("senderId", "" + u3.getId()));
-        phl.add(new PacketHeader("receiverId", "" + u3.getId()));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
-
-        ErrorPacket o4 = (ErrorPacket) h.handle(new Packet("this dosent matter", phl), null);
-        assertEquals("You cannot message yourself!", o4.getMessage());
+        resp = handler.handle(packet, null);
+        TestUtility.assertNotErrorPacket(resp);
+        ObjectListPacket<Message> user2Inbox = (ObjectListPacket<Message>) resp;
+        assertEquals(3, user2Inbox.getObjList().size());
+        assertTrue(user2Inbox.getObjList().get(0).getTimestamp() >= user2Inbox.getObjList().get(1).getTimestamp());
+        assertEquals("this is another message from me to u2", user2Inbox.getObjList().get(0).getMessage());
+        assertEquals("this is a message from u2 to me", user2Inbox.getObjList().get(1).getMessage());
+        assertEquals("this is a message from me to u2", user2Inbox.getObjList().get(2).getMessage());
     }
 
     @Test
-    public void testGetUserFromIdHandler() {
+    public void testGetUserFromIdHandler() throws DatabaseWriteException {
         clearDb();
-        Session session = login();
+        SessionInfo sessionInfo = getSession();
+        GetUserFromIdHandler handler = new GetUserFromIdHandler();
 
-        User u = new User("karma", "verysecretpassword");
-        try {
-            DatabaseWrapper.get().save(u);
-            GetUserFromIdHandler h = new GetUserFromIdHandler();
-            Packet p = new Packet();
-            p.addHeader("Session-Token", session.getToken());
-            ObjectPacket<User> userP = (ObjectPacket) h.handle(p, new String[] {u.getId() + ""});
-            assertEquals(u.getUsername(), userP.getObj().getUsername());
-            assertEquals(u.getPassword(), userP.getObj().getPassword());
-        } catch (DatabaseWriteException e) {
-            e.printStackTrace();
-        }
+        // get me
+        Packet packet = sessionInfo.makePacket();
+        Packet resp = handler.handle(
+            packet,
+            new String[] { "" + sessionInfo.user.getId() }
+        );
+        TestUtility.assertNotErrorPacket(resp);
+        ObjectPacket<User> userResp = (ObjectPacket<User>) resp;
+        assertEquals(sessionInfo.user.getId(), userResp.getObj().getId());
+        assertEquals(sessionInfo.user.getUsername(), userResp.getObj().getUsername());
+
+        // get new user
+        User newUser = new User("karma", "verysecretpassword");
+        newUser.save();
+
+        packet = sessionInfo.makePacket();
+        resp = handler.handle(packet, new String[] {"" + newUser.getId()});
+        TestUtility.assertNotErrorPacket(resp);
+        userResp = (ObjectPacket<User>) resp;
+        assertEquals(newUser.getId(), userResp.getObj().getId());
+        assertEquals(newUser.getUsername(), userResp.getObj().getUsername());
     }
 
     @Test
-    public void testGetUsersFromAttributeHandler() {
+    public void testGetUsersFromAttributeHandler() throws DatabaseWriteException {
         clearDb();
-        Session session = login();
+        SessionInfo sessionInfo = getSession();
+        GetUsersFromAttributeHandler handler = new GetUsersFromAttributeHandler();
 
-        User u1 = new User("karma", "1234");
-        User u2 = new User("karma1", "1awd234");
-        User u3 = new User("karma2", "1234a");
-        User u4 = new User("karma3", "12312214");
-        User u5 = new User("karma4", "1234");
-        User u6 = new User("karma5", "1234");
-
-        try {
-            DatabaseWrapper.get().save(u1);
-            DatabaseWrapper.get().save(u2);
-            DatabaseWrapper.get().save(u3);
-            DatabaseWrapper.get().save(u4);
-            DatabaseWrapper.get().save(u5);
-            DatabaseWrapper.get().save(u6);
-        } catch (DatabaseWriteException e) {
-            throw new RuntimeException(e);
+        User[] users = new User[] {
+            new User("karma", "1234"),
+            new User("karma1", "1awd234"),
+            new User("karma2", "1234a"),
+            new User("karma3", "12312214"),
+            new User("karma4", "1234"),
+            new User("karma5", "1234")
+        };
+        for (User user : users) {
+            user.save();
         }
 
-        ArrayList<PacketHeader> phl = new ArrayList<>();
-        phl.add(new PacketHeader("attribute", "username"));
-        phl.add(new PacketHeader("attributeVal", "karma"));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        Packet packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "username");
+        packet.addHeader("attributeVal", "karma");
 
-        GetUsersFromAttributeHandler h = new GetUsersFromAttributeHandler();
-        ObjectListPacket<User> o = (ObjectListPacket<User>) h.handle(new Packet("this dosent matter", phl), null);
-        assertEquals(1, o.getObjList().size());
-        assertEquals("karma", o.getObjList().get(0).getUsername());
+        ObjectListPacket<User> resp = (ObjectListPacket<User>) handler.handle(packet, null);
+        assertEquals(1, resp.getObjList().size());
+        assertEquals("karma", resp.getObjList().get(0).getUsername());
 
-        phl.clear();
-        phl.add(new PacketHeader("attribute", "password"));
-        phl.add(new PacketHeader("attributeVal", "1awd234"));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "password");
+        packet.addHeader("attributeVal", "1awd234");
 
-        ObjectListPacket<User> o2 = (ObjectListPacket<User>) h.handle(new Packet("this dosent matter", phl), null);
-        assertEquals(1, o2.getObjList().size());
-        assertEquals("1awd234", o2.getObjList().get(0).getPassword());
+        resp = (ObjectListPacket<User>) handler.handle(packet, null);
+        assertEquals(1, resp.getObjList().size());
+        assertEquals("1awd234", resp.getObjList().get(0).getPassword());
 
-        phl.clear();
-        phl.add(new PacketHeader("attribute", "password"));
-        phl.add(new PacketHeader("attributeVal", "1234"));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "password");
+        packet.addHeader("attributeVal", "1234");
 
-        ObjectListPacket<User> o3 = (ObjectListPacket<User>) h.handle(new Packet("this dosent matter", phl), null);
-        assertEquals(3, o3.getObjList().size());
+        resp = (ObjectListPacket<User>) handler.handle(packet, null);
+        assertEquals(3, resp.getObjList().size());
+        assertEquals("1234", resp.getObjList().get(0).getPassword());
 
-        phl.clear();
-        phl.add(new PacketHeader("attribute", "password"));
-        phl.add(new PacketHeader("attributeVal", "12222234"));
-        phl.add( new PacketHeader("Session-Token", session.getToken()));
+        packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "password");
+        packet.addHeader("attributeVal", "12222234");
 
-        ObjectListPacket<User> o4 = (ObjectListPacket<User>) h.handle(new Packet("this dosent matter", phl), null);
-        assertEquals(0, o4.getObjList().size());
+        resp = (ObjectListPacket<User>) handler.handle(packet, null);
+        assertEquals(0, resp.getObjList().size());
     }
 
     @Test

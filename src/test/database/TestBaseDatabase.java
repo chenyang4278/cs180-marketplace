@@ -4,6 +4,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import java.io.File;
+
 import static org.junit.Assert.*;
 
 /**
@@ -19,12 +21,13 @@ public class TestBaseDatabase {
 
     @Test
     public void testACreate() throws DatabaseNotFoundException {
+        new File("userDb.csv").delete();
 
         String[] headers = {"username", "password", "balance", "rating"};
         Database userDb = new Database("userDb.csv", headers);
 
 
-        String[] user1 = {"karma", "pass2word123", "821.21", "12"};
+        String[] user1 = {"karma", "", "821.21", "12"};
         String[] user2 = {"kar3ma", "passw2ord123", "821.21", "12"};
         String[] user3 = {"ka2rma", "pass2word123", "821.21", "12"};
         String[] user4 = {"ka\"2\"rma\",\"", "password123", "821.21", "12"};
@@ -49,6 +52,8 @@ public class TestBaseDatabase {
         String[] headers = {"username", "password", "balance", "rating"};
         Database userDb = new Database("userDb.csv", headers);
 
+        assertArrayEquals(new String[]{"karma", "", "821.21", "12"},
+            userDb.get("username", "karma").get(0));
         assertArrayEquals(new String[]{"ka\"2\"rma\",\"", "password123", "821.21", "12"},
                 userDb.get("username", "ka\"2\"rma\",\"").get(0));
         assertArrayEquals(new String[]{"ka\"2\"rma\",\"", "passw2ord123", "7821.21", "12"},

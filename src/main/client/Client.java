@@ -39,7 +39,7 @@ public class Client implements IClient {
     public User getUser() {
         try {
             ArrayList<PacketHeader> headers = new ArrayList<>();
-            return sendObjectPacketRequest("/user/" + currentUserId, headers, User.class);
+            return sendObjectPacketRequest("/users/" + currentUserId, headers, User.class);
         } catch (Exception e) {
             System.out.println("User update failed: " + e.getMessage());
             return null;
@@ -58,6 +58,10 @@ public class Client implements IClient {
 
     public <T extends Table> T sendObjectPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
             throws IOException, PacketParsingException, ErrorPacketException {
+        if (headers == null) {
+            headers = new ArrayList<>();
+        }
+
         Packet packet = new Packet(path, headers);
         packet.addHeader("Session-Token", sessionToken);
         packet.write(oStream);
@@ -68,6 +72,10 @@ public class Client implements IClient {
 
     public <T extends Table> List<T> sendObjectListPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
             throws IOException, PacketParsingException, ErrorPacketException {
+        if (headers == null) {
+            headers = new ArrayList<>();
+        }
+
         Packet packet = new Packet(path, headers);
         packet.addHeader("Session-Token", sessionToken);
         packet.write(oStream);
@@ -78,6 +86,10 @@ public class Client implements IClient {
 
     public SuccessPacket sendSuccessPacketRequest(String path, List<PacketHeader> headers)
             throws IOException, PacketParsingException, ErrorPacketException {
+        if (headers == null) {
+            headers = new ArrayList<>();
+        }
+
         Packet packet = new Packet(path, headers);
         packet.addHeader("Session-Token", sessionToken);
         packet.write(oStream);
@@ -122,7 +134,7 @@ public class Client implements IClient {
     public boolean createUser(String username, String password) {
         try {
             List<PacketHeader> headers = createHeaders("username", username, "password", password);
-            User user = sendObjectPacketRequest("/user/create", headers, User.class);
+            User user = sendObjectPacketRequest("/users/create", headers, User.class);
             this.currentUserId = user.getId();
             return true;
         } catch (Exception e) {
@@ -134,13 +146,12 @@ public class Client implements IClient {
     public Listing createListing(String title, String description, double price, String image) {
         try {
             List<PacketHeader> headers = createHeaders(
-                    "username", getUser().getUsername(),
                     "title", title,
                     "description", description,
                     "price", String.valueOf(price),
                     "image", image
             );
-            return sendObjectPacketRequest("/listing/create", headers, Listing.class);
+            return sendObjectPacketRequest("/listings/create", headers, Listing.class);
         } catch (Exception e) {
             System.out.println("Listing creation failed: " + e.getMessage());
             return null;
@@ -149,11 +160,7 @@ public class Client implements IClient {
 
     public boolean buyListing(int listingId) {
         try {
-            List<PacketHeader> headers = createHeaders(
-                    "buyingId", String.valueOf(currentUserId),
-                    "listingId", String.valueOf(listingId)
-            );
-            sendObjectPacketRequest("/buy", headers, User.class);
+            sendObjectPacketRequest("listings/" + listingId + "/buy", null, User.class);
             return true;
         } catch (Exception e) {
             System.out.println("Purchase failed: " + e.getMessage());
@@ -164,11 +171,10 @@ public class Client implements IClient {
     public boolean setUserBalance(double newBalance) {
         try {
             List<PacketHeader> headers = createHeaders(
-                    "userId", String.valueOf(currentUserId),
                     "attribute", "balance",
                     "attributeVal", String.valueOf(newBalance)
             );
-            sendObjectPacketRequest("/user/edit", headers, User.class);
+            sendObjectPacketRequest("/users/" + currentUserId + "/edit", headers, User.class);
             return true;
         } catch (Exception e) {
             System.out.println("Balance update failed: " + e.getMessage());
@@ -178,8 +184,7 @@ public class Client implements IClient {
 
     public boolean deleteUser() {
         try {
-            List<PacketHeader> headers = createHeaders("userId", String.valueOf(currentUserId));
-            sendSuccessPacketRequest("/user/delete", headers);
+            sendSuccessPacketRequest("/users/" + currentUserId + "/delete", null);
             this.currentUserId = -1;
             this.sessionToken = "";
             return true;
@@ -191,8 +196,7 @@ public class Client implements IClient {
 
     public boolean deleteListing(int listingId) {
         try {
-            List<PacketHeader> headers = createHeaders("listingId", String.valueOf(listingId));
-            sendSuccessPacketRequest("/listing/delete", headers);
+            sendSuccessPacketRequest("/listings/" + listingId + "/delete", null);
             return true;
         } catch (Exception e) {
             System.out.println("Listing deletion failed: " + e.getMessage());
@@ -216,11 +220,10 @@ public class Client implements IClient {
     public boolean sendMessage(int fromId, int toId, String body) {
         try {
             List<PacketHeader> headers = createHeaders(
-                    "senderId", String.valueOf(fromId),
                     "receiverId", String.valueOf(toId),
                     "message", body
             );
-            sendSuccessPacketRequest("/message/create", headers);
+            sendSuccessPacketRequest("/messages/create", headers);
             return true;
         } catch (Exception e) {
             System.out.println("Send message failed: " + e.getMessage());
@@ -230,22 +233,10 @@ public class Client implements IClient {
 
     public List<Message> getMessagesWithUser(int otherUserId) {
         try {
-            List<PacketHeader> headersForSToR = createHeaders(
-                    "senderId", String.valueOf(currentUserId),
-                    "receiverId", String.valueOf(otherUserId)
+            List<PacketHeader> headers = createHeaders(
+                    "otherUserId", String.valueOf(currentUserId)
             );
-            List<PacketHeader> headersForRToS = createHeaders(
-                    "senderId", String.valueOf(otherUserId),
-                    "receiverId", String.valueOf(currentUserId)
-            );
-            /* Call database twice because we need to get messages sent by user1 to user 2
-            * AND messages from user2 to user1. List of messages are appended together and returned, gui
-            * can parse message object (contains receiver and sender ids, and time data) for display purposes.
-             */
-            List<Message> sToR=  (List<Message>) sendObjectListPacketRequest("/get/messages", headersForSToR, Message.class);
-            List<Message> rToS=  (List<Message>) sendObjectListPacketRequest("/get/messages", headersForRToS, Message.class);
-            sToR.addAll(rToS);
-            return sToR;
+            return sendObjectListPacketRequest("/messages", headers, Message.class);
         } catch (Exception e) {
             System.out.println("Message retrieval failed: " + e.getMessage());
             return new ArrayList<>();
