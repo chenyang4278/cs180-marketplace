@@ -71,7 +71,7 @@ public abstract class PacketHandler implements IPacketHandler {
      *
      * @return User or null
      */
-    public User authenticate(Packet packet) {
+    public User getSessionUser(Packet packet) {
         PacketHeader sessionHeader = packet.getHeader("Session-Token");
         if (sessionHeader == null) {
             return null;

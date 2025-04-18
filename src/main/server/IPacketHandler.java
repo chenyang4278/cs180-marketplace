@@ -11,6 +11,6 @@ import packet.Packet;
  */
 public interface IPacketHandler {
     Packet handle(Packet packet, String[] args);
-    User authenticate(Packet packet);
+    User getSessionUser(Packet packet);
     String[] match(String matchingPath);
 }

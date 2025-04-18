@@ -42,11 +42,11 @@ public class TestPacketHandler {
     }
 
     @Test
-    public void testAuthenticate() throws DatabaseWriteException {
+    public void testGetSessionUser() throws DatabaseWriteException {
         TestingHandler t = new TestingHandler("/testing");
         Packet packet = new Packet();
         packet.addHeader("Session-Token", "invalid token");
-        assertNull(t.authenticate(packet));
+        assertNull(t.getSessionUser(packet));
 
         User newUser = new User("username", "password");
         DatabaseWrapper.get().save(newUser);
@@ -56,6 +56,6 @@ public class TestPacketHandler {
 
         packet = new Packet();
         packet.addHeader("Session-Token", session.getToken());
-        assertEquals(newUser.getId(), t.authenticate(packet).getId());
+        assertEquals(newUser.getId(), t.getSessionUser(packet).getId());
     }
 }

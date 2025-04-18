@@ -24,7 +24,7 @@ public class DeleteUserHandler extends PacketHandler implements IDeleteUserHandl
 
     @Override
     public Packet handle(Packet packet, String[] args) {
-        User user = authenticate(packet);
+        User user = getSessionUser(packet);
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
