@@ -13,24 +13,21 @@ Vocareum submission: Ayden Cline
 ### Phase 2
 Vocareum submission: 
 
-## Database
-### Database.java
-- Karma Luitel
-- This class provides 4 main operations and directly interacts with .csv files used as our database. It is initialized using a filename which will be used to reference the csv file it is using, and a set of String headers which refer to the columns of the database. The write method will take an array corresponding to a row of the csv file and append it to the next line of the csv file. The update method, which is overloaded, will take a header value pair to identify a specific line, and either update the value of another specified header or update the entire line, depending on which overloaded method is called. The get method will take in a header value pair identifying a line and return the original array representation of that line.  Finally the delete method will delete the line for a given header value pair.  All three (get, delete, update) methods will perform their actions on multiple lines if multiple header value pairs are found, and will also all throw a DatabaseNotFoundException if the given filename does not correspond to a valid database file. String sanitization is handled by modifying user input with quotes before writing and modifying before getting. Getters and setters also exist for the filename and header array, and all operations are thread safe. The associated interface is IDatabase.java, and the associated test file is TestBaseDatabase.java. Testing for the database class makes sure it can read, write, update, and delete lines correctly, and that it returns the correct error for an invalid database. The DatabaseWrapper class interfaces with Database to provide functionality for all other classes.
-### DatabaseWrapper.java
-- Ayden Cline
-- This class wraps the `Database` class with higher-level functions that work with the `Table` class. The class contains methods for getting and filtering objects from the database, saving objects to the database, and deleting objects from the database.
-- This is the sole class meant to be used for interacting with the database. Classes that need to use the database will call the static method `get` to get a global instance of the class and then use it as needed.
-- When performing any database actions for a specific object, it first determines the class of the object and fetches the database for that class, creating a new one if it doesn't exist. When getting or filtering objects from the database, it calls `Database.get` to get the values, then maps the values to their respective objects via `Table.fromRow`. When saving an object, it first determines whether it needs to create the object or update the object. Objects with an id of 0 are assumed to not exist yet, so a new database row is created with `Database.write`, and otherwise it uses the id to update the row in the database with `Database.update`. The values to be added/updated to the database come from `Table.asRow`. When deleting an object, it simply calls `Database.delete` for the object's id, or does nothing if the id is 0 (object doesn't exist).
-- The tests use the `TestTable` class created specifically for tests. The tests check that each method doesn't cause errors and that they take effect in the database. For example, after deleting an object, it attempts to get it from the database, ensuring it no longer exists. Additionally, there are tests to ensure intended behavior occurs for unexpected arguments and unintended function calls (e.g. calling `delete` twice). Lastly, there's a test that starts 5 threads at the same time, which each do heavy database work, and check everything was retrieved, saved, and deleted as intended.
+## Client
+### Client.java
+- Chen Yang
+- 
 
 ## Data
 ### Table.java
 - Ayden Cline
 - This is an abstract class designed to serialize an object to a list of strings and deserialize a list of strings back into an object. The class is not meant to be used directly, hence why it’s an abstract class. The class also contains an annotated id attribute, getters, and setters to be inherited by database objects.
 - Any class that extends `Table` defines its own fields annotated by the `TableField` annotation and provides an empty constructor. The classes that extend this one are `User`, `Message`, and `Listing` (aside from tests).
-- When serializing an object (`Table.asRow`), the `Table` class determines what fields to serialize and in what order by checking each field with the `TableField` annotation. When deserializing an object (`Table.fromRow`), an empty object is created using the empty constructor, then each attribute on the object is set according to the annotated fields and their index. Additionally, any class extending `Table` inherits a `save` and `delete` method that will get and call `DatabaseWrapper.save` and `DatabaseWrapper.delete` respectively; this is just for convenience (e.g. `user.setUsername("name"); user.save();`). Additionally, there is a method to get an array of the column names for the class, which is used in `DatabaseWrapper` to initialized the `Database` objects.
+- When serializing an object (`Table.asRow`), the `Table` class determines what fields to serialize and in what order by checking each field with the `TableField` annotation. When deserializing an object (`Table.fromRow`), an empty object is created using the empty constructor, then each attribute on the object is set according to the annotated fields and their index. Additionally, there is a method to get an array of the column names for the class, which is used in `DatabaseWrapper` to initialized the `Database` objects.
 - The tests use the `TestTable` class created specifically for tests. It tests that the object is correctly serialized and deserialized, checking against expected String arrays and TestTable objects. Additionally, it checks that the columns returned by `getColumns` are correct.
+### TableField.java
+- Ayden Cline
+- Allows an annotation to define a field as being able to be put in a table, used for easy database operations.
 ### Message.java
 - Ayden Cline
 - This class extends `Table` and holds information about a message.
@@ -50,21 +47,77 @@ Vocareum submission:
 - Testing associated with the Listing class mostly entails making sure the setters and getters return the right values when they are being used.
 - All of this allows for the other classes, such as user or databaseWrapper classes, use the methods that are created in this listing class.
 - Image support will be implemented through getImage() and setImage().
+### Session.java
+- Ayden Cline
+- 
+
+## Database
+### Database.java
+- Karma Luitel
+- This class provides 4 main operations and directly interacts with .csv files used as our database. It is initialized using a filename which will be used to reference the csv file it is using, and a set of String headers which refer to the columns of the database. The write method will take an array corresponding to a row of the csv file and append it to the next line of the csv file. The update method, which is overloaded, will take a header value pair to identify a specific line, and either update the value of another specified header or update the entire line, depending on which overloaded method is called. The get method will take in a header value pair identifying a line and return the original array representation of that line.  Finally the delete method will delete the line for a given header value pair.  All three (get, delete, update) methods will perform their actions on multiple lines if multiple header value pairs are found, and will also all throw a DatabaseNotFoundException if the given filename does not correspond to a valid database file. String sanitization is handled by modifying user input with quotes before writing and modifying before getting. Getters and setters also exist for the filename and header array, and all operations are thread safe. The associated interface is IDatabase.java, and the associated test file is TestBaseDatabase.java. Testing for the database class makes sure it can read, write, update, and delete lines correctly, and that it returns the correct error for an invalid database. The DatabaseWrapper class interfaces with Database to provide functionality for all other classes.
+### DatabaseWrapper.java
+- Ayden Cline
+- This class wraps the `Database` class with higher-level functions that work with the `Table` class. The class contains methods for getting and filtering objects from the database, saving objects to the database, and deleting objects from the database.
+- This is the sole class meant to be used for interacting with the database. Classes that need to use the database will call the static method `get` to get a global instance of the class and then use it as needed.
+- When performing any database actions for a specific object, it first determines the class of the object and fetches the database for that class, creating a new one if it doesn't exist. When getting or filtering objects from the database, it calls `Database.get` to get the values, then maps the values to their respective objects via `Table.fromRow`. When saving an object, it first determines whether it needs to create the object or update the object. Objects with an id of 0 are assumed to not exist yet, so a new database row is created with `Database.write`, and otherwise it uses the id to update the row in the database with `Database.update`. The values to be added/updated to the database come from `Table.asRow`. When deleting an object, it simply calls `Database.delete` for the object's id, or does nothing if the id is 0 (object doesn't exist).
+- The tests use the `TestTable` class created specifically for tests. The tests check that each method doesn't cause errors and that they take effect in the database. For example, after deleting an object, it attempts to get it from the database, ensuring it no longer exists. Additionally, there are tests to ensure intended behavior occurs for unexpected arguments and unintended function calls (e.g. calling `delete` twice). Lastly, there's a test that starts 5 threads at the same time, which each do heavy database work, and check everything was retrieved, saved, and deleted as intended.
+### DatabaseNotFoundException.java
+- Karma Luitel
+- Exception for when a database is missing.
+### DatabaseWriteException.java
+- Ayden Cline
+- An exception that handles a problematic database write.
+### RowNotFoundException.java
+- Ayden Cline
+- A exception that handles a row not found error for the database.
+
 
 ## Packet
+### Packet.java
+- Ayden Cline
+- 
+### PacketHeader.java
+- Ayden Cline
+- 
 ### SuccessPacket.java
 - Ayden Cline
+- 
 ### ErrorPacket.java
 - Ayden Cline
+- 
 ### ObjectPacket.java
 - Ayden Cline
+- 
 ### ObjectListPacket.java
 - Karma Luitel
 - This class extends SuccessPacket to account for having a list of objects that extend Table. This allows a list to be send from the client to server.
 - Testing associated with this class is done in TestResponsePacket - just test the getters and setters.
 - This class is used by various handlers such as GetListingsFromAttributeHandler, GetMessagesBetweenUsersHandler, GetUsersFromAttributeHandler, and Client to handle sending data in a list format.
+### ErrorPacketException.java
+- Ayden Cline
+- Thrown when an error packet is sent.
+### PacketParsingException.java
+- Ayden Cline
+- Thrown when a packet is formatted incorrectly.
+
+## Server
+### Server.java
+- Ayden Cline
+- Runs the server, creating a thread for every client running ClientHandler.java.
+### ClientHandler.java
+- Ayden Cline
+- Thrown when a packet is formatted incorrectly.
+### PacketHandler.java
+- Ayden Cline
+- 
 
 ## Server Handlers
+### HandlerUtil.java
+- Ayden Cline
+- 
+### LoginHandler.java
+- Ayden Cline
+- 
 ### BuyListingHandler.java
 - Karma Luitel
 - This class handles the calculations and database operations for a user buying a listing.
@@ -149,5 +202,3 @@ Vocareum submission:
 - All handler classes use Packet or subclasses of Packet to handle data transmission.
 - Testing for all handler classes is done in TestEndpointHandlers.
 - Handlers are utilized by Client.java to perform database operations from the client over the server.
-### LoginHandler.java
-- Ayden Cline
