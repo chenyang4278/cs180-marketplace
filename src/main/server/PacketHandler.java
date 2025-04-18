@@ -1,7 +1,13 @@
 package server;
 
+import data.Session;
+import data.User;
 import database.DatabaseWrapper;
-import packet.IPacketHandler;
+import database.RowNotFoundException;
+import packet.Packet;
+import packet.PacketHeader;
+
+import java.util.List;
 
 /**
  * PacketHandler
@@ -58,6 +64,30 @@ public abstract class PacketHandler implements IPacketHandler {
         }
 
         return args;
+    }
+
+    /**
+     * Returns the user that sent this packet, if they're logged in.
+     *
+     * @return User or null
+     */
+    public User authenticate(Packet packet) {
+        PacketHeader sessionHeader = packet.getHeader("Session-Token");
+        if (sessionHeader == null) {
+            return null;
+        }
+
+        String token = sessionHeader.getValues().get(0);
+        List<Session> sessions = db.filterByColumn(Session.class, "token", token);
+        if (sessions.isEmpty()) {
+            return null;
+        }
+
+        try {
+            return db.getById(User.class, sessions.get(0).getUserId());
+        } catch (RowNotFoundException ignored) {
+            return null;
+        }
     }
 }
 

@@ -80,21 +80,4 @@ public class TestPacket {
             fail("Exception during test: " + e.getMessage());
         }
     }
-
-    @Test
-    public void testGetUser() throws DatabaseWriteException {
-        Packet packet = new Packet();
-        packet.addHeader("Session-Token", "invalid token");
-        assertNull(packet.getUser());
-
-        User newUser = new User("username", "password");
-        DatabaseWrapper.get().save(newUser);
-
-        Session session = new Session(newUser.getId(), HandlerUtil.generateToken());
-        DatabaseWrapper.get().save(session);
-
-        packet = new Packet();
-        packet.addHeader("Session-Token", session.getToken());
-        assertEquals(newUser.getId(), packet.getUser().getId());
-    }
 }

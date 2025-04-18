@@ -1,6 +1,11 @@
-package packet;
+package server;
+import data.Session;
+import data.User;
+import database.DatabaseWrapper;
+import database.DatabaseWriteException;
 import org.junit.Test;
-import server.PacketHandler;
+import packet.Packet;
+import server.handlers.HandlerUtil;
 
 import static org.junit.Assert.*;
 
@@ -34,5 +39,23 @@ public class TestPacketHandler {
         assertEquals("2", t.match("/testing/1/2")[1]);
         TestingHandler t2 = new TestingHandler("/testing/:arg1/:arg2/:arg3");
         assertNull(t2.match("/testing/1/2"));
+    }
+
+    @Test
+    public void testAuthenticate() throws DatabaseWriteException {
+        TestingHandler t = new TestingHandler("/testing");
+        Packet packet = new Packet();
+        packet.addHeader("Session-Token", "invalid token");
+        assertNull(t.authenticate(packet));
+
+        User newUser = new User("username", "password");
+        DatabaseWrapper.get().save(newUser);
+
+        Session session = new Session(newUser.getId(), HandlerUtil.generateToken());
+        DatabaseWrapper.get().save(session);
+
+        packet = new Packet();
+        packet.addHeader("Session-Token", session.getToken());
+        assertEquals(newUser.getId(), t.authenticate(packet).getId());
     }
 }
