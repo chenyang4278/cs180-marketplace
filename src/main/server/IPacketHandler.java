@@ -1,4 +1,7 @@
-package packet;
+package server;
+
+import data.User;
+import packet.Packet;
 
 /**
  * IPacketHandler
@@ -8,5 +11,6 @@ package packet;
  */
 public interface IPacketHandler {
     Packet handle(Packet packet, String[] args);
+    User getSessionUser(Packet packet);
     String[] match(String matchingPath);
 }

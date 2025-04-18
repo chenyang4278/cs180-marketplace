@@ -1,6 +1,7 @@
 package client;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import data.Listing;
@@ -34,7 +35,7 @@ public class TestClient {
      * TestServer just acts as a class to keep a server running in the background 
      * in order for the clients to connect to during tests.
      */
-    class TestServer implements Runnable {
+    static class TestServer implements Runnable {
 
         @Override
         public void run() {
@@ -52,8 +53,8 @@ public class TestClient {
         }
         
     }
-    @Before
-    public void setUpServer() {
+    @BeforeClass
+    public static void setUpServer() {
         Thread serverThread = new Thread(new TestServer());
         serverThread.start();
     }
@@ -146,11 +147,11 @@ public class TestClient {
         
         buyer.setUserBalance(3);
         // should be false since balance 
-        assertFalse(buyer.buyListing(item.getListingId()));
+        assertFalse(buyer.buyListing(item.getId()));
 
         buyer.setUserBalance(10);
         // now balance is sufficient, should return true
-        assertTrue(buyer.buyListing(item.getListingId()));
+        assertTrue(buyer.buyListing(item.getId()));
 
         // after buying, the balance should reflect the purchase.
         assertEquals(10-5, buyer.getUser().getBalance(), 0.01);
@@ -161,10 +162,10 @@ public class TestClient {
 
         otherbuyer.setUserBalance(100000);
         // once item is sold, nobody else should be able to purchase
-        assertFalse(otherbuyer.buyListing(item.getListingId()));
+        assertFalse(otherbuyer.buyListing(item.getId()));
         assertEquals(100000, otherbuyer.getUser().getBalance(), 0.01);
 
-        seller.deleteListing(item.getListingId());
+        seller.deleteListing(item.getId());
         seller.deleteUser();
         buyer.deleteUser();
         otherbuyer.deleteUser();
@@ -197,7 +198,7 @@ public class TestClient {
         c.login("seller", "password");
 
         Listing item = c.createListing("necklace", "pearl", 100, "null");
-        int listingid = item.getListingId();
+        int listingid = item.getId();
         c.deleteListing(listingid);
 
         Client c2 = new Client("localhost", 12345);
@@ -237,8 +238,8 @@ public class TestClient {
         list = seller.searchListingsByAttribute("sellerName", seller.getUser().getUsername());
         assertEquals(2, list.size());
 
-        seller.deleteListing(item1.getListingId());
-        seller.deleteListing(item2.getListingId());
+        seller.deleteListing(item1.getId());
+        seller.deleteListing(item2.getId());
         seller.deleteUser();
             
     }
@@ -254,13 +255,13 @@ public class TestClient {
         c2.createUser("Bob", "pass");
         c2.login("Bob", "pass");
 
-        assertTrue(c1.sendMessage(c1.getUser().getId(), c2.getUser().getId(), "Hi Bob!"));
+        assertTrue(c1.sendMessage(c2.getUser().getId(), "Hi Bob!"));
 
         List<Message> history = c2.getMessagesWithUser(c1.getUser().getId());
         assertEquals(1, history.size());
         assertEquals("Hi Bob!", history.get(0).getMessage());
 
-        assertTrue(c2.sendMessage(c2.getUser().getId(), c1.getUser().getId(), "What's up Alice?"));
+        assertTrue(c2.sendMessage(c1.getUser().getId(), "What's up Alice?"));
         history = c1.getMessagesWithUser(c2.getUser().getId());
         assertEquals(2, history.size());
         

@@ -5,7 +5,7 @@ import database.DatabaseWrapper;
 import database.DatabaseWriteException;
 import database.RowNotFoundException;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
@@ -28,7 +28,7 @@ public class EditUserHandler extends PacketHandler implements IEditUserHandler {
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-        User user = packet.getUser();
+        User user = getSessionUser(packet);
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
@@ -47,7 +47,7 @@ public class EditUserHandler extends PacketHandler implements IEditUserHandler {
 
         if (attribute.equals("username")) {
             try {
-                DatabaseWrapper.get().getByColumn(User.class, "username", attributeVal);
+                db.getByColumn(User.class, "username", attributeVal);
                 return new ErrorPacket("Username already exists!");
             } catch (RowNotFoundException e) { e.getMessage(); }
         }

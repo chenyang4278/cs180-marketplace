@@ -4,7 +4,7 @@ import data.Listing;
 import data.User;
 import database.*;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
@@ -30,7 +30,7 @@ public class CreateListingHandler extends PacketHandler implements ICreateListin
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-        User user = packet.getUser();
+        User user = getSessionUser(packet);
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
@@ -57,7 +57,7 @@ public class CreateListingHandler extends PacketHandler implements ICreateListin
 
         try {
             Listing listing = new Listing(user.getId(), user.getUsername(), title, description, dbPrice, image, false);
-            listing.save();
+            db.save(listing);
             return new ObjectPacket<Listing>(listing);
         } catch (DatabaseWriteException ignored) {
             return new ErrorPacket("Database failure in creating listing");

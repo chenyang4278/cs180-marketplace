@@ -18,7 +18,7 @@ public class TestListing {
     public void testDefaultConstructorAndSetters() {
         Listing listing = new Listing();
 
-        listing.setListingId(69420);
+        listing.setId(69420);
         listing.setSellerId(89344);
         listing.setSellerName("Benjamin");
         listing.setTitle("Pokemon Cards");
@@ -27,7 +27,7 @@ public class TestListing {
         listing.setImage("9661e2091b0e2b4fcac790c6e23e616320d8f24edc828f2280c7a726e4f70b93");
         listing.setSold(false);
 
-        assertEquals(69420, listing.getListingId());
+        assertEquals(69420, listing.getId());
         assertEquals(89344, listing.getSellerId());
         assertEquals("Benjamin", listing.getSellerName());
         assertEquals("Pokemon Cards", listing.getTitle());
@@ -46,9 +46,9 @@ public class TestListing {
                 "c4e01474ba8a5420be8f6e30a01dc9346bbf3d84fc5765d233212418f69320db",
                 true);
 
-        listing.setListingId(202);
+        listing.setId(202);
 
-        assertEquals(202, listing.getListingId());
+        assertEquals(202, listing.getId());
         assertEquals(8910, listing.getSellerId());
         assertEquals("Benny", listing.getSellerName());
         assertEquals("Watch Band", listing.getTitle());
@@ -65,7 +65,7 @@ public class TestListing {
         Listing listing = new Listing(888, "Egan", "Charizard",
                 "Charizard is cool.", 500.00, "1020c855098e16e7820ac2eda00256a56f6f9eb9d5fa9473c85839164ffcbf48",
                 false);
-        listing.setListingId(777);
+        listing.setId(777);
 
         String expected = ("Listing: id = 777, sellerId = 888, sellerName = Egan," +
                 " title = Charizard, description = Charizard is cool., price = 500.00," +

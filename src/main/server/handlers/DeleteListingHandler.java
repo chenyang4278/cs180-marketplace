@@ -6,7 +6,7 @@ import database.DatabaseWriteException;
 import data.Listing;
 import database.RowNotFoundException;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.SuccessPacket;
 
@@ -25,7 +25,7 @@ public class DeleteListingHandler extends PacketHandler implements IDeleteListin
 
     @Override
     public Packet handle(Packet packet, String[] args) {
-        User user = packet.getUser();
+        User user = getSessionUser(packet);
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
@@ -35,8 +35,7 @@ public class DeleteListingHandler extends PacketHandler implements IDeleteListin
             if (listing.getSellerId() != user.getId()) {
                 return new ErrorPacket("Cannot delete another user's listing");
             }
-
-            listing.delete();
+            db.delete(listing);
             return new SuccessPacket();
         } catch (DatabaseWriteException e) {
             return new ErrorPacket("Database delete failure!");

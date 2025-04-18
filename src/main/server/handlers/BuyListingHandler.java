@@ -4,7 +4,7 @@ import data.Listing;
 import data.User;
 import database.*;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
@@ -29,7 +29,7 @@ public class BuyListingHandler extends PacketHandler implements IBuyListingHandl
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-        User user = packet.getUser();
+        User user = getSessionUser(packet);
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
@@ -40,20 +40,20 @@ public class BuyListingHandler extends PacketHandler implements IBuyListingHandl
             if (listing.isSold()) {
                 return new ErrorPacket("Item already has already been sold!");
             }
-
+          
             if (user.getBalance() < listing.getPrice() + EPSILON) {
                 return new ErrorPacket("User does not have enough balance to buy this item!");
             }
 
             user.setBalance(user.getBalance() - listing.getPrice());
-            user.save();
+            db.save(user);
 
             User seller = db.getById(User.class, listing.getSellerId());
             seller.setBalance(seller.getBalance() + listing.getPrice());
-            seller.save();
+            db.save(seller);
 
             listing.setSold(true);
-            listing.save();
+            db.save(listing);
 
             return new ObjectPacket<User>(user);
         } catch (DatabaseWriteException e) {

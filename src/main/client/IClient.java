@@ -46,7 +46,7 @@ public interface IClient {
 
     List<Listing> searchListingsByAttribute(String key, String value);
 
-    boolean sendMessage(int fromId, int toId, String body);
+    boolean sendMessage(int toId, String body);
 
     List<Message> getMessagesWithUser(int otherUserId);
 }

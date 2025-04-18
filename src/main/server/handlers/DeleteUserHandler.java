@@ -5,7 +5,7 @@ import data.User;
 import database.DatabaseWriteException;
 import database.RowNotFoundException;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.SuccessPacket;
 
@@ -24,7 +24,7 @@ public class DeleteUserHandler extends PacketHandler implements IDeleteUserHandl
 
     @Override
     public Packet handle(Packet packet, String[] args) {
-        User user = packet.getUser();
+        User user = getSessionUser(packet);
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
@@ -36,7 +36,7 @@ public class DeleteUserHandler extends PacketHandler implements IDeleteUserHandl
                 return new ErrorPacket("No permission to delete another user");
             }
 
-            userToDelete.delete();
+            db.delete(userToDelete);
             return new SuccessPacket();
         } catch (DatabaseWriteException e) {
             return new ErrorPacket("Database delete failure!");

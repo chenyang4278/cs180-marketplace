@@ -2,8 +2,9 @@ package server.handlers;
 
 import data.Listing;
 import data.User;
+import database.DatabaseWrapper;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectListPacket;
 
@@ -27,7 +28,7 @@ public class GetListingsFromAttributeHandler extends PacketHandler implements IG
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-        User user = packet.getUser();
+        User user = getSessionUser(packet);
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }

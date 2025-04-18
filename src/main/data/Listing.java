@@ -49,15 +49,6 @@ public class Listing extends Table implements IListing {
     }
 
     //general getter/setters for listing information
-    @Override
-    public int getListingId() {
-        return getId();
-    }
-
-    @Override
-    public void setListingId(int id) {
-        setId(id);
-    }
 
     @Override
     public int getSellerId() {

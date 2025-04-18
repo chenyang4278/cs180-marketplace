@@ -4,7 +4,7 @@ import data.Message;
 import data.User;
 import database.*;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
@@ -28,7 +28,7 @@ public class CreateMessageHandler extends PacketHandler implements ICreateMessag
      */
     @Override
     public Packet handle(Packet packet, String[] args) {
-        User user = packet.getUser();
+        User user = getSessionUser(packet);
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }
@@ -43,9 +43,8 @@ public class CreateMessageHandler extends PacketHandler implements ICreateMessag
             if (user.getId() == receiverId) {
                 return new ErrorPacket("You cannot message yourself!");
             }
-
             Message msg = new Message(user.getId(), receiverId, data[1]);
-            msg.save();
+            db.save(msg);
 
             return new ObjectPacket<Message>(msg);
         } catch (DatabaseWriteException e) {

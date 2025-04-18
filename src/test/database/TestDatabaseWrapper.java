@@ -26,7 +26,7 @@ public class TestDatabaseWrapper {
             tables[2] = new TestingClass("hi3", Integer.MAX_VALUE, Long.MIN_VALUE, Float.MAX_VALUE, Double.MIN_VALUE);
             tables[3] = new TestingClass("hi4", Integer.MIN_VALUE, Long.MAX_VALUE, Float.MIN_VALUE, Double.MAX_VALUE);
             for (TestingClass table : tables) {
-                table.save();
+                DatabaseWrapper.get().save(table);
             }
         } catch (DatabaseWriteException e) {
             e.printStackTrace();
@@ -105,7 +105,8 @@ public class TestDatabaseWrapper {
         table.setLongCount(10);
         table.setDecimal(5.62f);
         table.setPreciseDecimal(10.55d);
-        table.save();
+        DatabaseWrapper.get().save(table);
+
 
         TestingClass tableFromDb = DatabaseWrapper.get().getById(TestingClass.class, table.getId());
         assert tableFromDb != null;
@@ -124,7 +125,7 @@ public class TestDatabaseWrapper {
     @Test
     public void testDelete() throws DatabaseWriteException {
         TestingClass table = getTables()[0];
-        table.delete();
+        DatabaseWrapper.get().delete(table);
         try {
             TestingClass.getById(table.getId());
             fail("User was not deleted");
@@ -133,7 +134,7 @@ public class TestDatabaseWrapper {
         }
 
         // should do nothing
-        table.delete();
+        DatabaseWrapper.get().delete(table);
     }
 
     @Test
@@ -196,9 +197,9 @@ public class TestDatabaseWrapper {
                             200,
                             0.54f,
                             0.218d);
-                    t.save();
+                    DatabaseWrapper.get().save(t);
                     t.setCount(727);
-                    t.save();
+                    DatabaseWrapper.get().save(t);
                 }
 
                 DatabaseWrapper db = DatabaseWrapper.get();
@@ -210,7 +211,7 @@ public class TestDatabaseWrapper {
 
                 for (int i = 0; i < lTables.size(); i += 2) {
                     TestingClass t = lTables.get(i);
-                    t.delete();
+                    DatabaseWrapper.get().delete(t);
                 }
 
                 lTables = db.filterByColumn(TestingClass.class, "name", localName);

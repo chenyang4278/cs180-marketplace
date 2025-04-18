@@ -217,7 +217,7 @@ public class Client implements IClient {
         }
     }
 
-    public boolean sendMessage(int fromId, int toId, String body) {
+    public boolean sendMessage(int toId, String body) {
         try {
             List<PacketHeader> headers = createHeaders(
                     "receiverId", String.valueOf(toId),
@@ -234,7 +234,7 @@ public class Client implements IClient {
     public List<Message> getMessagesWithUser(int otherUserId) {
         try {
             List<PacketHeader> headers = createHeaders(
-                    "otherUserId", String.valueOf(currentUserId)
+                    "otherUserId", String.valueOf(otherUserId)
             );
             return sendObjectListPacketRequest("/messages", headers, Message.class);
         } catch (Exception e) {

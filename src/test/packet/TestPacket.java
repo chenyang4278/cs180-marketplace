@@ -1,6 +1,7 @@
 package packet;
 import data.Session;
 import data.User;
+import database.DatabaseWrapper;
 import database.DatabaseWriteException;
 import org.junit.Test;
 import server.handlers.HandlerUtil;
@@ -78,22 +79,5 @@ public class TestPacket {
         } catch (Exception e) {
             fail("Exception during test: " + e.getMessage());
         }
-    }
-
-    @Test
-    public void testGetUser() throws DatabaseWriteException {
-        Packet packet = new Packet();
-        packet.addHeader("Session-Token", "invalid token");
-        assertNull(packet.getUser());
-
-        User newUser = new User("username", "password");
-        newUser.save();
-
-        Session session = new Session(newUser.getId(), HandlerUtil.generateToken());
-        session.save();
-
-        packet = new Packet();
-        packet.addHeader("Session-Token", session.getToken());
-        assertEquals(newUser.getId(), packet.getUser().getId());
     }
 }

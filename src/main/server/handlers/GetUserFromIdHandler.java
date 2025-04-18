@@ -1,9 +1,10 @@
 package server.handlers;
 
+import database.DatabaseWrapper;
 import database.RowNotFoundException;
 import data.User;
 import packet.Packet;
-import packet.PacketHandler;
+import server.PacketHandler;
 import packet.response.ErrorPacket;
 import packet.response.ObjectPacket;
 
@@ -22,7 +23,7 @@ public class GetUserFromIdHandler extends PacketHandler implements IGetUserFromI
 
     @Override
     public Packet handle(Packet packet, String[] args) {
-        User user = packet.getUser();
+        User user = getSessionUser(packet);
         if (user == null) {
             return new ErrorPacket("Not logged in");
         }

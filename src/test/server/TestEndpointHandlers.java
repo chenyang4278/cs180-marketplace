@@ -62,9 +62,9 @@ public class TestEndpointHandlers {
             try {
                 User user = new User("testusername", HandlerUtil.hashPassword("my_password"));
                 user.setBalance(80);
-                user.save();
+                DatabaseWrapper.get().save(user);
                 Session session = new Session(user.getId(), HandlerUtil.generateToken());
-                session.save();
+                DatabaseWrapper.get().save(session);
                 sessionInfo = new SessionInfo(session, user);
             } catch (DatabaseWriteException e) {
                 throw new RuntimeException(e);
@@ -83,12 +83,12 @@ public class TestEndpointHandlers {
 
         User seller = new User("ayden", "pass");
         seller.setBalance(20);
-        seller.save();
+        DatabaseWrapper.get().save(seller);
 
         Listing listing = new Listing(seller.getId(), seller.getUsername(), "a keyboard",
                 "idk", 50.00, "null",
                 false);
-        listing.save();
+        DatabaseWrapper.get().save(listing);
 
         // test successful buy
         Packet packet = sessionInfo.makePacket();
@@ -111,7 +111,7 @@ public class TestEndpointHandlers {
 
         Listing listing2 = new Listing(seller.getId(), seller.getUsername(), "a keyboard",
                 "idk", 500.00, "null", false);
-        listing2.save();
+        DatabaseWrapper.get().save(listing2);
 
         // test not enough balance
         packet = sessionInfo.makePacket();
@@ -180,7 +180,8 @@ public class TestEndpointHandlers {
         CreateMessageHandler handler = new CreateMessageHandler();
 
         User receiver = new User("ayden", "123467");
-        receiver.save();
+        DatabaseWrapper.get().save(receiver);
+
 
         // successfully create message
         Packet packet = sessionInfo.makePacket();
@@ -236,15 +237,15 @@ public class TestEndpointHandlers {
         TestUtility.assertErrorPacket(resp);
 
         // duplicate username
-        new User("username", "password").save();
+        DatabaseWrapper.get().save(new User("username", "password"));
         packet = new Packet();
         packet.addHeader("username", "username");
         packet.addHeader("password", "my_password");
         resp = createUserHandler.handle(packet, new String[0]);
         TestUtility.assertErrorPacket(resp);
 
-        // empty values
-        new User("username", "password").save();
+        //empty values
+        DatabaseWrapper.get().save(new User("username", "password"));
         packet = new Packet();
         packet.addHeader("username", "");
         packet.addHeader("password", "");
@@ -275,7 +276,7 @@ public class TestEndpointHandlers {
 
         Listing listing = new Listing(sessionInfo.user.getId(), "karma", "a keyboard",
                 "idk", 50.00, "null", false);
-        listing.save();
+        DatabaseWrapper.get().save(listing);
 
         // successfully delete
         Packet packet = sessionInfo.makePacket();
@@ -300,10 +301,10 @@ public class TestEndpointHandlers {
         DeleteUserHandler handler = new DeleteUserHandler();
 
         User user = new User("karma", "1234");
-        user.save();
+        DatabaseWrapper.get().save(user);
 
         Session session = new Session(user.getId(), HandlerUtil.generateToken());
-        session.save();
+        DatabaseWrapper.get().save(session);
 
         String[] args = new String[] { "" + user.getId() };
 
@@ -320,7 +321,8 @@ public class TestEndpointHandlers {
 
         // try to delete user that does not exist
         ErrorPacket e = (ErrorPacket) handler.handle(packet, args);
-        assertEquals("User does not exist!", e.getMessage());
+        // will cause login to fail if user is deleted.
+        assertEquals("Not logged in", e.getMessage());
     }
 
     @Test
@@ -332,7 +334,7 @@ public class TestEndpointHandlers {
 
         Listing listing = new Listing(sessionInfo.user.getId(), sessionInfo.user.getUsername(), "a keyboard",
                 "idk", 50.00, "null", false);
-        listing.save();
+        DatabaseWrapper.get().save(listing);
 
         String[] args = new String[] { "" + listing.getId() };
 
@@ -406,8 +408,7 @@ public class TestEndpointHandlers {
         TestUtility.assertErrorPacket(handler.handle(packet, args));
 
         // duplicate username error
-        new User("duplicate username", "").save();
-
+        DatabaseWrapper.get().save(new User("duplicate username", ""));
         packet = sessionInfo.makePacket();
         packet.addHeader("attribute", "username");
         packet.addHeader("attributeVal", "duplicate username");
@@ -436,7 +437,7 @@ public class TestEndpointHandlers {
                 "idk", 50.00, "null", true)
         };
         for (Listing listing : listings) {
-            listing.save();
+            DatabaseWrapper.get().save(listing);
         }
 
         Packet packet = sessionInfo.makePacket();
@@ -469,9 +470,9 @@ public class TestEndpointHandlers {
         GetMessagesBetweenUsersHandler handler = new GetMessagesBetweenUsersHandler();
 
         User user1 = new User("karma", "verysecretpassword");
-        user1.save();
+        DatabaseWrapper.get().save(user1);
         User user2 = new User("ayden", "extrasecretpassword");
-        user2.save();
+        DatabaseWrapper.get().save(user2);
 
         Message[] messages = new Message[5] ;
         // add delay so that the timestamps are spaced out
@@ -485,7 +486,7 @@ public class TestEndpointHandlers {
         Thread.sleep(100);
         messages[4] = new Message(sessionInfo.user.getId(), user2.getId(), "this is another message from me to u2");
         for (Message msg : messages) {
-            msg.save();
+            DatabaseWrapper.get().save(msg);
         }
 
         // check messages between me and user 1
@@ -533,7 +534,7 @@ public class TestEndpointHandlers {
 
         // get new user
         User newUser = new User("karma", "verysecretpassword");
-        newUser.save();
+        DatabaseWrapper.get().save(newUser);
 
         packet = sessionInfo.makePacket();
         resp = handler.handle(packet, new String[] {"" + newUser.getId()});
@@ -558,7 +559,7 @@ public class TestEndpointHandlers {
             new User("karma5", "1234")
         };
         for (User user : users) {
-            user.save();
+            DatabaseWrapper.get().save(user);
         }
 
         Packet packet = sessionInfo.makePacket();
@@ -612,7 +613,7 @@ public class TestEndpointHandlers {
         TestUtility.assertErrorPacket(resp);
 
         User user = new User("username", HandlerUtil.hashPassword("my_password"));
-        user.save();
+        DatabaseWrapper.get().save(user);
 
         // invalid password for user
         packet = new Packet();
