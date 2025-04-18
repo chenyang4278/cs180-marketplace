@@ -14,9 +14,6 @@ package data;
  */
 
 public interface IListing {
-    int getListingId();
-
-    void setListingId(int id);
 
     int getSellerId();
 

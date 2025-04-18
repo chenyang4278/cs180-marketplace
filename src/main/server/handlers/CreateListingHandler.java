@@ -58,7 +58,7 @@ public class CreateListingHandler extends PacketHandler implements ICreateListin
 
         try {
             Listing listing = new Listing(user.getId(), user.getUsername(), title, description, dbPrice, image, false);
-            listing.save();
+            DatabaseWrapper.get().save(listing);
             return new ObjectPacket<Listing>(listing);
         } catch (DatabaseWriteException ignored) {
             return new ErrorPacket("Database failure in creating listing");

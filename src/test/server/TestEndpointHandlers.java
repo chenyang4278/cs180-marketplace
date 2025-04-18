@@ -247,7 +247,7 @@ public class TestEndpointHandlers {
         TestUtility.assertErrorPacket(resp);
 
         // duplicate username
-        new User("username", "password").save();
+        DatabaseWrapper.get().save(new User("username", "password"));
         packet = new Packet();
         packet.addHeader("username", "username");
         packet.addHeader("password", "my_password");
@@ -255,7 +255,7 @@ public class TestEndpointHandlers {
         TestUtility.assertErrorPacket(resp);
 
         //empty values
-        new User("username", "password").save();
+        DatabaseWrapper.get().save(new User("username", "password"));
         packet = new Packet();
         packet.addHeader("username", "");
         packet.addHeader("password", "");
@@ -680,7 +680,7 @@ public class TestEndpointHandlers {
         TestUtility.assertErrorPacket(resp);
 
         User user = new User("username", HandlerUtil.hashPassword("my_password"));
-        user.save();
+        DatabaseWrapper.get().save(user);
 
         // invalid password for user
         packet = new Packet();

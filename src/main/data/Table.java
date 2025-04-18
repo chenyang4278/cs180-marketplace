@@ -145,25 +145,4 @@ public abstract class Table implements ITable {
             throw new RuntimeException(e);
         }
     }
-
-    /**
-     * Saves the object to the database
-     * Call this method after making any changes to attributes.
-     * This method is only used server side, it is not used client side.
-     *
-     * @throws DatabaseWriteException
-     */
-    public void save() throws DatabaseWriteException {
-        DatabaseWrapper.get().save(this);
-    }
-
-    /**
-     * Deletes the object from the database
-     * This method is only used server side, it is not used client side.
-     *
-     * @throws DatabaseWriteException
-     */
-    public void delete() throws DatabaseWriteException {
-        DatabaseWrapper.get().delete(this);
-    }
 }

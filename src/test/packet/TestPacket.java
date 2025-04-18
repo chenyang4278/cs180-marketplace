@@ -1,6 +1,7 @@
 package packet;
 import data.Session;
 import data.User;
+import database.DatabaseWrapper;
 import database.DatabaseWriteException;
 import org.junit.Test;
 import server.handlers.HandlerUtil;
@@ -87,10 +88,10 @@ public class TestPacket {
         assertNull(packet.getUser());
 
         User newUser = new User("username", "password");
-        newUser.save();
+        DatabaseWrapper.get().save(newUser);
 
         Session session = new Session(newUser.getId(), HandlerUtil.generateToken());
-        session.save();
+        DatabaseWrapper.get().save(session);
 
         packet = new Packet();
         packet.addHeader("Session-Token", session.getToken());

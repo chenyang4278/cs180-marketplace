@@ -48,7 +48,7 @@ public class LoginHandler extends PacketHandler implements ILoginHandler {
         // save session and return new session token
         try {
             for (Session session : db.filterByColumn(Session.class, "user_id", Integer.toString(user.getId()))) {
-                session.delete();
+                DatabaseWrapper.get().delete(session);
             }
 
             // make sure duplicate token isn't added
@@ -60,7 +60,7 @@ public class LoginHandler extends PacketHandler implements ILoginHandler {
             } while (!db.filterByColumn(Session.class, "token", token).isEmpty());
 
             Session session = new Session(user.getId(), token);
-            session.save();
+            DatabaseWrapper.get().save(session);
 
             Packet resp = new ObjectPacket<User>(user);
             resp.addHeader("Session-Token", session.getToken());

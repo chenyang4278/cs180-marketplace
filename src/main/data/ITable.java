@@ -18,8 +18,4 @@ public interface ITable extends Serializable {
     void setId(int id);
 
     String[] asRow();
-
-    void save() throws DatabaseWriteException;
-
-    void delete() throws DatabaseWriteException;
 }
