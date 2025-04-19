@@ -563,6 +563,8 @@ public class TestEndpointHandlers {
             new User("karma4", "1234"),
             new User("karma5", "1234")
         };
+        users[3].setBalance(50.0);
+        users[4].setBalance(50.0);
         for (User user : users) {
             DatabaseWrapper.get().save(user);
         }
@@ -574,26 +576,27 @@ public class TestEndpointHandlers {
         ObjectListPacket<User> resp = (ObjectListPacket<User>) handler.handle(packet, null);
         assertEquals(1, resp.getObjList().size());
         assertEquals("karma", resp.getObjList().get(0).getUsername());
+        assertNull(resp.getObjList().get(0).getPassword());
 
         packet = sessionInfo.makePacket();
         packet.addHeader("attribute", "password");
         packet.addHeader("attributeVal", "1awd234");
 
-        resp = (ObjectListPacket<User>) handler.handle(packet, null);
-        assertEquals(1, resp.getObjList().size());
-        assertEquals("1awd234", resp.getObjList().get(0).getPassword());
+        Packet err = handler.handle(packet, null);
+        TestUtility.assertErrorPacket(err);
 
         packet = sessionInfo.makePacket();
-        packet.addHeader("attribute", "password");
-        packet.addHeader("attributeVal", "1234");
+        packet.addHeader("attribute", "balance");
+        packet.addHeader("attributeVal", "50.0");
 
         resp = (ObjectListPacket<User>) handler.handle(packet, null);
-        assertEquals(3, resp.getObjList().size());
-        assertEquals("1234", resp.getObjList().get(0).getPassword());
+        assertEquals(2, resp.getObjList().size());
+        assertEquals(null, resp.getObjList().get(0).getPassword());
+        assertEquals(50.0, resp.getObjList().get(0).getBalance(), 0.1);
 
         packet = sessionInfo.makePacket();
-        packet.addHeader("attribute", "password");
-        packet.addHeader("attributeVal", "12222234");
+        packet.addHeader("attribute", "balance");
+        packet.addHeader("attributeVal", "200.0");
 
         resp = (ObjectListPacket<User>) handler.handle(packet, null);
         assertEquals(0, resp.getObjList().size());

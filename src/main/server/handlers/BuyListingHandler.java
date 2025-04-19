@@ -53,6 +53,7 @@ public class BuyListingHandler extends PacketHandler implements IBuyListingHandl
             listing.setSold(true);
             db.save(listing);
 
+            user.setPassword(null);
             return new ObjectPacket<User>(user);
         } catch (DatabaseWriteException e) {
             return new ErrorPacket("Database update error!");

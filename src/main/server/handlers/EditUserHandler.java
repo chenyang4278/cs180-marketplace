@@ -56,6 +56,10 @@ public class EditUserHandler extends PacketHandler implements IEditUserHandler {
             }
         }
 
+        if (attribute.equals("password")) {
+            attributeVal = HandlerUtil.hashPassword(attributeVal);
+        }
+
         try {
             int id = Integer.parseInt(args[0]);
             User userToUpdate = db.getById(User.class, id);
@@ -64,7 +68,10 @@ public class EditUserHandler extends PacketHandler implements IEditUserHandler {
             }
 
             db.setById(User.class, id, attribute, attributeVal);
-            return new ObjectPacket<User>(db.getById(User.class, id));
+
+            User updatedUser = db.getById(User.class, id);
+            updatedUser.setPassword(null);
+            return new ObjectPacket<User>(updatedUser);
         } catch (RowNotFoundException e) {
             return new ErrorPacket("User not found!");
         } catch (DatabaseWriteException e) {

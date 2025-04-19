@@ -30,6 +30,7 @@ public class GetUserFromIdHandler extends PacketHandler implements IGetUserFromI
 
         try {
             User requestedUser = db.getById(User.class, Integer.parseInt(args[0]));
+            requestedUser.setPassword(null);
             return new ObjectPacket<>(requestedUser);
         } catch (RowNotFoundException ignored) {
             return new ErrorPacket("User not found");
