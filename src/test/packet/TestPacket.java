@@ -80,4 +80,19 @@ public class TestPacket {
             fail("Exception during test: " + e.getMessage());
         }
     }
+
+    @Test
+    public void testGetHeaderValues() {
+        try {
+            ArrayList<PacketHeader> headers = new ArrayList<PacketHeader>();
+            headers.add(new PacketHeader("testHeader", "first header"));
+            headers.add(new PacketHeader("testHeader2", "first header 2"));
+            Packet p = new Packet("mypath", headers);
+            String[] vals = p.getHeaderValues("testHeader", "testHeader2");
+            assertEquals("first header", vals[0]);
+            assertEquals("first header 2", vals[1]);
+        } catch (Exception e) {
+            fail("Exception during test: " + e.getMessage());
+        }
+    }
 }

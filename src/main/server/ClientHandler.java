@@ -13,6 +13,8 @@ import java.net.Socket;
  * Does initial handling of packets coming from clients.
  * The packets are then sent to their proper handler or
  * a path not found error is returned.
+ * Note that since this course does not expect to test over network io, and
+ * this class just handles network packets, it has no testcases.
  *
  * @author Ayden Cline
  * @version 4/12/25
