@@ -16,7 +16,9 @@ Vocareum submission:
 ## Client
 ### Client.java
 - Chen Yang
-- 
+- Client is a class that handles communication between the frontend and the backend. It opens a socket connection to the server and sends/receives serialized packets. It does not store any local user or listing data; all data is retrieved through network calls to the server. Client only stores the user’s ID and session token after logging in. When user information is needed, the class calls the `/user/:id` endpoint to retrieve the most up-to-date user object. This ensures the user data is always fresh and consistent with the database. Client implements the IClient interface. IClient defines all required methods like login, user creation, listing creation, search, messaging, and data deletion. By implementing this interface, Client ensures consistency and makes testing or mocking easier. All packets are sent through three generic methods: sendObjectPacketRequest, sendObjectListPacketRequest, and sendSuccessPacketRequest. These methods construct a Packet, attach the session token, send the packet over the socket, and parse the appropriate type of response from the server. Each action such as creating a user, buying a listing, sending a message, has a specific method that builds the required headers, sends the request to the corresponding route, and returns either an object, a list, or a success result. Message retrieval calls the server twice — once for messages sent and once for messages received, then combines the results to return a complete conversation. The Client class also includes a static method called createHeaders. This utility is used to build a list of PacketHeader objects from alternating key-value Strings, to reduce repeated boilerplate when preparing requests. Overall, this class provides a clean and consistent API for interacting with the server. It is ready to be integrated with a frontend and supports full account, listing, and message functionality.
+
+
 
 ## Data
 ### Table.java
