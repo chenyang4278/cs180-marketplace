@@ -7,6 +7,7 @@ import data.Table;
  *
  * @author Karma Luitel
  * @version 4/14/25
+ * @param <T>
  */
 public interface IObjectPacket<T extends Table> {
     T getObj();

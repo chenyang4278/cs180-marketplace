@@ -6,6 +6,14 @@ import server.handlers.HandlerUtil;
 
 import static org.junit.Assert.*;
 
+/**
+ * TestHandlerUtil Class
+ * <p>
+ * A class to test the HandlerUtil class.
+ *
+ * @author Ayden Cline, lab L24
+ * @version 4/12/25
+ */
 public class TestHandlerUtil {
     @Test
     public void testHex() {

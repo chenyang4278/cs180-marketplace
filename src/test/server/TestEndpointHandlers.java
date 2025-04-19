@@ -25,12 +25,21 @@ import static org.junit.Assert.*;
 /**
  * TestEndpointHandlers Class
  * <p>
- * A class to test JUnit tests for endpoints.
+ * A class to run JUnit tests for endpoints.
  *
  * @author Karma Luitel, lab L24
  * @version 4/13/25
  */
 public class TestEndpointHandlers {
+
+    /**
+     * SessionInfo Class
+     * <p>
+     * A private class to handle making sessions only used in testing.
+     *
+     * @author Ayden Cline, lab L24
+     * @version 4/13/25
+     */
     private static class SessionInfo {
         private Session session;
         private User user;
@@ -57,7 +66,7 @@ public class TestEndpointHandlers {
         sessionInfo = null;
     }
 
-    private SessionInfo getSession() {
+    private void getSession() {
         if (sessionInfo == null) {
             try {
                 User user = new User("testusername", HandlerUtil.hashPassword("my_password"));
@@ -70,14 +79,12 @@ public class TestEndpointHandlers {
                 throw new RuntimeException(e);
             }
         }
-
-        return sessionInfo;
     }
 
     @Test
     public void testBuyListingHandler() throws DatabaseWriteException, RowNotFoundException {
         clearDb();
-        SessionInfo sessionInfo = getSession();
+        getSession();
         BuyListingHandler handler = new BuyListingHandler();
         DatabaseWrapper db = DatabaseWrapper.get();
 
@@ -130,7 +137,7 @@ public class TestEndpointHandlers {
     @Test
     public void testCreateListingHandler() throws RowNotFoundException {
         clearDb();
-        SessionInfo sessionInfo = getSession();
+        getSession();
         CreateListingHandler createListingHandler = new CreateListingHandler();
 
         Packet packet = sessionInfo.makePacket();
@@ -176,7 +183,7 @@ public class TestEndpointHandlers {
     @Test
     public void testCreateMessageHandler() throws DatabaseWriteException {
         clearDb();
-        SessionInfo sessionInfo = getSession();
+        getSession();
         CreateMessageHandler handler = new CreateMessageHandler();
 
         User receiver = new User("ayden", "123467");
@@ -271,7 +278,7 @@ public class TestEndpointHandlers {
     @Test
     public void testDeleteListingHandler() throws DatabaseWriteException {
         clearDb();
-        SessionInfo sessionInfo = getSession();
+        getSession();
         DeleteListingHandler handler = new DeleteListingHandler();
 
         Listing listing = new Listing(sessionInfo.user.getId(), "karma", "a keyboard",
@@ -328,7 +335,7 @@ public class TestEndpointHandlers {
     @Test
     public void testEditListingHandler() throws DatabaseWriteException, RowNotFoundException {
         clearDb();
-        SessionInfo sessionInfo = getSession();
+        getSession();
         EditListingHandler handler = new EditListingHandler();
         DatabaseWrapper db = DatabaseWrapper.get();
 
@@ -377,7 +384,7 @@ public class TestEndpointHandlers {
     @Test
     public void testEditUserHandler() throws RowNotFoundException, DatabaseWriteException {
         clearDb();
-        SessionInfo sessionInfo = getSession();
+        getSession();
         EditUserHandler handler = new EditUserHandler();
 
         String[] args = new String[] { "" + sessionInfo.user.getId() };
@@ -419,7 +426,7 @@ public class TestEndpointHandlers {
     @Test
     public void testGetListingsFromAttributeHandler() throws DatabaseWriteException {
         clearDb();
-        SessionInfo sessionInfo = getSession();
+        getSession();
         GetListingsFromAttributeHandler handler = new GetListingsFromAttributeHandler();
 
         Listing[] listings = new Listing[] {
@@ -466,7 +473,7 @@ public class TestEndpointHandlers {
     @Test
     public void testGetMessagesBetweenUsersHandler() throws DatabaseWriteException, InterruptedException {
         clearDb();
-        SessionInfo sessionInfo = getSession();
+        getSession();
         GetMessagesBetweenUsersHandler handler = new GetMessagesBetweenUsersHandler();
 
         User user1 = new User("karma", "verysecretpassword");
@@ -518,7 +525,7 @@ public class TestEndpointHandlers {
     @Test
     public void testGetUserFromIdHandler() throws DatabaseWriteException {
         clearDb();
-        SessionInfo sessionInfo = getSession();
+        getSession();
         GetUserFromIdHandler handler = new GetUserFromIdHandler();
 
         // get me
@@ -547,7 +554,7 @@ public class TestEndpointHandlers {
     @Test
     public void testGetUsersFromAttributeHandler() throws DatabaseWriteException {
         clearDb();
-        SessionInfo sessionInfo = getSession();
+        getSession();
         GetUsersFromAttributeHandler handler = new GetUsersFromAttributeHandler();
 
         User[] users = new User[] {

@@ -4,8 +4,17 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+/**
+ * HandlerUtil
+ * <p>
+ * Contains various operations for hashing useful in other handlers,
+ * such as for login.
+ *
+ * @author Ayden Cline
+ * @version 4/14/25
+ */
 public class HandlerUtil implements IHandlerUtil {
-    private static final SecureRandom secureRandom = new SecureRandom();
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     public static String hex(byte[] data) {
         StringBuilder hexString = new StringBuilder();
@@ -21,7 +30,7 @@ public class HandlerUtil implements IHandlerUtil {
 
     public static String generateToken() {
         byte[] tokenBytes = new byte[32];
-        secureRandom.nextBytes(tokenBytes);
+        SECURE_RANDOM.nextBytes(tokenBytes);
         return hex(tokenBytes);
     }
 

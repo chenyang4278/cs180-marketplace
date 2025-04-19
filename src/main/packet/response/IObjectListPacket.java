@@ -9,6 +9,7 @@ import java.util.ArrayList;
  *
  * @author Karma Luitel
  * @version 4/14/25
+ * @param <T>
  */
 public interface IObjectListPacket<T extends Table> {
     ArrayList<T> getObjList();

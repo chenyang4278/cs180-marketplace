@@ -130,7 +130,8 @@ public class DatabaseWrapper implements IDatabaseWrapper {
         //Avoid a race condition where multiple objects are being edited at the same time
         synchronized (lock) {
 
-            //sychronized for loop since db.getHeaders() might be different for clients in rare case db is not initialized
+            //sychronized for loop since db.getHeaders() might be different for clients in rare case
+            //db is not initialized
             //for loop run is also fairly constant (limited headers).
             String[] headers = db.getHeaders();
             boolean error = true;

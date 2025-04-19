@@ -16,9 +16,7 @@ import packet.response.ObjectPacket;
  * @author Karma Luitel
  * @version 4/13/25
  */
-public class BuyListingHandler extends PacketHandler implements IBuyListingHandler{
-
-    final double EPSILON = 1e-9;
+public class BuyListingHandler extends PacketHandler implements IBuyListingHandler {
 
     public BuyListingHandler() {
         super("listings/:id/buy");
@@ -40,8 +38,8 @@ public class BuyListingHandler extends PacketHandler implements IBuyListingHandl
             if (listing.isSold()) {
                 return new ErrorPacket("Item already has already been sold!");
             }
-          
-            if (user.getBalance() < listing.getPrice() + EPSILON) {
+
+            if (user.getBalance() < listing.getPrice() + 1e-9) {
                 return new ErrorPacket("User does not have enough balance to buy this item!");
             }
 

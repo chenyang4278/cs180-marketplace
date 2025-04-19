@@ -5,6 +5,14 @@ import packet.response.ErrorPacket;
 
 import static org.junit.Assert.*;
 
+/**
+ * TestUtility Class
+ * <p>
+ * A class to help test packets for the server.
+ *
+ * @author Ayden Cline, lab L24
+ * @version 4/12/25
+ */
 public class TestUtility {
     public static void assertNotErrorPacket(Packet packet) {
         if (packet instanceof ErrorPacket) {

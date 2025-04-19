@@ -70,8 +70,9 @@ public class Client implements IClient {
         return o.getObj();
     }
 
-    private <T extends Table> List<T> sendObjectListPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
-            throws IOException, PacketParsingException, ErrorPacketException {
+    private <T extends Table> List<T> sendObjectListPacketRequest(String path,
+            List<PacketHeader> headers, Class<T> type) throws IOException, PacketParsingException,
+            ErrorPacketException {
         if (headers == null) {
             headers = new ArrayList<>();
         }

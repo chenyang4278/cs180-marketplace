@@ -80,7 +80,8 @@ public class Packet implements IPacket, Serializable {
      * @throws PacketParsingException thrown if the object read isn't a valid packet object
      * @throws ErrorPacketException thrown if an error packet is returned
      */
-    public static <T extends Packet> T read(InputStream stream) throws IOException, PacketParsingException, ErrorPacketException {
+    public static <T extends Packet> T read(InputStream stream) throws IOException,
+            PacketParsingException, ErrorPacketException {
         ObjectInputStream ois = new ObjectInputStream(stream);
         try {
             Packet packet = (Packet) ois.readObject();

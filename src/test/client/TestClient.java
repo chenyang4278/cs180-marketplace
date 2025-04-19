@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/*
+/**
  * TestClient
  * <p>
  * A class that runs JUnit tests on methods in the Client.java class.
@@ -31,9 +31,14 @@ import java.util.concurrent.Executors;
  */
 public class TestClient {
 
-    /*
+    /**
+     * TestServer
+     *  * <p>
      * TestServer just acts as a class to keep a server running in the background 
      * in order for the clients to connect to during tests.
+     *
+     * @author Ian Ogden
+     * @version 4/16/25
      */
     static class TestServer implements Runnable {
 
@@ -154,7 +159,7 @@ public class TestClient {
         assertTrue(buyer.buyListing(item.getId()));
 
         // after buying, the balance should reflect the purchase.
-        assertEquals(10-5, buyer.getUser().getBalance(), 0.01);
+        assertEquals(10 - 5, buyer.getUser().getBalance(), 0.01);
 
         Client otherbuyer = new Client("localhost", 12345);
         otherbuyer.createUser("buyer2", "pw");
