@@ -44,6 +44,7 @@ public class CreateUserHandler extends PacketHandler implements ICreateUserHandl
             User user = new User(username, HandlerUtil.hashPassword(password));
             try {
                 db.save(user);
+                user.setPassword(null);
                 return new ObjectPacket<User>(user);
             } catch (DatabaseWriteException e) {
                 return new ErrorPacket("Database failure in creating user");

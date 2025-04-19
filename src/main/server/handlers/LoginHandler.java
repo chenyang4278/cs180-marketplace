@@ -62,6 +62,7 @@ public class LoginHandler extends PacketHandler implements ILoginHandler {
             Session session = new Session(user.getId(), token);
             db.save(session);
 
+            user.setPassword(null);
             Packet resp = new ObjectPacket<User>(user);
             resp.addHeader("Session-Token", session.getToken());
             return resp;
