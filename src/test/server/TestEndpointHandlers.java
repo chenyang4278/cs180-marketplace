@@ -436,7 +436,7 @@ public class TestEndpointHandlers {
                     "idk", 20.00, "null", true),
             new Listing(2, "chen", "a 3 keyboard",
                     "idk", 50.00, "null", true),
-                new Listing(3, "idk", "a 4 keyboard",
+            new Listing(3, "idk", "a 4 keyboard",
                     "idk", 50.00, "null", true),
             new Listing(1, "karma", "a 5 keyboard",
                     "idk", 50.00, "null", true)
