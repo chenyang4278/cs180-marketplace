@@ -18,7 +18,9 @@ import packet.response.ObjectPacket;
  * @version 4/13/25
  */
 public class EditUserHandler extends PacketHandler implements IEditUserHandler {
-    public EditUserHandler() { super("/users/:id/edit"); }
+    public EditUserHandler() {
+        super("/users/:id/edit");
+    }
 
     /* For example, an attribute would be "username", an attribute val would be "karma"
      * Expected PacketHeaders:
@@ -49,7 +51,9 @@ public class EditUserHandler extends PacketHandler implements IEditUserHandler {
             try {
                 db.getByColumn(User.class, "username", attributeVal);
                 return new ErrorPacket("Username already exists!");
-            } catch (RowNotFoundException e) { e.getMessage(); }
+            } catch (RowNotFoundException e) {
+                e.getMessage();
+            }
         }
 
         try {

@@ -19,7 +19,9 @@ import java.util.ArrayList;
  * @version 4/13/25
  */
 public class GetListingsFromAttributeHandler extends PacketHandler implements IGetListingsFromAttributeHandler {
-    public GetListingsFromAttributeHandler() { super("/listings/attribute"); }
+    public GetListingsFromAttributeHandler() {
+        super("/listings/attribute");
+    }
 
     /* For example, an attribute would be "username", an attribute val would be "karma"
      * Expected PacketHeaders:

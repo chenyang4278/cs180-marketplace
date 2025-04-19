@@ -19,7 +19,9 @@ import packet.response.ObjectPacket;
  * @version 4/13/25
  */
 public class EditListingHandler extends PacketHandler implements IEditListingHandler {
-    public EditListingHandler() { super("/listings/:id/edit"); }
+    public EditListingHandler() {
+        super("/listings/:id/edit");
+    }
 
     /* For example, an attribute would be "username", an attribute val would be "karma"
      * Expected headers:

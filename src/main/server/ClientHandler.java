@@ -18,20 +18,20 @@ import java.net.Socket;
  * @version 4/12/25
  */
 public class ClientHandler implements Runnable, IClientHandler {
-    public static PacketHandler[] handlers = new PacketHandler[] {
-        new BuyListingHandler(),
-        new CreateListingHandler(),
-        new CreateMessageHandler(),
-        new CreateUserHandler(),
-        new DeleteListingHandler(),
-        new DeleteUserHandler(),
-        new EditListingHandler(),
-        new EditUserHandler(),
-        new GetListingsFromAttributeHandler(),
-        new GetMessagesBetweenUsersHandler(),
-        new GetUserFromIdHandler(),
-        new GetUsersFromAttributeHandler(),
-        new LoginHandler()
+    public static PacketHandler[] handlers = new PacketHandler[]{
+            new BuyListingHandler(),
+            new CreateListingHandler(),
+            new CreateMessageHandler(),
+            new CreateUserHandler(),
+            new DeleteListingHandler(),
+            new DeleteUserHandler(),
+            new EditListingHandler(),
+            new EditUserHandler(),
+            new GetListingsFromAttributeHandler(),
+            new GetMessagesBetweenUsersHandler(),
+            new GetUserFromIdHandler(),
+            new GetUsersFromAttributeHandler(),
+            new LoginHandler()
     };
 
     private Socket socket;

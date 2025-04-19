@@ -22,7 +22,9 @@ import java.util.stream.Stream;
  * @version 4/13/25
  */
 public class GetMessagesBetweenUsersHandler extends PacketHandler implements IGetMessagesBetweenUsersHandler {
-    public GetMessagesBetweenUsersHandler() { super("/messages"); }
+    public GetMessagesBetweenUsersHandler() {
+        super("/messages");
+    }
 
     /*
      * Expected PacketHeaders:
@@ -47,23 +49,23 @@ public class GetMessagesBetweenUsersHandler extends PacketHandler implements IGe
             }
 
             List<Message> sentMessages = db.filterByColumn(
-                Message.class,
-                "senderId",
-                "" + user.getId()
+                    Message.class,
+                    "senderId",
+                    "" + user.getId()
             );
             List<Message> receivedMessages = db.filterByColumn(
-                Message.class,
-                "receiverId",
-                "" + user.getId()
+                    Message.class,
+                    "receiverId",
+                    "" + user.getId()
             );
 
             // filter out messages between the two users
             // and return sorted by timestamp in order of recent to oldest
             ArrayList<Message> messages = (ArrayList<Message>) Stream.concat(
-                sentMessages.stream().filter((msg) -> msg.getReceiverId() == otherUserId),
-                receivedMessages.stream().filter((msg) -> msg.getSenderId() == otherUserId)
-            ).sorted((msg1, msg2) -> (int) (msg2.getTimestamp() - msg1.getTimestamp()))
-                .collect(Collectors.toList());
+                            sentMessages.stream().filter((msg) -> msg.getReceiverId() == otherUserId),
+                            receivedMessages.stream().filter((msg) -> msg.getSenderId() == otherUserId)
+                    ).sorted((msg1, msg2) -> (int) (msg2.getTimestamp() - msg1.getTimestamp()))
+                    .collect(Collectors.toList());
 
             return new ObjectListPacket<Message>(messages);
         } catch (NumberFormatException e) {
