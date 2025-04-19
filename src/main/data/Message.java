@@ -3,7 +3,7 @@ package data;
 /**
  * Message
  * <p>
- * A class that defines and allows operations on a message 
+ * A class that defines and allows operations on a message
  * being sent from a user to another user.
  *
  * @author Ayden Cline

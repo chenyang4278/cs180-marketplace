@@ -119,7 +119,7 @@ public class Listing extends Table implements IListing {
     public void setImage(String image) {
         this.image = image;
     }
-    
+
     @Override
     public String toString() {
         String priceString = String.format("%.2f", price);

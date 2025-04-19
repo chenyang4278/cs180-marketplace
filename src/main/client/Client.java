@@ -6,12 +6,12 @@ import packet.response.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
 import data.Table;
 import data.Listing;
 import data.User;
 import data.Message;
 
-//will add other functions tmr
 /**
  * Client
  * <p>
@@ -71,7 +71,7 @@ public class Client implements IClient {
     }
 
     private <T extends Table> List<T> sendObjectListPacketRequest(String path,
-            List<PacketHeader> headers, Class<T> type) throws IOException, PacketParsingException,
+                                                                  List<PacketHeader> headers, Class<T> type) throws IOException, PacketParsingException,
             ErrorPacketException {
         if (headers == null) {
             headers = new ArrayList<>();
