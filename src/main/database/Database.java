@@ -78,7 +78,7 @@ public class Database implements IDatabase {
                     quoteStart = i + 1;
                 } else if (chr == ',') {
                     row[rowI] = line.substring(quoteStart, i - 1)
-                        .replaceAll("\"\"", "\"");
+                            .replaceAll("\"\"", "\"");
                     rowI++;
                 }
 
@@ -94,7 +94,7 @@ public class Database implements IDatabase {
             }
         }
         row[rowI] = line.substring(quoteStart, line.length() - 1)
-            .replaceAll("\"\"", "\"");
+                .replaceAll("\"\"", "\"");
 
         return row;
     }

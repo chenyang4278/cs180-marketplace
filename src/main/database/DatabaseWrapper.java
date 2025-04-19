@@ -21,8 +21,8 @@ public class DatabaseWrapper implements IDatabaseWrapper {
 
     private final Database idDb;
     static private final String[] ID_COLUMNS = new String[]{
-        "cls",
-        "id"
+            "cls",
+            "id"
     };
 
     private final ArrayList<Database> databases;
@@ -42,7 +42,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
     }
 
     private ArrayList<String[]> requireRows(Database db, String column,
-        String value, String errorMsg) throws RowNotFoundException {
+                                            String value, String errorMsg) throws RowNotFoundException {
         ArrayList<String[]> rows = getRows(db, column, value);
         if (rows.isEmpty()) {
             throw new RowNotFoundException(errorMsg);
@@ -117,15 +117,15 @@ public class DatabaseWrapper implements IDatabaseWrapper {
     /**
      * Set a value of an instance of a class from one of its columns
      *
-     * @param cls    the class to get an instance of
-     * @param id  the id value of the object being edited
-     * @param column the column name
-     * @param newValue  the new value of the column
-     * @param <T>    type that extends Table
+     * @param cls      the class to get an instance of
+     * @param id       the id value of the object being edited
+     * @param column   the column name
+     * @param newValue the new value of the column
+     * @param <T>      type that extends Table
      * @throws DatabaseWriteException thrown if a matching row is not found
      */
     public <T extends Table> void setById(Class<T> cls,
-                                           int id, String column, String newValue) throws DatabaseWriteException {
+                                          int id, String column, String newValue) throws DatabaseWriteException {
         Database db = getDbFor(cls);
         //Avoid a race condition where multiple objects are being edited at the same time
         synchronized (lock) {
