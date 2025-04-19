@@ -17,6 +17,7 @@ public interface IPacket {
     List<PacketHeader> getHeaders();
     void setPath(String path);
     void setHeaders(List<PacketHeader> headers);
+    String[] getHeaderValues(String... keys);
 
     void addHeader(String name, String value);
     PacketHeader getHeader(String name);
