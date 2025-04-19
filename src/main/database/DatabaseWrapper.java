@@ -21,8 +21,8 @@ public class DatabaseWrapper implements IDatabaseWrapper {
 
     private final Database idDb;
     static private final String[] ID_COLUMNS = new String[]{
-            "cls",
-            "id"
+        "cls",
+        "id"
     };
 
     private final ArrayList<Database> databases;

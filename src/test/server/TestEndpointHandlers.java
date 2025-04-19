@@ -13,11 +13,9 @@ import packet.PacketHeader;
 import packet.response.ErrorPacket;
 import packet.response.ObjectListPacket;
 import packet.response.ObjectPacket;
-import packet.response.SuccessPacket;
 import server.handlers.*;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -430,18 +428,18 @@ public class TestEndpointHandlers {
         GetListingsFromAttributeHandler handler = new GetListingsFromAttributeHandler();
 
         Listing[] listings = new Listing[]{
-                new Listing(0, "ayden", "a keyboard",
-                        "idk", 50.00, "null", false),
-                new Listing(1, "karma", "a sold keyboard",
-                        "idk", 20.00, "null", true),
-                new Listing(1, "karma", "a 2 keyboard",
-                        "idk", 20.00, "null", true),
-                new Listing(2, "chen", "a 3 keyboard",
-                        "idk", 50.00, "null", true),
+            new Listing(0, "ayden", "a keyboard",
+                    "idk", 50.00, "null", false),
+            new Listing(1, "karma", "a sold keyboard",
+                    "idk", 20.00, "null", true),
+            new Listing(1, "karma", "a 2 keyboard",
+                    "idk", 20.00, "null", true),
+            new Listing(2, "chen", "a 3 keyboard",
+                    "idk", 50.00, "null", true),
                 new Listing(3, "idk", "a 4 keyboard",
-                        "idk", 50.00, "null", true),
-                new Listing(1, "karma", "a 5 keyboard",
-                        "idk", 50.00, "null", true)
+                    "idk", 50.00, "null", true),
+            new Listing(1, "karma", "a 5 keyboard",
+                    "idk", 50.00, "null", true)
         };
         for (Listing listing : listings) {
             DatabaseWrapper.get().save(listing);
@@ -558,12 +556,12 @@ public class TestEndpointHandlers {
         GetUsersFromAttributeHandler handler = new GetUsersFromAttributeHandler();
 
         User[] users = new User[]{
-                new User("karma", "1234"),
-                new User("karma1", "1awd234"),
-                new User("karma2", "1234a"),
-                new User("karma3", "12312214"),
-                new User("karma4", "1234"),
-                new User("karma5", "1234")
+            new User("karma", "1234"),
+            new User("karma1", "1awd234"),
+            new User("karma2", "1234a"),
+            new User("karma3", "12312214"),
+            new User("karma4", "1234"),
+            new User("karma5", "1234")
         };
         for (User user : users) {
             DatabaseWrapper.get().save(user);
