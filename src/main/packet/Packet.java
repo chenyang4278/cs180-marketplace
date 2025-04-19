@@ -1,4 +1,5 @@
 package packet;
+
 import packet.response.ErrorPacket;
 
 import java.io.*;
@@ -74,11 +75,11 @@ public class Packet implements IPacket, Serializable {
      * Reads a packet from an input stream
      *
      * @param stream stream to read from
+     * @param <T>    type of packet to attempt to read
      * @return read packet
-     * @param <T> type of packet to attempt to read
-     * @throws IOException possibly thrown while reading
+     * @throws IOException            possibly thrown while reading
      * @throws PacketParsingException thrown if the object read isn't a valid packet object
-     * @throws ErrorPacketException thrown if an error packet is returned
+     * @throws ErrorPacketException   thrown if an error packet is returned
      */
     public static <T extends Packet> T read(InputStream stream) throws IOException,
             PacketParsingException, ErrorPacketException {

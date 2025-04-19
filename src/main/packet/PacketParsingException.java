@@ -3,6 +3,7 @@ package packet;
 /**
  * PacketParsingException
  * Thrown when a packet is formatted incorrectly.
+ *
  * @author Ayden Cline
  * @version 4/12/25
  */

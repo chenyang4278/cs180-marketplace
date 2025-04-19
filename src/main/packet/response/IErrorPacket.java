@@ -8,5 +8,6 @@ package packet.response;
  */
 public interface IErrorPacket {
     String getMessage();
+
     void setMessage(String message);
 }

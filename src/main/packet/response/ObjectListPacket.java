@@ -10,10 +10,9 @@ import java.util.ArrayList;
  * <p>
  * Extends SuccessPacket with the ability to hold a list of table objects.
  *
+ * @param <T> table class
  * @author Karma Luitel
  * @version 4/13/25
- *
- * @param <T> table class
  */
 public class ObjectListPacket<T extends Table> extends SuccessPacket implements Serializable, IObjectListPacket<T> {
     private ArrayList<T> objList;

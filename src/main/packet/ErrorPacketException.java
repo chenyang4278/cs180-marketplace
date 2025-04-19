@@ -2,7 +2,7 @@ package packet;
 
 /**
  * ErrorPacketException
- *
+ * <p>
  * Thrown when an error packet is sent.
  *
  * @author Ayden Cline

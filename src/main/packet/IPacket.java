@@ -14,12 +14,18 @@ import java.util.List;
  */
 public interface IPacket {
     String getPath();
+
     List<PacketHeader> getHeaders();
+
     void setPath(String path);
+
     void setHeaders(List<PacketHeader> headers);
+
     String[] getHeaderValues(String... keys);
 
     void addHeader(String name, String value);
+
     PacketHeader getHeader(String name);
+
     void write(OutputStream stream) throws IOException;
 }

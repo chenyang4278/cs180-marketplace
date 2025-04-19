@@ -10,6 +10,8 @@ import java.util.List;
  */
 public interface IPacketHeader {
     String getName();
+
     List<String> getValues();
+
     void addValue(String value);
 }
