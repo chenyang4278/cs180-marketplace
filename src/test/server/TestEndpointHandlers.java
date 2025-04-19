@@ -60,7 +60,7 @@ public class TestEndpointHandlers {
 
     private void clearDb() {
         // start on a clean slate
-        for (String file : new String[] { "id.csv", "User.csv", "Listing.csv", "Message.csv", "Session.csv" }) {
+        for (String file : new String[]{"id.csv", "User.csv", "Listing.csv", "Message.csv", "Session.csv"}) {
             new File(file).delete();
         }
         sessionInfo = null;
@@ -100,8 +100,8 @@ public class TestEndpointHandlers {
         // test successful buy
         Packet packet = sessionInfo.makePacket();
         ObjectPacket<User> updatedUser = (ObjectPacket<User>) handler.handle(
-            packet,
-            new String[] { "" + listing.getId() }
+                packet,
+                new String[]{"" + listing.getId()}
         );
         // check updated user
         assertEquals(updatedUser.getObj().getId(), sessionInfo.user.getId());
@@ -113,7 +113,7 @@ public class TestEndpointHandlers {
 
         // test trying to buy an already sold item
         packet = sessionInfo.makePacket();
-        ErrorPacket err = (ErrorPacket) handler.handle(packet, new String[] { "" + listing.getId() });
+        ErrorPacket err = (ErrorPacket) handler.handle(packet, new String[]{"" + listing.getId()});
         assertEquals("Item already has already been sold!", err.getMessage());
 
         Listing listing2 = new Listing(seller.getId(), seller.getUsername(), "a keyboard",
@@ -122,15 +122,15 @@ public class TestEndpointHandlers {
 
         // test not enough balance
         packet = sessionInfo.makePacket();
-        ErrorPacket e2 = (ErrorPacket) handler.handle(packet, new String[] { "" + listing2.getId() });
+        ErrorPacket e2 = (ErrorPacket) handler.handle(packet, new String[]{"" + listing2.getId()});
         assertEquals("User does not have enough balance to buy this item!", e2.getMessage());
 
         packet = sessionInfo.makePacket();
-        ErrorPacket e3 = (ErrorPacket) handler.handle(packet, new String[] { "invalid id" });
+        ErrorPacket e3 = (ErrorPacket) handler.handle(packet, new String[]{"invalid id"});
         assertEquals("Invalid ids!", e3.getMessage()); // same code for all invalid ids
 
         packet = sessionInfo.makePacket();
-        ErrorPacket e4 = (ErrorPacket) handler.handle(packet, new String[] { "-29" });
+        ErrorPacket e4 = (ErrorPacket) handler.handle(packet, new String[]{"-29"});
         assertEquals("Could not find user or listing!", e4.getMessage());
     }
 
@@ -171,7 +171,7 @@ public class TestEndpointHandlers {
 
         // invalid data
         packet = sessionInfo.makePacket();
-        packet.addHeader("title",  "");
+        packet.addHeader("title", "");
         packet.addHeader("description", "");
         packet.addHeader("price", "10");
         packet.addHeader("image", "null");
@@ -287,7 +287,7 @@ public class TestEndpointHandlers {
 
         // successfully delete
         Packet packet = sessionInfo.makePacket();
-        Packet resp = handler.handle(packet, new String[] { "" + listing.getId() });
+        Packet resp = handler.handle(packet, new String[]{"" + listing.getId()});
         TestUtility.assertNotErrorPacket(resp);
         try {
             DatabaseWrapper.get().getById(Listing.class, listing.getId());
@@ -298,7 +298,7 @@ public class TestEndpointHandlers {
 
         // invalid id
         packet = sessionInfo.makePacket();
-        ErrorPacket err = (ErrorPacket) handler.handle(packet, new String[] { "" + listing.getId() });
+        ErrorPacket err = (ErrorPacket) handler.handle(packet, new String[]{"" + listing.getId()});
         assertEquals("Listing does not exist!", err.getMessage());
     }
 
@@ -313,7 +313,7 @@ public class TestEndpointHandlers {
         Session session = new Session(user.getId(), HandlerUtil.generateToken());
         DatabaseWrapper.get().save(session);
 
-        String[] args = new String[] { "" + user.getId() };
+        String[] args = new String[]{"" + user.getId()};
 
         // successfully delete user
         Packet packet = new Packet();
@@ -343,7 +343,7 @@ public class TestEndpointHandlers {
                 "idk", 50.00, "null", false);
         DatabaseWrapper.get().save(listing);
 
-        String[] args = new String[] { "" + listing.getId() };
+        String[] args = new String[]{"" + listing.getId()};
 
         // successfully edit sold
         Packet packet = sessionInfo.makePacket();
@@ -387,7 +387,7 @@ public class TestEndpointHandlers {
         getSession();
         EditUserHandler handler = new EditUserHandler();
 
-        String[] args = new String[] { "" + sessionInfo.user.getId() };
+        String[] args = new String[]{"" + sessionInfo.user.getId()};
 
         // edit username
         Packet packet = sessionInfo.makePacket();
@@ -429,19 +429,19 @@ public class TestEndpointHandlers {
         getSession();
         GetListingsFromAttributeHandler handler = new GetListingsFromAttributeHandler();
 
-        Listing[] listings = new Listing[] {
-            new Listing(0, "ayden", "a keyboard",
-                "idk", 50.00, "null", false),
-            new Listing(1, "karma", "a sold keyboard",
-                "idk", 20.00, "null", true),
-            new Listing(1, "karma", "a 2 keyboard",
-                "idk", 20.00, "null", true),
-            new Listing(2, "chen", "a 3 keyboard",
-                "idk", 50.00, "null", true),
-            new Listing(3, "idk", "a 4 keyboard",
-                "idk", 50.00, "null", true),
-            new Listing(1, "karma", "a 5 keyboard",
-                "idk", 50.00, "null", true)
+        Listing[] listings = new Listing[]{
+                new Listing(0, "ayden", "a keyboard",
+                        "idk", 50.00, "null", false),
+                new Listing(1, "karma", "a sold keyboard",
+                        "idk", 20.00, "null", true),
+                new Listing(1, "karma", "a 2 keyboard",
+                        "idk", 20.00, "null", true),
+                new Listing(2, "chen", "a 3 keyboard",
+                        "idk", 50.00, "null", true),
+                new Listing(3, "idk", "a 4 keyboard",
+                        "idk", 50.00, "null", true),
+                new Listing(1, "karma", "a 5 keyboard",
+                        "idk", 50.00, "null", true)
         };
         for (Listing listing : listings) {
             DatabaseWrapper.get().save(listing);
@@ -481,7 +481,7 @@ public class TestEndpointHandlers {
         User user2 = new User("ayden", "extrasecretpassword");
         DatabaseWrapper.get().save(user2);
 
-        Message[] messages = new Message[5] ;
+        Message[] messages = new Message[5];
         // add delay so that the timestamps are spaced out
         messages[0] = new Message(user1.getId(), sessionInfo.user.getId(), "this is a message from u1 to me");
         Thread.sleep(100);
@@ -531,8 +531,8 @@ public class TestEndpointHandlers {
         // get me
         Packet packet = sessionInfo.makePacket();
         Packet resp = handler.handle(
-            packet,
-            new String[] { "" + sessionInfo.user.getId() }
+                packet,
+                new String[]{"" + sessionInfo.user.getId()}
         );
         TestUtility.assertNotErrorPacket(resp);
         ObjectPacket<User> userResp = (ObjectPacket<User>) resp;
@@ -544,7 +544,7 @@ public class TestEndpointHandlers {
         DatabaseWrapper.get().save(newUser);
 
         packet = sessionInfo.makePacket();
-        resp = handler.handle(packet, new String[] {"" + newUser.getId()});
+        resp = handler.handle(packet, new String[]{"" + newUser.getId()});
         TestUtility.assertNotErrorPacket(resp);
         userResp = (ObjectPacket<User>) resp;
         assertEquals(newUser.getId(), userResp.getObj().getId());
@@ -557,13 +557,13 @@ public class TestEndpointHandlers {
         getSession();
         GetUsersFromAttributeHandler handler = new GetUsersFromAttributeHandler();
 
-        User[] users = new User[] {
-            new User("karma", "1234"),
-            new User("karma1", "1awd234"),
-            new User("karma2", "1234a"),
-            new User("karma3", "12312214"),
-            new User("karma4", "1234"),
-            new User("karma5", "1234")
+        User[] users = new User[]{
+                new User("karma", "1234"),
+                new User("karma1", "1awd234"),
+                new User("karma2", "1234a"),
+                new User("karma3", "12312214"),
+                new User("karma4", "1234"),
+                new User("karma5", "1234")
         };
         for (User user : users) {
             DatabaseWrapper.get().save(user);

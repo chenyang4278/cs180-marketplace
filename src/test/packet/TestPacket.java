@@ -1,4 +1,5 @@
 package packet;
+
 import data.Session;
 import data.User;
 import database.DatabaseWrapper;

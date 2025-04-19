@@ -1,4 +1,5 @@
 package packet;
+
 import org.junit.Test;
 
 import packet.response.ErrorPacket;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
  * @version 4/12/25
  */
 public class TestResponsePacket {
-    
+
     @Test
     public void testErrorPacket() {
         ErrorPacket ep = new ErrorPacket("error");

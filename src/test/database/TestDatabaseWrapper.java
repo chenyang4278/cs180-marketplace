@@ -150,12 +150,12 @@ public class TestDatabaseWrapper {
 
     @Test
     public void testThreadSafety() throws InterruptedException {
-        Thread[] threads = new Thread[] {
-            new TestThread("1"),
-            new TestThread("2"),
-            new TestThread("3"),
-            new TestThread("4"),
-            new TestThread("5")
+        Thread[] threads = new Thread[]{
+                new TestThread("1"),
+                new TestThread("2"),
+                new TestThread("3"),
+                new TestThread("4"),
+                new TestThread("5")
         };
 
         for (Thread thread : threads) {

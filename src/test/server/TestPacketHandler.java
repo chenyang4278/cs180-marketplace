@@ -1,4 +1,5 @@
 package server;
+
 import data.Session;
 import data.User;
 import database.DatabaseWrapper;
@@ -27,9 +28,14 @@ public class TestPacketHandler {
      * @version 4/12/25
      */
     class TestingHandler extends PacketHandler {
-        public TestingHandler(String p) { super(p); }
+        public TestingHandler(String p) {
+            super(p);
+        }
+
         @Override
-        public Packet handle(Packet packet, String[] args) { return null; }
+        public Packet handle(Packet packet, String[] args) {
+            return null;
+        }
     }
 
     @Test

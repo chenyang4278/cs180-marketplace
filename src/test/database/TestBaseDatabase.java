@@ -53,7 +53,7 @@ public class TestBaseDatabase {
         Database userDb = new Database("userDb.csv", headers);
 
         assertArrayEquals(new String[]{"karma", "", "821.21", "12"},
-            userDb.get("username", "karma").get(0));
+                userDb.get("username", "karma").get(0));
         assertArrayEquals(new String[]{"ka\"2\"rma\",\"", "password123", "821.21", "12"},
                 userDb.get("username", "ka\"2\"rma\",\"").get(0));
         assertArrayEquals(new String[]{"ka\"2\"rma\",\"", "passw2ord123", "7821.21", "12"},
