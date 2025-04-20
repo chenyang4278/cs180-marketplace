@@ -67,16 +67,16 @@ public class ClientHandler implements Runnable, IClientHandler {
             file.createNewFile();
             FileOutputStream fos = new FileOutputStream(file);
 
+            Packet currentPacket = packet;
             while (true) {
-                byte[] body = packet.getBody();
-                if (body.length == 0) {
-                    continue;
+                byte[] body = currentPacket.getBody();
+
+                if (body.length != 0) {
+                    digest.update(body);
+                    fos.write(body);
                 }
 
-                digest.update(body);
-                fos.write(body);
-
-                if (!packet.getBodyContinues()) {
+                if (!currentPacket.getBodyContinues()) {
                     fos.close();
 
                     String fileHash = HandlerUtil.hex(digest.digest());
@@ -94,7 +94,7 @@ public class ClientHandler implements Runnable, IClientHandler {
                     return fileHash;
                 }
 
-                packet = readPacket();
+                currentPacket = readPacket();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

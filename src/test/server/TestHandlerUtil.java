@@ -25,6 +25,8 @@ public class TestHandlerUtil {
     public void testGenerateToken() {
         String token = HandlerUtil.generateToken();
         assertEquals(64, token.length());
+        token = HandlerUtil.generateToken(16);
+        assertEquals(32, token.length());
     }
 
     @Test

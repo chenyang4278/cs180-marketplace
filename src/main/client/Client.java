@@ -269,7 +269,8 @@ public class Client implements IClient {
             }
 
             // signal end
-            new Packet().write(oStream);
+            packet.setBodyContinues(false);
+            packet.write(oStream);
 
             Packet resp = Packet.read(iStream);
             return resp.getHeader("File-Hash").getValues().get(0);

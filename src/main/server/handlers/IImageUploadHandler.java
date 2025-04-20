@@ -1,5 +1,7 @@
 package server.handlers;
 
+import packet.Packet;
+
 /**
  * IImageUploaderHandler
  *
@@ -7,4 +9,5 @@ package server.handlers;
  * @version 4/19/25
  */
 public interface IImageUploadHandler {
+    Packet handle(Packet packet, String[] args);
 }

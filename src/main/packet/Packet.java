@@ -16,9 +16,14 @@ import java.util.List;
  * @version 4/12/25
  */
 public class Packet implements IPacket, Serializable {
+    // path where the packet is intended to be handled at
     private String path;
+    // any kind of data that's not binary
     private List<PacketHeader> headers;
+    // binary data
     private byte[] body;
+    // indicating whether the server should expect another
+    // data packet after this one
     private boolean bodyContinues;
 
     public Packet(String path, List<PacketHeader> headers) {
@@ -151,7 +156,7 @@ public class Packet implements IPacket, Serializable {
 
     @Override
     public boolean getBodyContinues() {
-        return false;
+        return bodyContinues;
     }
 
     @Override
