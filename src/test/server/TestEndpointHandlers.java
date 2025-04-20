@@ -654,4 +654,22 @@ public class TestEndpointHandlers {
         Session session = sessions.get(0);
         assertEquals(session.getUserId(), user.getId());
     }
+
+    @Test
+    public void testImageUploadHandler() {
+        clearDb();
+        getSession();
+        ImageUploadHandler imageUploadHandler = new ImageUploadHandler();
+
+        Packet packet = sessionInfo.makePacket();
+
+        Packet resp = imageUploadHandler.handle(packet, null);
+        TestUtility.assertErrorPacket(resp);
+
+        packet.addHeader("File-Hash", "hash");
+
+        resp = imageUploadHandler.handle(packet, null);
+        TestUtility.assertNotErrorPacket(resp);
+        assertEquals("hash", resp.getHeader("File-Hash").getValues().get(0));
+    }
 }

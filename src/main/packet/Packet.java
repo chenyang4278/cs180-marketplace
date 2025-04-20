@@ -18,20 +18,28 @@ import java.util.List;
 public class Packet implements IPacket, Serializable {
     private String path;
     private List<PacketHeader> headers;
+    private byte[] body;
+    private boolean bodyContinues;
 
     public Packet(String path, List<PacketHeader> headers) {
         this.path = path;
         this.headers = headers;
+        this.body = new byte[0];
+        this.bodyContinues = false;
     }
 
     public Packet(String path) {
         this.path = path;
         this.headers = new ArrayList<>();
+        this.body = new byte[0];
+        this.bodyContinues = false;
     }
 
     public Packet() {
         this.path = "";
         this.headers = new ArrayList<>();
+        this.body = new byte[0];
+        this.bodyContinues = false;
     }
 
     @Override
@@ -137,6 +145,16 @@ public class Packet implements IPacket, Serializable {
     }
 
     @Override
+    public byte[] getBody() {
+        return body;
+    }
+
+    @Override
+    public boolean getBodyContinues() {
+        return false;
+    }
+
+    @Override
     public void setPath(String path) {
         this.path = path;
     }
@@ -144,5 +162,15 @@ public class Packet implements IPacket, Serializable {
     @Override
     public void setHeaders(List<PacketHeader> headers) {
         this.headers = headers;
+    }
+
+    @Override
+    public void setBody(byte[] body) {
+        this.body = body;
+    }
+
+    @Override
+    public void setBodyContinues(boolean bodyContinues) {
+        this.bodyContinues = bodyContinues;
     }
 }
