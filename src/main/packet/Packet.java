@@ -16,22 +16,35 @@ import java.util.List;
  * @version 4/12/25
  */
 public class Packet implements IPacket, Serializable {
+    // path where the packet is intended to be handled at
     private String path;
+    // any kind of data that's not binary
     private List<PacketHeader> headers;
+    // binary data
+    private byte[] body;
+    // indicating whether the server should expect another
+    // data packet after this one
+    private boolean bodyContinues;
 
     public Packet(String path, List<PacketHeader> headers) {
         this.path = path;
         this.headers = headers;
+        this.body = new byte[0];
+        this.bodyContinues = false;
     }
 
     public Packet(String path) {
         this.path = path;
         this.headers = new ArrayList<>();
+        this.body = new byte[0];
+        this.bodyContinues = false;
     }
 
     public Packet() {
         this.path = "";
         this.headers = new ArrayList<>();
+        this.body = new byte[0];
+        this.bodyContinues = false;
     }
 
     @Override
@@ -137,6 +150,16 @@ public class Packet implements IPacket, Serializable {
     }
 
     @Override
+    public byte[] getBody() {
+        return body;
+    }
+
+    @Override
+    public boolean getBodyContinues() {
+        return bodyContinues;
+    }
+
+    @Override
     public void setPath(String path) {
         this.path = path;
     }
@@ -144,5 +167,15 @@ public class Packet implements IPacket, Serializable {
     @Override
     public void setHeaders(List<PacketHeader> headers) {
         this.headers = headers;
+    }
+
+    @Override
+    public void setBody(byte[] body) {
+        this.body = body;
+    }
+
+    @Override
+    public void setBodyContinues(boolean bodyContinues) {
+        this.bodyContinues = bodyContinues;
     }
 }

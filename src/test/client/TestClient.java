@@ -7,15 +7,23 @@ import org.junit.Test;
 import data.Listing;
 import data.Message;
 import packet.ErrorPacketException;
+import packet.Packet;
 import packet.PacketHeader;
 import packet.PacketParsingException;
 import server.ClientHandler;
+import server.Server;
+import server.handlers.HandlerUtil;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -41,23 +49,16 @@ public class TestClient {
      * @version 4/16/25
      */
     static class TestServer implements Runnable {
-
         @Override
         public void run() {
             try {
-                ExecutorService pool = Executors.newCachedThreadPool();
-                ServerSocket server = new ServerSocket(12345);
-
-                while (true) {
-                    Socket socket = server.accept();
-                    pool.submit(new ClientHandler(socket));
-                }
+                Server.main(new String[0]);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        
     }
+
     @BeforeClass
     public static void setUpServer() {
         Thread serverThread = new Thread(new TestServer());
@@ -67,15 +68,16 @@ public class TestClient {
     @Test
     public void testClientInitialization() throws IOException {
         
-        Client client = new Client("localhost", 12345);
+        Client client = new Client("localhost", 8080);
         client.setCurrentUserId(100);
         assertEquals(100, client.getCurrentUserId());
 
+        client.close();
     }
 
     @Test
     public void testClose() throws IOException {
-        Client client = new Client("localhost", 12345);
+        Client client = new Client("localhost", 8080);
         client.close();
         boolean b = client.createUser("test", "1234");
         assertFalse(b);
@@ -85,7 +87,7 @@ public class TestClient {
     public void testUserCreationLogin() throws IOException {
         
         String user = "testingusername";
-        Client client = new Client("localhost", 12345);
+        Client client = new Client("localhost", 8080);
         
         // make sure that user with such info does not exist in User.csv already
         assertTrue(client.createUser(user, "3.1415"));
@@ -93,7 +95,7 @@ public class TestClient {
         assertTrue(client.login(user, "3.1415"));
         assertEquals(user, client.getUser().getUsername());
 
-        Client c2 = new Client("localhost", 12345);
+        Client c2 = new Client("localhost", 8080);
         c2.createUser(user, "3.1415");
         // shouldn't assign c2 a user since username is already taken
         assertNull(c2.getUser());
@@ -101,6 +103,8 @@ public class TestClient {
         client.deleteUser();
         c2.deleteUser();
 
+        client.close();
+        c2.close();
     }
 
     @Test
@@ -126,7 +130,7 @@ public class TestClient {
     @Test
     public void testSetUserBal() throws IOException {
 
-        Client c = new Client("localhost", 12345);
+        Client c = new Client("localhost", 8080);
         c.createUser("user", "pass");
         c.login("user", "pass");
 
@@ -135,18 +139,19 @@ public class TestClient {
 
         c.deleteUser();
 
+        c.close();
     }
 
     @Test
     public void testCreateAndBuyListing() throws IOException {
 
-        Client seller = new Client("localhost", 12345);
+        Client seller = new Client("localhost", 8080);
         seller.createUser("ian", "pass");
         seller.login("ian", "pass");
         
         Listing item = seller.createListing("apple", "red, crunchy", 5, "null");
 
-        Client buyer = new Client("localhost", 12345);
+        Client buyer = new Client("localhost", 8080);
         buyer.createUser("buyeruser", "password");
         buyer.login("buyeruser", "password");
         
@@ -161,7 +166,7 @@ public class TestClient {
         // after buying, the balance should reflect the purchase.
         assertEquals(10 - 5, buyer.getUser().getBalance(), 0.01);
 
-        Client otherbuyer = new Client("localhost", 12345);
+        Client otherbuyer = new Client("localhost", 8080);
         otherbuyer.createUser("buyer2", "pw");
         otherbuyer.login("buyer2", "pw");
 
@@ -175,12 +180,15 @@ public class TestClient {
         buyer.deleteUser();
         otherbuyer.deleteUser();
 
+        seller.close();
+        buyer.close();
+        otherbuyer.close();
     }
 
     @Test
     public void testDeleteUser() throws IOException {
 
-        Client client = new Client("localhost", 12345);
+        Client client = new Client("localhost", 8080);
         client.createUser("ian", "pass");
         client.login("ian", "pass");
         // make sure client is assigned new user
@@ -193,12 +201,14 @@ public class TestClient {
         client.login("ian", "pass");
         // delete user again
         assertTrue(client.deleteUser());
+
+        client.close();
     }
 
     @Test
     public void testDeleteListing() throws IOException {
 
-        Client c = new Client("localhost", 12345);
+        Client c = new Client("localhost", 8080);
         c.createUser("seller", "password");
         c.login("seller", "password");
 
@@ -206,7 +216,7 @@ public class TestClient {
         int listingid = item.getId();
         c.deleteListing(listingid);
 
-        Client c2 = new Client("localhost", 12345);
+        Client c2 = new Client("localhost", 8080);
         c2.createUser("buyer", "pass");
         c2.login("buyer", "pass");
         c2.setUserBalance(100000);
@@ -215,6 +225,8 @@ public class TestClient {
         c.deleteUser();
         c2.deleteUser();
 
+        c.close();
+        c2.close();
     }
 
     @Test
@@ -222,7 +234,7 @@ public class TestClient {
 
         System.out.println("debug:");
 
-        Client seller = new Client("localhost", 12345);
+        Client seller = new Client("localhost", 8080);
         seller.createUser("seller", "pass");
         seller.login("seller", "pass");
         Listing item1 = seller.createListing("item1", "description1", 10, "null");
@@ -246,17 +258,18 @@ public class TestClient {
         seller.deleteListing(item1.getId());
         seller.deleteListing(item2.getId());
         seller.deleteUser();
-            
+
+        seller.close();
     }
 
     @Test
     public void testMessaging() throws IOException {
 
-        Client c1 = new Client("localhost", 12345);
+        Client c1 = new Client("localhost", 8080);
         c1.createUser("Alice", "pass");
         c1.login("Alice", "pass");
 
-        Client c2 = new Client("localhost", 12345);
+        Client c2 = new Client("localhost", 8080);
         c2.createUser("Bob", "pass");
         c2.login("Bob", "pass");
 
@@ -273,6 +286,42 @@ public class TestClient {
         c1.deleteUser();
         c2.deleteUser();
 
+        c1.close();
+        c2.close();
     }
 
+    private String calculateFileHash(File file) throws IOException {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) { // should not occur
+            throw new RuntimeException(e);
+        }
+
+        FileInputStream fos = new FileInputStream(file);
+        byte[] buf = new byte[1024 * 1024];
+        int count;
+        while ((count = fos.read(buf)) > 0) {
+            digest.update(buf, 0, count);
+        }
+
+        fos.close();
+
+        return HandlerUtil.hex(digest.digest());
+    }
+
+    @Test
+    public void testImageUpload() throws IOException {
+        Client client = new Client("localhost", 8080);
+        client.createUser("Alice", "pass");
+        client.login("Alice", "pass");
+
+        String fileHash = client.uploadImage("README.md");
+        assertNotNull(fileHash);
+
+        File staticFile = new File("static/" + fileHash);
+        assertTrue(staticFile.exists());
+
+        assertEquals(calculateFileHash(staticFile), calculateFileHash(new File("README.md")));
+    }
 }

@@ -28,10 +28,14 @@ public class HandlerUtil implements IHandlerUtil {
         return hexString.toString();
     }
 
-    public static String generateToken() {
-        byte[] tokenBytes = new byte[32];
+    public static String generateToken(int size) {
+        byte[] tokenBytes = new byte[size];
         SECURE_RANDOM.nextBytes(tokenBytes);
         return hex(tokenBytes);
+    }
+
+    public static String generateToken() {
+        return generateToken(32);
     }
 
     public static String hashPassword(String password) {

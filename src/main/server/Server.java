@@ -1,5 +1,6 @@
 package server;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,6 +21,9 @@ public class Server implements IServer {
         ExecutorService pool = Executors.newCachedThreadPool();
 
         ServerSocket server = new ServerSocket(8080);
+
+        // make sure static directory exists
+        new File("static").mkdir();
 
         while (true) {
             Socket socket = server.accept();

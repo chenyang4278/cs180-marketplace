@@ -1,10 +1,5 @@
 package client;
 
-import packet.PacketHeader;
-import packet.response.SuccessPacket;
-import packet.ErrorPacketException;
-import packet.PacketParsingException;
-import data.Table;
 import data.Listing;
 import data.User;
 import data.Message;

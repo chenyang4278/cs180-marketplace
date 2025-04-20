@@ -1,11 +1,6 @@
 package packet;
 
-import data.Session;
-import data.User;
-import database.DatabaseWrapper;
-import database.DatabaseWriteException;
 import org.junit.Test;
-import server.handlers.HandlerUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -61,6 +56,10 @@ public class TestPacket {
         headers2.add(new PacketHeader("testHeader2", "first header2"));
         p.setHeaders(headers2);
         assertEquals(headers2, p.getHeaders());
+        p.setBody(new byte[10]);
+        assertEquals(10, p.getBody().length);
+        p.setBodyContinues(true);
+        assertTrue(p.getBodyContinues());
     }
 
     @Test

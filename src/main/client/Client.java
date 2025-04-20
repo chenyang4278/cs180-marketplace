@@ -243,4 +243,40 @@ public class Client implements IClient {
             return new ArrayList<>();
         }
     }
+
+    public String uploadImage(String path) {
+        try {
+            File file = new File(path);
+            FileInputStream stream = new FileInputStream(file);
+
+            Packet packet = new Packet("/upload");
+            packet.addHeader("Session-Token", sessionToken);
+            packet.setBodyContinues(true);
+
+            // write 1MiB at a time
+            byte[] buf = new byte[1024 * 1024];
+            int count;
+            while ((count = stream.read(buf)) > 0) {
+                if (count != buf.length) {
+                    packet.setBody(Arrays.copyOfRange(buf, 0, count));
+                } else {
+                    packet.setBody(buf);
+                }
+                packet.write(oStream);
+
+                packet = new Packet();
+                packet.setBodyContinues(true);
+            }
+
+            // signal end
+            packet.setBodyContinues(false);
+            packet.write(oStream);
+
+            Packet resp = Packet.read(iStream);
+            return resp.getHeader("File-Hash").getValues().get(0);
+        } catch (Exception e) {
+            System.out.println("Failed to upload image: " + e.getMessage());
+            return null;
+        }
+    }
 }

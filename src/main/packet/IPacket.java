@@ -13,6 +13,10 @@ import java.util.List;
  * @version 4/12/25
  */
 public interface IPacket {
+    byte[] getBody();
+
+    boolean getBodyContinues();
+
     String getPath();
 
     List<PacketHeader> getHeaders();
@@ -20,6 +24,10 @@ public interface IPacket {
     void setPath(String path);
 
     void setHeaders(List<PacketHeader> headers);
+
+    void setBody(byte[] body);
+
+    void setBodyContinues(boolean bodyContinues);
 
     String[] getHeaderValues(String... keys);
 
