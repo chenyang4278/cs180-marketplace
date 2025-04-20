@@ -51,7 +51,9 @@ Vocareum submission:
 - Image support will be implemented through getImage() and setImage().
 ### Session.java
 - Ayden Cline
-- 
+- This class is used to track a client session so they can be verified as logged in between requests or even restarts.
+- This class is used by the login handler and packet handlers that require the user to be logged in.
+- Testing is implemented to ensure the class can be properly instantiated and its getters and setters function correctly.
 
 ## Database
 ### Database.java
@@ -77,19 +79,35 @@ Vocareum submission:
 ## Packet
 ### Packet.java
 - Ayden Cline
-- 
+- This is the base class that carries information between server and client.
+- Packets have a path, headers, and body, although all are optional.
+  - The path tells the server where the packet is intended to be sent
+  - Headers carry generally any information or data
+  - The body is for binary data, such as files
+- In addition, the class provides a method for writing to an output stream and reading from an input stream.
+- This class is used by all the client handler, endpoint handlers, and the client.
+- The tests are implemented to make sure the packet can be properly instantiated, the getters and setters function, and its read and write functions work correctly.
 ### PacketHeader.java
 - Ayden Cline
-- 
+- This class contains header information.
+- Headers have one key, but can have multiple values.
+- This class is used solely by the `Packet` class.
+- The tests ensure that it can be properly instantiated and the getters and setters function correctly.
 ### SuccessPacket.java
 - Ayden Cline
-- 
+- This class extends `Packet` and adds a "Status" header indicating that the packet is not an error packet.
+- The class is used by some handlers that don't return any objects.
+- The tests ensure the status header is added and with the correct value.
 ### ErrorPacket.java
 - Ayden Cline
-- 
+- This class extends `Packet` and adds a "Status" header indicating that the packet is an error packet.
+- The class is used by the client handler and all handlers in case of invalid data, an internal error, or some other reason.
+- The tests ensure it's instantiated as expected, the status header is added with the correct value, and the getter and setter methods works.
 ### ObjectPacket.java
 - Ayden Cline
-- 
+- This class extends `SuccessPacket` with an attribute that holds an object of a class extending `Table`.
+- The class is intended for sending database objects between the server and client, and is used by some handlers.
+- The tests ensure it's instantiated as expected and the getter and setter methods works.
 ### ObjectListPacket.java
 - Karma Luitel
 - This class extends SuccessPacket to account for having a list of objects that extend Table. This allows a list to be send from the client to server.
@@ -105,21 +123,38 @@ Vocareum submission:
 ## Server
 ### Server.java
 - Ayden Cline
-- Runs the server, creating a thread for every client running ClientHandler.java.
+- Starts the socket server and uses a thread pool via `Executors.newCachedThreadPool` to avoid the costs of creating a new thread for each client.
+- Once a connection is made, the socket is handed off to `ClientHandler` to handle it, which runs in its own thread.
+- The class is tested alongside the `Client` class to ensure it functions as intended and can handle multiple clients at once.
 ### ClientHandler.java
 - Ayden Cline
-- Thrown when a packet is formatted incorrectly.
+- Implements `Runnable`, handling a single client connection.
+- The run method continuously reads incoming packets from the client until it disconnects. Once a packet is received, it's sent to a packet handler depending on the path, or otherwise sends an error packet. If the packet has a body, it's read and stored to a file temporarily for the handler.
+- The packet returned by the handler is then sent to the client.
+- The class is tested alongside the `Client` class to ensure it handles all possible packets that can be received.
 ### PacketHandler.java
 - Ayden Cline
-- 
+- An abstract class that all packet handlers inherit from.
+- The class implements a method for checking whether a provided path and the handler's path match. Additionally, it implements a wildcard syntax that can be used in the path. There is also a function that checks whether the packet comes from a user that is logged in and returns that user if so.
+- The tests ensure that both methods do what they're intended to do.
 
 ## Server Handlers
 ### HandlerUtil.java
 - Ayden Cline
-- 
+- This class contains a few static methods that are utilities for some of the handler classes.
+- It contains functionality for generating random token strings of varying length, hashing a string, and returning the hex string for a byte array.
+- There are tests to ensure that each function returns the correct results.
 ### LoginHandler.java
 - Ayden Cline
-- 
+- This class extends `PacketHandler` and handles logging in a user.
+- The client gives a username and password, and the handler checks whether they match what's in the database. If so, a new `Session` object is created, deleting any old ones associated with the user, and the session token is returned so the client's login can persist.
+- The handler is tested to ensure it correctly returns a session token and error packets where valid.
+### ImageUploadHandler
+- Ayden Cline
+- This class extends `PacketHandler` and handles image uploading.
+- `ClientHandler` handles reading data from packet bodies to file, but as its temporary, this handler ensures it becomes permanent by including a hash of the file in the response header.
+- If the user is not logged in or no body data was sent, an error packet is returned.
+- The handler is tested to ensure the file is stored permanently and it returns an error packet where valid.
 ### BuyListingHandler.java
 - Karma Luitel
 - This class handles the calculations and database operations for a user buying a listing.
