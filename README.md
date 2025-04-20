@@ -7,7 +7,7 @@ For now our project is a  set of Database and User/Listing/Message object classe
 ### Phase 2
 The `client` package needs to be compiled alongside the `packet` and `data` packages. The `server` package needs to compiled alongside the `database`, `packet`, and `data` packages. Run test cases to see how the classes function.
 
-The project can optionally be compiled and/or tested using Maven.
+The project can optionally be compiled and tested using Maven.
 
 ## Submissions
 ### Phase 1
