@@ -244,11 +244,8 @@ public class Client implements IClient {
         }
     }
 
-    public String uploadImage(String path) {
-        try {
-            File file = new File(path);
-            FileInputStream stream = new FileInputStream(file);
-
+    public String uploadImage(File file) {
+        try (FileInputStream stream = new FileInputStream(file)) {
             Packet packet = new Packet("/upload");
             packet.addHeader("Session-Token", sessionToken);
             packet.setBodyContinues(true);
@@ -273,6 +270,8 @@ public class Client implements IClient {
             packet.write(oStream);
 
             Packet resp = Packet.read(iStream);
+
+            //would use returned hash to create a new listing
             return resp.getHeader("File-Hash").getValues().get(0);
         } catch (Exception e) {
             System.out.println("Failed to upload image: " + e.getMessage());

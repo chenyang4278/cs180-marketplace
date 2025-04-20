@@ -316,7 +316,7 @@ public class TestClient {
         client.createUser("Alice", "pass");
         client.login("Alice", "pass");
 
-        String fileHash = client.uploadImage("README.md");
+        String fileHash = client.uploadImage(new File("README.md"));
         assertNotNull(fileHash);
 
         File staticFile = new File("static/" + fileHash);
