@@ -65,7 +65,7 @@ public class ClientHandler implements Runnable, IClientHandler {
         }
 
         try {
-            File file = new File("static/tmp-"+HandlerUtil.generateToken(16));
+            File file = new File("static/tmp-" + HandlerUtil.generateToken(16));
             file.createNewFile();
             FileOutputStream fos = new FileOutputStream(file);
 
@@ -146,7 +146,7 @@ public class ClientHandler implements Runnable, IClientHandler {
             return;
         }
 
-        new File("/static/"+hash).delete();
+        new File("/static/" + hash).delete();
     }
 
     private void handlePacket(Packet packet) throws IOException, PacketParsingException, ErrorPacketException {

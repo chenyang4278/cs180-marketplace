@@ -284,7 +284,7 @@ public class Client implements IClient {
     }
 
     public File downloadImage(String hash) {
-        File file = new File("tmp/"+hash);
+        File file = new File("tmp/" + hash);
         if (file.isFile()) {
             return file;
         }

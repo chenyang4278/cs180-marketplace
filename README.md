@@ -1,5 +1,5 @@
 # CS180 Team Project
-- L24 Team 1: Karma Luitel, Benny Huang, Ayden Cline, Chen Yang
+- L24 Team 1: Karma Luitel, Ian Ogden, Ayden Cline, Chen Yang
 
 
 
