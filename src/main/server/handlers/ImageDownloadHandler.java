@@ -7,7 +7,15 @@ import server.PacketHandler;
 
 import java.io.File;
 
-public class ImageDownloadHandler extends PacketHandler implements IImageUploadHandler {
+/**
+ * ImageDownloadHandler
+ * <p>
+ * Handles sending files to the client.
+ *
+ * @author Ayden Cline
+ * @version 4/20/2025
+ */
+public class ImageDownloadHandler extends PacketHandler implements IImageDownloadHandler {
     public ImageDownloadHandler() {
         super("/static/:hash");
     }
