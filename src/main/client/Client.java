@@ -34,6 +34,9 @@ public class Client implements IClient {
         iStream = socket.getInputStream();
         sessionToken = "";
         currentUserId = -1;
+
+        // ensure tmp directory exists for image downloading
+        new File("tmp").mkdir();
     }
 
     public User getUser() {
@@ -244,9 +247,8 @@ public class Client implements IClient {
         }
     }
 
-    public String uploadImage(String path) {
+    public String uploadImage(File file) {
         try {
-            File file = new File(path);
             FileInputStream stream = new FileInputStream(file);
 
             Packet packet = new Packet("/upload");
@@ -275,7 +277,40 @@ public class Client implements IClient {
             Packet resp = Packet.read(iStream);
             return resp.getHeader("File-Hash").getValues().get(0);
         } catch (Exception e) {
-            System.out.println("Failed to upload image: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public File downloadImage(String hash) {
+        File file = new File("tmp/"+hash);
+        if (file.isFile()) {
+            return file;
+        }
+
+        try {
+            Packet packet = new Packet("/static/" + hash);
+            packet.write(oStream);
+
+            Packet dataPacket = Packet.read(iStream);
+
+            file.createNewFile();
+            FileOutputStream stream = new FileOutputStream(file);
+
+            while (true) {
+                stream.write(dataPacket.getBody());
+
+                if (!dataPacket.getBodyContinues()) {
+                    break;
+                }
+                dataPacket = Packet.read(iStream);
+            }
+
+            return file;
+        } catch (ErrorPacketException ignored) {
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }

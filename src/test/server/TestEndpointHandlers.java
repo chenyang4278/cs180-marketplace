@@ -16,6 +16,7 @@ import packet.response.ObjectPacket;
 import server.handlers.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -671,5 +672,22 @@ public class TestEndpointHandlers {
         resp = imageUploadHandler.handle(packet, null);
         TestUtility.assertNotErrorPacket(resp);
         assertEquals("hash", resp.getHeader("File-Hash").getValues().get(0));
+    }
+
+    @Test
+    public void testImageDownloadHandler() throws IOException {
+        clearDb();
+        ImageDownloadHandler handler = new ImageDownloadHandler();
+
+        new File("static/hash").createNewFile();
+
+        Packet packet = new Packet();
+
+        Packet resp = handler.handle(packet, new String[] { "invalid hash" });
+        TestUtility.assertErrorPacket(resp);
+
+        resp = handler.handle(packet, new String[] { "hash" });
+        TestUtility.assertNotErrorPacket(resp);
+        assertEquals("hash", resp.getHeader("Download-Hash").getValues().get(0));
     }
 }

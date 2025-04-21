@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 /**
  * ClientHandler
@@ -36,7 +37,8 @@ public class ClientHandler implements Runnable, IClientHandler {
         new GetUserFromIdHandler(),
         new GetUsersFromAttributeHandler(),
         new LoginHandler(),
-        new ImageUploadHandler()
+        new ImageUploadHandler(),
+        new ImageDownloadHandler()
     };
 
     private Socket socket;
@@ -49,7 +51,7 @@ public class ClientHandler implements Runnable, IClientHandler {
 
     // parse packet body into a file
     // may or may not be part of a file-upload endpoint
-    // if not upload-related, it'll be cleaned up afterward
+    // if not upload-related, it'll be cleaned up afterward (file deleted)
     private String parsePacketBody(Packet packet) throws PacketParsingException, ErrorPacketException {
         if (packet.getBody().length == 0) {
             return null;
@@ -99,7 +101,41 @@ public class ClientHandler implements Runnable, IClientHandler {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    private void sendFile(String fileHash, Packet packet) {
+        File file = new File("static/" + fileHash);
+        if (!file.isFile()) {
+            return;
+        }
+
+        try {
+            FileInputStream fis = new FileInputStream(file);
+
+            packet.setBodyContinues(true);
+
+            byte[] buf = new byte[1024 * 1024];
+            int count;
+            while ((count = fis.read(buf)) > 0) {
+                if (count == buf.length) {
+                    packet.setBody(buf);
+                } else {
+                    packet.setBody(Arrays.copyOfRange(buf, 0, count));
+                }
+
+                sendPacket(packet);
+
+                packet = new Packet();
+                packet.setBodyContinues(true);
+            }
+
+            packet.setBodyContinues(false);
+            sendPacket(packet);
+
+            fis.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // if the file downloaded was not part of an upload
@@ -126,16 +162,25 @@ public class ClientHandler implements Runnable, IClientHandler {
             }
         }
 
-        String hash = parsePacketBody(packet);
-
         if (handler == null) {
             sendPacket(new ErrorPacket("Path not found"));
+            return;
+        }
+
+        // parse body for binary data
+        String hash = parsePacketBody(packet);
+        // hand off packet to handler
+        Packet resp = handler.handle(packet, args);
+        // determine whether the endpoint is returning a file
+        PacketHeader downloadHeader = resp.getHeader("Download-Hash");
+        if (downloadHeader != null) {
+            sendFile(downloadHeader.getValues().get(0), resp);
         } else {
-            Packet resp = handler.handle(packet, args);
             sendPacket(resp);
-            if (hash != null) {
-                cleanupFile(resp, hash);
-            }
+        }
+
+        if (hash != null) {
+            cleanupFile(resp, hash);
         }
     }
 
