@@ -311,17 +311,27 @@ public class TestClient {
     }
 
     @Test
-    public void testImageUpload() throws IOException {
+    public void testImageUploadAndDownload() throws IOException {
+        File testFile = new File("README.md");
+
         Client client = new Client("localhost", 8080);
         client.createUser("Alice", "pass");
         client.login("Alice", "pass");
 
-        String fileHash = client.uploadImage(new File("README.md"));
+        String fileHash = client.uploadImage(testFile);
         assertNotNull(fileHash);
 
         File staticFile = new File("static/" + fileHash);
         assertTrue(staticFile.exists());
 
-        assertEquals(calculateFileHash(staticFile), calculateFileHash(new File("README.md")));
+        assertEquals(calculateFileHash(testFile), calculateFileHash(staticFile));
+
+        File downloadedFile = client.downloadImage("invalid hash");
+        assertNull(downloadedFile);
+
+        downloadedFile = client.downloadImage(fileHash);
+        assertNotNull(downloadedFile);
+
+        assertEquals(calculateFileHash(testFile), calculateFileHash(downloadedFile));
     }
 }

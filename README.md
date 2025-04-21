@@ -157,6 +157,12 @@ Vocareum submission:
 - `ClientHandler` handles reading data from packet bodies to file, but as its temporary, this handler ensures it becomes permanent by including a hash of the file in the response header.
 - If the user is not logged in or no body data was sent, an error packet is returned.
 - The handler is tested to ensure the file is stored permanently and it returns an error packet where valid.
+### ImageDownloadHandler
+- Ayden Cline
+- This class extends `PacketHandler` and handles sending an image file to the client.
+- `ClientHandler` handles sending the packet bodies to the client, but the handler tells the handler whether to send a file and which one to send.
+- An invalid hash requested from the client will result in an error packet being sent back.
+- The handler is tested to ensure the file is properly marked to be returned by the client handler.
 ### BuyListingHandler.java
 - Karma Luitel
 - This class handles the calculations and database operations for a user buying a listing.
