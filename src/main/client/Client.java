@@ -247,10 +247,11 @@ public class Client implements IClient {
         }
     }
 
+    /**
+     * Returns a hash that can be used to create a listing with an image
+     */
     public String uploadImage(File file) {
-        try {
-            FileInputStream stream = new FileInputStream(file);
-
+        try (FileInputStream stream = new FileInputStream(file)) {
             Packet packet = new Packet("/upload");
             packet.addHeader("Session-Token", sessionToken);
             packet.setBodyContinues(true);
