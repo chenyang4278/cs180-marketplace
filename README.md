@@ -1,19 +1,23 @@
 # CS180 Team Project
 - L24 Team 1: Karma Luitel, Benny Huang, Ayden Cline, Chen Yang
 
+
+
 ## Compilation
 ### Phase 1
 For now our project is a  set of Database and User/Listing/Message object classes, providing functionality for reading, writing, updating, and deleting object classes from a csv file database. Just compile every class and run test cases to see how the classes function.
 ### Phase 2
-The `client` package needs to be compiled alongside the `packet` and `data` packages. The `server` package needs to compiled alongside the `database`, `packet`, and `data` packages. Run test cases to see how the classes function.
+The `client` package needs to be compiled alongside the `packet` and `data` packages. The `server` package needs to compiled alongside the `database`, `packet`, and `data` packages. Run test cases to see how the classes function. For testing IO functionality, refer to `Server.java`, `ClientHandler.java`, and `Client.java`. These classes are our main Network IO classes. The project can optionally be compiled and tested using Maven.
 
-The project can optionally be compiled and tested using Maven.
+
 
 ## Submissions
 ### Phase 1
 Vocareum submission: Ayden Cline
 ### Phase 2
-Vocareum submission: 
+Vocareum submission: Karma Luitel
+
+
 
 ## Client
 ### Client.java
@@ -56,6 +60,8 @@ Vocareum submission:
 - This class is used to track a client session so they can be verified as logged in between requests or even restarts.
 - This class is used by the login handler and packet handlers that require the user to be logged in.
 - Testing is implemented to ensure the class can be properly instantiated and its getters and setters function correctly.
+
+
 
 ## Database
 ### Database.java
@@ -122,6 +128,8 @@ Vocareum submission:
 - Ayden Cline
 - Thrown when a packet is formatted incorrectly.
 
+
+
 ## Server
 ### Server.java
 - Ayden Cline
@@ -139,6 +147,8 @@ Vocareum submission:
 - An abstract class that all packet handlers inherit from.
 - The class implements a method for checking whether a provided path and the handler's path match. Additionally, it implements a wildcard syntax that can be used in the path. There is also a function that checks whether the packet comes from a user that is logged in and returns that user if so.
 - The tests ensure that both methods do what they're intended to do.
+
+
 
 ## Server Handlers
 ### HandlerUtil.java
@@ -200,7 +210,7 @@ Vocareum submission:
 - Handlers are utilized by Client.java to perform database operations from the client over the server.
 ### DeleteUserHandler.java
 - Karma Luitel
-- - This class handles the deletion of a user.
+- This class handles the deletion of a user.
 - It implements the handle method from the abstract PacketHandler class (its parent).
 - All handler classes use Packet or subclasses of Packet to handle data transmission.
 - Testing for all handler classes is done in TestEndpointHandlers.
