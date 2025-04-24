@@ -55,8 +55,11 @@ public class LoginScreen extends Screen implements ILoginScreen {
                 String password = charToString(passField.getPassword());
                 Client client = getClient();
                 if (loginMode) {
-                    client.login(username, password);
-                    getGUI().setScreen(new HomeScreen());
+                    if (client.login(username, password)) {
+                        getGUI().setScreen(new HomeScreen());
+                    } else {
+                        setButtonLabels();
+                    }
                 } else {
                     client.createUser(username, password);
                     //require login after
