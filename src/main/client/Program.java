@@ -10,7 +10,7 @@ public class Program implements IProgram {
     private static Client client;
 
     public static void main(String[] args) throws IOException {
-        // client = new Client("localhost", 8080);
+        client = new Client("localhost", 8080);
 
         SwingUtilities.invokeLater(() -> {
             gui = new ClientGUI();

@@ -40,6 +40,10 @@ public class Client implements IClient {
     }
 
     public User getUser() {
+        if (currentUserId == -1) {
+            return null;
+        }
+
         try {
             ArrayList<PacketHeader> headers = new ArrayList<>();
             return sendObjectPacketRequest("/users/" + currentUserId, headers, User.class);
@@ -314,5 +318,9 @@ public class Client implements IClient {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public boolean isLoggedIn() {
+        return !sessionToken.isEmpty();
     }
 }
