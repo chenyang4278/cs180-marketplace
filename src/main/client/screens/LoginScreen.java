@@ -11,7 +11,6 @@ public class LoginScreen extends Screen implements ILoginScreen {
 
 
     //note for myself later, use this link for boxlayout info: https://docs.oracle.com/javase/tutorial/uiswing/layout/box.html
-    private Client client;
     private boolean loginMode;
     private JLabel title;
     private JButton switchButton;
@@ -20,7 +19,6 @@ public class LoginScreen extends Screen implements ILoginScreen {
     private JPasswordField passField;
 
     public LoginScreen() {
-        client = getClient();
         loginMode = true;
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -55,12 +53,12 @@ public class LoginScreen extends Screen implements ILoginScreen {
             public void actionPerformed(ActionEvent e) {
                 String username = userField.getText();
                 String password = charToString(passField.getPassword());
+                Client client = getClient();
                 if (loginMode) {
                     client.login(username, password);
-                    //TODO handle login
+                    getGUI().setScreen(new HomeScreen());
                 } else {
                     client.createUser(username, password);
-
                     //require login after
                     loginMode = !loginMode;
                     setButtonLabels();
