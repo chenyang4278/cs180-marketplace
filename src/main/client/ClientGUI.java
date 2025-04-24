@@ -9,6 +9,7 @@ import java.util.Stack;
 public class ClientGUI implements IClientGUI {
     private final JFrame frame;
     private final JScrollPane scrollPane;
+    private final Header header;
     private final Stack<Screen> screenHistory = new Stack<>();
 
     public ClientGUI() {
@@ -20,7 +21,7 @@ public class ClientGUI implements IClientGUI {
         scrollPane = new JScrollPane();
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-        frame.add(new Header(), BorderLayout.NORTH);
+        frame.add(header = new Header(), BorderLayout.NORTH);
         frame.add(scrollPane, BorderLayout.CENTER);
         frame.setVisible(true);
     }
@@ -29,6 +30,7 @@ public class ClientGUI implements IClientGUI {
         screen.setVisible(true);
         screenHistory.push(screen);
         scrollPane.setViewportView(screen);
+        header.refresh();
     }
 
     public void goBackScreen() {
@@ -39,7 +41,8 @@ public class ClientGUI implements IClientGUI {
         screenHistory.pop();
         JPanel newScreen = screenHistory.peek();
         newScreen.setVisible(true);  // should be true already, but just to be sure
-        scrollPane.add(newScreen);
+        scrollPane.setViewportView(newScreen);
+        header.refresh();
     }
 
     public boolean canGoBack() {
