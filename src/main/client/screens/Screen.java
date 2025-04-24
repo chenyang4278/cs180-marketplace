@@ -6,7 +6,7 @@ import client.Program;
 
 import javax.swing.*;
 
-public abstract class Screen extends JPanel {
+public abstract class Screen extends JPanel implements IScreen {
     protected ClientGUI getGUI() {
         return Program.getGUI();
     }

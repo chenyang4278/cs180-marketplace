@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class Header extends JPanel {
+public class Header extends JPanel implements IHeader {
     public Header() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 

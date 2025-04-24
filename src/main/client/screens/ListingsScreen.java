@@ -1,6 +1,5 @@
 package client.screens;
 
-import javax.swing.*;
+public class ListingsScreen extends Screen implements IListingsScreen {
 
-public class ListingsScreen extends Screen {
 }

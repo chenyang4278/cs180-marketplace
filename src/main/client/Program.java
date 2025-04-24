@@ -5,7 +5,7 @@ import client.screens.HomeScreen;
 import javax.swing.*;
 import java.io.IOException;
 
-public class Program {
+public class Program implements IProgram {
     private static ClientGUI gui;
     private static Client client;
 

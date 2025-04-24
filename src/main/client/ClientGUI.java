@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Stack;
 
-public class ClientGUI {
+public class ClientGUI implements IClientGUI {
     private final JFrame frame;
     private final JScrollPane scrollPane;
     private final Stack<Screen> screenHistory = new Stack<>();

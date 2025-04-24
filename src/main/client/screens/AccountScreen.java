@@ -1,6 +1,4 @@
 package client.screens;
 
-import javax.swing.*;
-
-public class AccountScreen extends Screen {
+public class AccountScreen extends Screen implements IAccountScreen {
 }
