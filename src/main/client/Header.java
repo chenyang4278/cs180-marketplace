@@ -13,7 +13,6 @@ public class Header extends JPanel implements IHeader {
     public Header() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-        LinkAction linkAction = new LinkAction();
         JButton homeBtn = createLinkButton("Home", "home");
         JButton listingBtn = createLinkButton("Listings", "listings");
         loginBtn = createLinkButton("Login", "login");
