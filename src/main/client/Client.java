@@ -12,6 +12,8 @@ import data.Listing;
 import data.User;
 import data.Message;
 
+import javax.swing.*;
+
 /**
  * Client
  * <p>
@@ -135,6 +137,7 @@ public class Client implements IClient {
             return true;
         } catch (Exception e) {
             System.out.println("Login failed: " + e.getMessage());
+            showError(e.getMessage());
             return false;
         }
     }
@@ -147,6 +150,7 @@ public class Client implements IClient {
             return true;
         } catch (Exception e) {
             System.out.println("User creation failed: " + e.getMessage());
+            showError(e.getMessage());
             return false;
         }
     }
@@ -318,6 +322,11 @@ public class Client implements IClient {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(null, message, "Error",
+                JOptionPane.ERROR_MESSAGE);
     }
 
     public boolean isLoggedIn() {

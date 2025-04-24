@@ -3,30 +3,31 @@ import client.Client;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class LoginScreen extends Screen implements ILoginScreen {
 
 
     //note for myself later, use this link for boxlayout info: https://docs.oracle.com/javase/tutorial/uiswing/layout/box.html
     private Client client;
+    private boolean loginMode;
+    private JLabel title;
+    private JButton switchButton;
+    private JButton continueButton;
+    private JTextField userField;
+    private JPasswordField passField;
 
     public LoginScreen() {
         client = getClient();
-
+        loginMode = true;
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         this.add(Box.createVerticalGlue());
-        this.add(createInputBox("Login", "Login", "Create Account"));
-        //this.add(createInputBox("Create Account", "Create", "To Login"));
-        this.add(Box.createVerticalGlue());
-    }
-
-    private Box createInputBox(String t, String b1, String b2) {
         Box box = new Box(BoxLayout.Y_AXIS);
 
-        JLabel title = new JLabel(t);
+        title = new JLabel("Login");
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         box.add(Box.createVerticalStrut(10));
@@ -36,25 +37,47 @@ public class LoginScreen extends Screen implements ILoginScreen {
 
         JLabel userLabel = new JLabel("Username:");
         userLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JTextField userField = new JTextField(10);
+        userField = new JTextField(10);
         userField.setMaximumSize(new Dimension(250, 200));
         box.add(userLabel);
         box.add(userField);
         box.add(Box.createVerticalStrut(25));
         JLabel passLabel = new JLabel("Password:");
         passLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JPasswordField passField = new JPasswordField(10);
+        passField = new JPasswordField(10);
         passField.setMaximumSize(new Dimension(250, 200));
         box.add(passLabel);
         box.add(passField);
         box.add(Box.createVerticalStrut(25));
-        JButton loginButton = new JButton(b1);
-        box.add(loginButton);
-        JButton createButton = new JButton(b2);
-        box.add(loginButton);
+        continueButton = new JButton("Login");
+        continueButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String username = userField.getText();
+                String password = charToString(passField.getPassword());
+                if (loginMode) {
+                    client.login(username, password);
+                    //TODO handle login
+                } else {
+                    client.createUser(username, password);
+
+                    //require login after
+                    loginMode = !loginMode;
+                    setButtonLabels();
+                }
+            }
+        });
+        switchButton = new JButton("To Create Account");
+        switchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loginMode = !loginMode;
+                setButtonLabels();
+            }
+        });
         JPanel buttonPanel = new JPanel();
-        buttonPanel.add(loginButton);
-        buttonPanel.add(createButton);
+        buttonPanel.add(continueButton);
+        buttonPanel.add(switchButton);
         box.add(buttonPanel);
 
         Border b = BorderFactory.createLineBorder(Color.BLACK, 2, true);
@@ -63,7 +86,29 @@ public class LoginScreen extends Screen implements ILoginScreen {
         box.setBorder(b);
 
         box.add(Box.createVerticalStrut(100));
+        this.add(box);
+        this.add(Box.createVerticalGlue());
+    }
 
-        return box;
+    private void setButtonLabels() {
+        if (loginMode) {
+            title.setText("Login");
+            continueButton.setText("Login");
+            switchButton.setText("To Create Account");
+        } else {
+            title.setText("Create New Account");
+            continueButton.setText("Create");
+            switchButton.setText("To Login");
+        }
+        userField.setText("");
+        passField.setText("");
+    }
+
+    private String charToString(char[] c) {
+        String ans = "";
+        for (int i = 0; i < c.length; i++) {
+            ans += c[i];
+        }
+        return ans;
     }
 }
