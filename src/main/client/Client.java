@@ -12,6 +12,8 @@ import data.Listing;
 import data.User;
 import data.Message;
 
+import javax.swing.*;
+
 /**
  * Client
  * <p>
@@ -27,13 +29,15 @@ public class Client implements IClient {
     private InputStream iStream;
     private int currentUserId;
     private String sessionToken;
+    private boolean showErrors;
 
-    public Client(String host, int port) throws IOException {
+    public Client(String host, int port, boolean showErrors) throws IOException {
         socket = new Socket(host, port);
         oStream = socket.getOutputStream();
         iStream = socket.getInputStream();
         sessionToken = "";
         currentUserId = -1;
+        this.showErrors = showErrors;
 
         // ensure tmp directory exists for image downloading
         new File("tmp").mkdir();
@@ -49,6 +53,7 @@ public class Client implements IClient {
             return sendObjectPacketRequest("/users/" + currentUserId, headers, User.class);
         } catch (Exception e) {
             System.out.println("User update failed: " + e.getMessage());
+            showError(e.getMessage());
             return null;
         }
     }
@@ -135,6 +140,7 @@ public class Client implements IClient {
             return true;
         } catch (Exception e) {
             System.out.println("Login failed: " + e.getMessage());
+            showError(e.getMessage());
             return false;
         }
     }
@@ -147,6 +153,7 @@ public class Client implements IClient {
             return true;
         } catch (Exception e) {
             System.out.println("User creation failed: " + e.getMessage());
+            showError(e.getMessage());
             return false;
         }
     }
@@ -162,6 +169,7 @@ public class Client implements IClient {
             return sendObjectPacketRequest("/listings/create", headers, Listing.class);
         } catch (Exception e) {
             System.out.println("Listing creation failed: " + e.getMessage());
+            showError(e.getMessage());
             return null;
         }
     }
@@ -172,6 +180,7 @@ public class Client implements IClient {
             return true;
         } catch (Exception e) {
             System.out.println("Purchase failed: " + e.getMessage());
+            showError(e.getMessage());
             return false;
         }
     }
@@ -186,6 +195,7 @@ public class Client implements IClient {
             return true;
         } catch (Exception e) {
             System.out.println("Balance update failed: " + e.getMessage());
+            showError(e.getMessage());
             return false;
         }
     }
@@ -198,6 +208,7 @@ public class Client implements IClient {
             return true;
         } catch (Exception e) {
             System.out.println("Account deletion failed: " + e.getMessage());
+            showError(e.getMessage());
             return false;
         }
     }
@@ -208,6 +219,7 @@ public class Client implements IClient {
             return true;
         } catch (Exception e) {
             System.out.println("Listing deletion failed: " + e.getMessage());
+            showError(e.getMessage());
             return false;
         }
     }
@@ -221,6 +233,7 @@ public class Client implements IClient {
             return sendObjectListPacketRequest("/listings/attribute", headers, Listing.class);
         } catch (Exception e) {
             System.out.println("Search failed: " + e.getMessage());
+            showError(e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -235,6 +248,7 @@ public class Client implements IClient {
             return true;
         } catch (Exception e) {
             System.out.println("Send message failed: " + e.getMessage());
+            showError(e.getMessage());
             return false;
         }
     }
@@ -247,6 +261,7 @@ public class Client implements IClient {
             return sendObjectListPacketRequest("/messages", headers, Message.class);
         } catch (Exception e) {
             System.out.println("Message retrieval failed: " + e.getMessage());
+            showError(e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -283,6 +298,7 @@ public class Client implements IClient {
             return resp.getHeader("File-Hash").getValues().get(0);
         } catch (Exception e) {
             e.printStackTrace();
+            showError(e.getMessage());
             return null;
         }
     }
@@ -316,8 +332,17 @@ public class Client implements IClient {
             return null;
         } catch (Exception e) {
             e.printStackTrace();
+            showError(e.getMessage());
             return null;
         }
+    }
+
+    private void showError(String message) {
+        if (showErrors) {
+            JOptionPane.showMessageDialog(null, message, "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
     }
 
     public boolean isLoggedIn() {
