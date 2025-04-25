@@ -1,16 +1,14 @@
 package client;
 
-import org.junit.Before;
+import data.User;
+import database.DatabaseWrapper;
+import database.DatabaseWriteException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import data.Listing;
 import data.Message;
-import packet.ErrorPacketException;
-import packet.Packet;
 import packet.PacketHeader;
-import packet.PacketParsingException;
-import server.ClientHandler;
 import server.Server;
 import server.handlers.HandlerUtil;
 
@@ -18,16 +16,10 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * TestClient
@@ -79,8 +71,7 @@ public class TestClient {
     public void testClose() throws IOException {
         Client client = new Client("localhost", 8080, false);
         client.close();
-        boolean b = client.createUser("test", "1234");
-        assertFalse(b);
+        assertNull(client.createUser("test", "1234"));
     }
 
     @Test
@@ -90,7 +81,7 @@ public class TestClient {
         Client client = new Client("localhost", 8080, false);
         
         // make sure that user with such info does not exist in User.csv already
-        assertTrue(client.createUser(user, "3.1415"));
+        assertNotNull(client.createUser(user, "3.1415"));
 
         assertTrue(client.login(user, "3.1415"));
         assertEquals(user, client.getUser().getUsername());
@@ -119,11 +110,11 @@ public class TestClient {
         PacketHeader ph1 = headers.get(0);
         PacketHeader ph2 = headers.get(1);
 
-        assertTrue("key1".equals(ph1.getName()));
-        assertTrue("key2".equals(ph2.getName()));
-        
-        assertTrue("value1".equals(ph1.getValues().get(0)));
-        assertTrue("value2".equals(ph2.getValues().get(0)));
+        assertEquals("key1", ph1.getName());
+        assertEquals("key2", ph2.getName());
+
+        assertEquals("value1", ph1.getValues().get(0));
+        assertEquals("value2", ph2.getValues().get(0));
         
     }
 
@@ -197,7 +188,7 @@ public class TestClient {
         // make sure client is no longer storing old user
         assertNull(client.getUser());
         // make sure old user was deleted from User.csv by trying to make a new user with same username
-        assertTrue(client.createUser("ian", "pass"));
+        assertNotNull(client.createUser("ian", "pass"));
         client.login("ian", "pass");
         // delete user again
         assertTrue(client.deleteUser());
@@ -333,5 +324,27 @@ public class TestClient {
         assertNotNull(downloadedFile);
 
         assertEquals(calculateFileHash(testFile), calculateFileHash(downloadedFile));
+    }
+
+    @Test
+    public void testGetInboxUsers() throws IOException, DatabaseWriteException {
+        Client client = new Client("localhost", 8080, false);
+        User me = client.createUser("user1", "pass");
+        User user2 = client.createUser("user2", "pass");
+        User user3 = client.createUser("user3", "pass");
+        client.login("user1", "pass");
+
+        DatabaseWrapper db = DatabaseWrapper.get();
+
+        Message msg1 = new Message(me.getId(), user2.getId(), "message");
+        Message msg2 = new Message(user3.getId(), me.getId(), "message");
+        db.save(msg1);
+        db.save(msg2);
+
+        List<User> users = client.getInboxUsers();
+        assertEquals(2, users.size());
+        for (User user : users) {
+            assertTrue(user.getId() == user2.getId() || user.getId() == user3.getId());
+        }
     }
 }

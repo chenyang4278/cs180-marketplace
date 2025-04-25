@@ -38,7 +38,8 @@ public class ClientHandler implements Runnable, IClientHandler {
         new GetUsersFromAttributeHandler(),
         new LoginHandler(),
         new ImageUploadHandler(),
-        new ImageDownloadHandler()
+        new ImageDownloadHandler(),
+        new GetInboxUsersHandler()
     };
 
     private Socket socket;

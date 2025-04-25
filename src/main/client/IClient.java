@@ -27,7 +27,7 @@ public interface IClient {
 
     boolean login(String username, String password);
 
-    boolean createUser(String username, String password);
+    User createUser(String username, String password);
 
     Listing createListing(String title, String description, double price, String image);
 
@@ -44,4 +44,6 @@ public interface IClient {
     boolean sendMessage(int toId, String body);
 
     List<Message> getMessagesWithUser(int otherUserId);
+
+    List<User> getInboxUsers();
 }
