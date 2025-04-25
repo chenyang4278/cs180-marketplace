@@ -22,10 +22,6 @@ public interface IClient {
 
     void close() throws IOException;
 
-    int getCurrentUserId();
-
-    void setCurrentUserId(int id);
-
     boolean login(String username, String password);
 
     User createUser(String username, String password);
