@@ -60,7 +60,7 @@ public class TestClient {
     @Test
     public void testClientInitialization() throws IOException {
         
-        Client client = new Client("localhost", 8080);
+        Client client = new Client("localhost", 8080, false);
         client.setCurrentUserId(100);
         assertEquals(100, client.getCurrentUserId());
 
@@ -69,7 +69,7 @@ public class TestClient {
 
     @Test
     public void testClose() throws IOException {
-        Client client = new Client("localhost", 8080);
+        Client client = new Client("localhost", 8080, false);
         client.close();
         assertNull(client.createUser("test", "1234"));
     }
@@ -78,7 +78,7 @@ public class TestClient {
     public void testUserCreationLogin() throws IOException {
         
         String user = "testingusername";
-        Client client = new Client("localhost", 8080);
+        Client client = new Client("localhost", 8080, false);
         
         // make sure that user with such info does not exist in User.csv already
         assertNotNull(client.createUser(user, "3.1415"));
@@ -86,7 +86,7 @@ public class TestClient {
         assertTrue(client.login(user, "3.1415"));
         assertEquals(user, client.getUser().getUsername());
 
-        Client c2 = new Client("localhost", 8080);
+        Client c2 = new Client("localhost", 8080, false);
         c2.createUser(user, "3.1415");
         // shouldn't assign c2 a user since username is already taken
         assertNull(c2.getUser());
@@ -121,7 +121,7 @@ public class TestClient {
     @Test
     public void testSetUserBal() throws IOException {
 
-        Client c = new Client("localhost", 8080);
+        Client c = new Client("localhost", 8080, false);
         c.createUser("user", "pass");
         c.login("user", "pass");
 
@@ -136,13 +136,13 @@ public class TestClient {
     @Test
     public void testCreateAndBuyListing() throws IOException {
 
-        Client seller = new Client("localhost", 8080);
+        Client seller = new Client("localhost", 8080, false);
         seller.createUser("ian", "pass");
         seller.login("ian", "pass");
         
         Listing item = seller.createListing("apple", "red, crunchy", 5, "null");
 
-        Client buyer = new Client("localhost", 8080);
+        Client buyer = new Client("localhost", 8080, false);
         buyer.createUser("buyeruser", "password");
         buyer.login("buyeruser", "password");
         
@@ -157,7 +157,7 @@ public class TestClient {
         // after buying, the balance should reflect the purchase.
         assertEquals(10 - 5, buyer.getUser().getBalance(), 0.01);
 
-        Client otherbuyer = new Client("localhost", 8080);
+        Client otherbuyer = new Client("localhost", 8080, false);
         otherbuyer.createUser("buyer2", "pw");
         otherbuyer.login("buyer2", "pw");
 
@@ -179,7 +179,7 @@ public class TestClient {
     @Test
     public void testDeleteUser() throws IOException {
 
-        Client client = new Client("localhost", 8080);
+        Client client = new Client("localhost", 8080, false);
         client.createUser("ian", "pass");
         client.login("ian", "pass");
         // make sure client is assigned new user
@@ -199,7 +199,7 @@ public class TestClient {
     @Test
     public void testDeleteListing() throws IOException {
 
-        Client c = new Client("localhost", 8080);
+        Client c = new Client("localhost", 8080, false);
         c.createUser("seller", "password");
         c.login("seller", "password");
 
@@ -207,7 +207,7 @@ public class TestClient {
         int listingid = item.getId();
         c.deleteListing(listingid);
 
-        Client c2 = new Client("localhost", 8080);
+        Client c2 = new Client("localhost", 8080, false);
         c2.createUser("buyer", "pass");
         c2.login("buyer", "pass");
         c2.setUserBalance(100000);
@@ -225,7 +225,7 @@ public class TestClient {
 
         System.out.println("debug:");
 
-        Client seller = new Client("localhost", 8080);
+        Client seller = new Client("localhost", 8080, false);
         seller.createUser("seller", "pass");
         seller.login("seller", "pass");
         Listing item1 = seller.createListing("item1", "description1", 10, "null");
@@ -256,11 +256,11 @@ public class TestClient {
     @Test
     public void testMessaging() throws IOException {
 
-        Client c1 = new Client("localhost", 8080);
+        Client c1 = new Client("localhost", 8080, false);
         c1.createUser("Alice", "pass");
         c1.login("Alice", "pass");
 
-        Client c2 = new Client("localhost", 8080);
+        Client c2 = new Client("localhost", 8080, false);
         c2.createUser("Bob", "pass");
         c2.login("Bob", "pass");
 
@@ -305,7 +305,7 @@ public class TestClient {
     public void testImageUploadAndDownload() throws IOException {
         File testFile = new File("README.md");
 
-        Client client = new Client("localhost", 8080);
+        Client client = new Client("localhost", 8080, false);
         client.createUser("Alice", "pass");
         client.login("Alice", "pass");
 
