@@ -34,7 +34,7 @@ public class LoginHandler extends PacketHandler implements ILoginHandler {
 
         // look for user by username
         ArrayList<User> users = new ArrayList<>(db.filterByColumn(User.class,
-                "username", username));
+                "username", username, false));
         if (users.isEmpty()) {
             return new ErrorPacket("Invalid username or password");
         }
@@ -48,7 +48,7 @@ public class LoginHandler extends PacketHandler implements ILoginHandler {
 
         // save session and return new session token
         try {
-            for (Session session : db.filterByColumn(Session.class, "user_id", Integer.toString(user.getId()))) {
+            for (Session session : db.filterByColumn(Session.class, "user_id", Integer.toString(user.getId()), false)) {
                 db.delete(session);
             }
 
@@ -58,7 +58,7 @@ public class LoginHandler extends PacketHandler implements ILoginHandler {
             String token;
             do {
                 token = HandlerUtil.generateToken();
-            } while (!db.filterByColumn(Session.class, "token", token).isEmpty());
+            } while (!db.filterByColumn(Session.class, "token", token, false).isEmpty());
 
             Session session = new Session(user.getId(), token);
             db.save(session);

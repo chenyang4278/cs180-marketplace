@@ -51,12 +51,14 @@ public class GetInboxUsersHandler extends PacketHandler implements IGetInboxUser
         List<Message> messagesToMe = db.filterByColumn(
             Message.class,
             "receiverId",
-            Integer.toString(user.getId())
+            Integer.toString(user.getId()),
+            false
         );
         List<Message> messagesFromMe = db.filterByColumn(
             Message.class,
             "senderId",
-            Integer.toString(user.getId())
+            Integer.toString(user.getId()),
+            false
         );
 
         ArrayList<User> inboxUsers = new ArrayList<User>();

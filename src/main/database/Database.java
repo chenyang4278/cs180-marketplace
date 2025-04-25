@@ -172,7 +172,9 @@ public class Database implements IDatabase {
 
     //Finds lines with a specific key value pair and returns in array form.
     //Returns an empty array if no string is found.
-    public ArrayList<String[]> get(String header, String value) throws DatabaseNotFoundException {
+
+    //Lenient will control how strict the comparison is, set to true for more lenience, false for exact
+    public ArrayList<String[]> get(String header, String value, boolean lenient) throws DatabaseNotFoundException {
         ArrayList<String[]> values = new ArrayList<>();
         synchronized (GATE) {
             try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
@@ -181,7 +183,8 @@ public class Database implements IDatabase {
                 while (line != null) {
                     String[] parsed = dataLineToArray(line);
                     if (checkIndex != -1) {
-                        if (parsed[checkIndex].equals(value)) {
+                        if ((lenient && lenientStringCompare(parsed[checkIndex], value)) ||
+                                (parsed[checkIndex].equals(value))) {
                             values.add(parsed);
                         }
                     }
@@ -192,6 +195,42 @@ public class Database implements IDatabase {
             }
         }
         return values;
+    }
+
+    //gets every row in the database
+    public ArrayList<String[]> getAll() throws DatabaseNotFoundException {
+        ArrayList<String[]> values = new ArrayList<>();
+        synchronized (GATE) {
+            try (BufferedReader bfr = new BufferedReader(new FileReader(new File(filename)))) {
+                String line = bfr.readLine();
+                while (line != null) {
+                    values.add(dataLineToArray(line));
+                    line = bfr.readLine();
+                }
+            } catch (IOException e) {
+                throw new DatabaseNotFoundException("Invalid database");
+            }
+        }
+        return values;
+    }
+
+    //Edit if we need more or less leniency, currently does following:
+    //remove spaces
+    //remove capitalization
+    private boolean lenientStringCompare(String s1, String s2) {
+        String lS1 = "";
+        String lS2 = "";
+        for (int i = 0; i < s1.length(); i++) {
+            if (s1.charAt(i) > 32) {
+                lS1 += s1.toLowerCase().charAt(i);
+            }
+        }
+        for (int i = 0; i < s2.length(); i++) {
+            if (s2.charAt(i) > 32) {
+                lS2 += s2.toLowerCase().charAt(i);
+            }
+        }
+        return lS1.equals(lS2);
     }
 
     //Deletes all lines containing a given key value pair.

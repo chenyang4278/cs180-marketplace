@@ -33,9 +33,9 @@ public class DatabaseWrapper implements IDatabaseWrapper {
         databases = new ArrayList<Database>();
     }
 
-    private ArrayList<String[]> getRows(Database db, String column, String value) {
+    private ArrayList<String[]> getRows(Database db, String column, String value, boolean lenient) {
         try {
-            return db.get(column, value);
+            return db.get(column, value, lenient);
         } catch (DatabaseNotFoundException e) {
             return new ArrayList<>();
         }
@@ -43,7 +43,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
 
     private ArrayList<String[]> requireRows(Database db, String column,
                                             String value, String errorMsg) throws RowNotFoundException {
-        ArrayList<String[]> rows = getRows(db, column, value);
+        ArrayList<String[]> rows = getRows(db, column, value, false);
         if (rows.isEmpty()) {
             throw new RowNotFoundException(errorMsg);
         }
@@ -56,7 +56,7 @@ public class DatabaseWrapper implements IDatabaseWrapper {
     private <T extends Table> int getNextId(Class<T> cls) throws DatabaseWriteException {
         String clsName = cls.getSimpleName();
 
-        ArrayList<String[]> ids = getRows(idDb, "cls", clsName);
+        ArrayList<String[]> ids = getRows(idDb, "cls", clsName, false);
         // add id row for class if it doesn't exist
         if (ids.isEmpty()) {
             try {
@@ -163,9 +163,9 @@ public class DatabaseWrapper implements IDatabaseWrapper {
      * @param <T>    type that extends Table
      * @return a list of instances according to the filter
      */
-    public <T extends Table> List<T> filterByColumn(Class<T> cls, String column, String value) {
+    public <T extends Table> List<T> filterByColumn(Class<T> cls, String column, String value, boolean lenient) {
         Database db = getDbFor(cls);
-        ArrayList<String[]> rows = getRows(db, column, value);
+        ArrayList<String[]> rows = getRows(db, column, value, lenient);
         return rows.stream().map(row -> Table.fromRow(cls, row)).collect(Collectors.toList());
     }
 

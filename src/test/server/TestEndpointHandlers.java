@@ -455,7 +455,7 @@ public class TestEndpointHandlers {
 
         packet = sessionInfo.makePacket();
         packet.addHeader("attribute", "sellerName");
-        packet.addHeader("attributeVal", "idk");
+        packet.addHeader("attributeVal", "iD k");
 
         ObjectListPacket<Listing> o2 = (ObjectListPacket<Listing>) handler.handle(packet, null);
         assertEquals(1, o2.getObjList().size());
@@ -572,7 +572,7 @@ public class TestEndpointHandlers {
 
         Packet packet = sessionInfo.makePacket();
         packet.addHeader("attribute", "username");
-        packet.addHeader("attributeVal", "karma");
+        packet.addHeader("attributeVal", "k  Arma");
 
         ObjectListPacket<User> resp = (ObjectListPacket<User>) handler.handle(packet, null);
         assertEquals(1, resp.getObjList().size());
@@ -649,7 +649,7 @@ public class TestEndpointHandlers {
 
         String token = header.getValues().get(0);
 
-        List<Session> sessions = DatabaseWrapper.get().filterByColumn(Session.class, "token", token);
+        List<Session> sessions = DatabaseWrapper.get().filterByColumn(Session.class, "token", token, false);
         assertEquals(1, sessions.size());
 
         Session session = sessions.get(0);

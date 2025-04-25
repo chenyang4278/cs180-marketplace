@@ -78,7 +78,7 @@ public abstract class PacketHandler implements IPacketHandler {
         }
 
         String token = sessionHeader.getValues().get(0);
-        List<Session> sessions = db.filterByColumn(Session.class, "token", token);
+        List<Session> sessions = db.filterByColumn(Session.class, "token", token, false);
         if (sessions.isEmpty()) {
             return null;
         }

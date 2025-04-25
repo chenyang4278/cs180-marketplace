@@ -46,7 +46,7 @@ public class GetUsersFromAttributeHandler extends PacketHandler implements IGetU
             return new ErrorPacket("Cannot obtain user from password");
         }
 
-        ArrayList<User> users = (ArrayList<User>) db.filterByColumn(User.class, attribute, attributeVal);
+        ArrayList<User> users = (ArrayList<User>) db.filterByColumn(User.class, attribute, attributeVal, true);
         for (User u : users) {
             u.setPassword(null);
         }
