@@ -43,7 +43,7 @@ public class GetListingsFromAttributeHandler extends PacketHandler implements IG
         String attribute = data[0];
         String attributeVal = data[1];
 
-        ArrayList<Listing> listings = (ArrayList<Listing>) db.filterByColumn(Listing.class, attribute, attributeVal);
+        ArrayList<Listing> listings = (ArrayList<Listing>) db.filterByColumn(Listing.class, attribute, attributeVal, true);
         return new ObjectListPacket<Listing>(listings);
     }
 }

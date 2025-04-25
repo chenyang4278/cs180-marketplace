@@ -51,12 +51,14 @@ public class GetMessagesBetweenUsersHandler extends PacketHandler implements IGe
             List<Message> sentMessages = db.filterByColumn(
                     Message.class,
                     "senderId",
-                    "" + user.getId()
+                    "" + user.getId(),
+                    false
             );
             List<Message> receivedMessages = db.filterByColumn(
                     Message.class,
                     "receiverId",
-                    "" + user.getId()
+                    "" + user.getId(),
+                    false
             );
 
             // filter out messages between the two users

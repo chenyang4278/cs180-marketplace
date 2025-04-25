@@ -116,8 +116,13 @@ public class TestDatabaseWrapper {
     @Test
     public void testFilter() {
         getTables(); // ensure initiated
-        List<TestingClass> lTables = DatabaseWrapper.get().filterByColumn(TestingClass.class, "count", "0");
+        List<TestingClass> lTables = DatabaseWrapper.get().filterByColumn(TestingClass.class, "count", "0", false);
         for (TestingClass table : lTables) {
+            assert table.getCount() == 0;
+        }
+
+        List<TestingClass> lTables2 = DatabaseWrapper.get().filterByColumn(TestingClass.class, "count", " \n 0  ", true);
+        for (TestingClass table : lTables2) {
             assert table.getCount() == 0;
         }
     }
@@ -166,7 +171,7 @@ public class TestDatabaseWrapper {
             thread.join();
         }
 
-        List<TestingClass> lTables = DatabaseWrapper.get().filterByColumn(TestingClass.class, "count", "727");
+        List<TestingClass> lTables = DatabaseWrapper.get().filterByColumn(TestingClass.class, "count", "727", false);
         assertEquals(250, lTables.size());
     }
 
@@ -203,7 +208,7 @@ public class TestDatabaseWrapper {
                 }
 
                 DatabaseWrapper db = DatabaseWrapper.get();
-                List<TestingClass> lTables = db.filterByColumn(TestingClass.class, "name", localName);
+                List<TestingClass> lTables = db.filterByColumn(TestingClass.class, "name", localName, false);
                 assertEquals(100, lTables.size());
                 for (TestingClass table : lTables) {
                     assertEquals(727, table.getCount());
@@ -214,7 +219,7 @@ public class TestDatabaseWrapper {
                     DatabaseWrapper.get().delete(t);
                 }
 
-                lTables = db.filterByColumn(TestingClass.class, "name", localName);
+                lTables = db.filterByColumn(TestingClass.class, "name", localName, false);
                 assertEquals(50, lTables.size());
             } catch (Exception e) {
                 e.printStackTrace();
