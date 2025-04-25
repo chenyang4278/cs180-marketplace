@@ -126,6 +126,11 @@ public class Client implements IClient {
         }
     }
 
+    public void logout() {
+        sessionToken = "";
+        currentUser = null;
+    }
+
     public User createUser(String username, String password) {
         try {
             List<PacketHeader> headers = createHeaders("username", username, "password", password);
