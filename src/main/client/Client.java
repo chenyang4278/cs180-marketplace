@@ -27,7 +27,7 @@ public class Client implements IClient {
     private Socket socket;
     private OutputStream oStream;
     private InputStream iStream;
-    private int currentUserId;
+    private User currentUser;
     private String sessionToken;
     private boolean showErrors;
 
@@ -36,26 +36,11 @@ public class Client implements IClient {
         oStream = socket.getOutputStream();
         iStream = socket.getInputStream();
         sessionToken = "";
-        currentUserId = -1;
+        currentUser = null;
         this.showErrors = showErrors;
 
         // ensure tmp directory exists for image downloading
         new File("tmp").mkdir();
-    }
-
-    public User getUser() {
-        if (currentUserId == -1) {
-            return null;
-        }
-
-        try {
-            ArrayList<PacketHeader> headers = new ArrayList<>();
-            return sendObjectPacketRequest("/users/" + currentUserId, headers, User.class);
-        } catch (Exception e) {
-            System.out.println("User update failed: " + e.getMessage());
-            showError(e.getMessage());
-            return null;
-        }
     }
 
     private User sendLoginPacketRequest(List<PacketHeader> headers)
@@ -65,7 +50,8 @@ public class Client implements IClient {
         Packet response = Packet.read(iStream);
         sessionToken = response.getHeaderValues("Session-Token")[0];
         ObjectPacket<User> o = (ObjectPacket<User>) response;
-        return o.getObj();
+        currentUser = o.getObj();
+        return currentUser;
     }
 
     private <T extends Table> T sendObjectPacketRequest(String path, List<PacketHeader> headers, Class<T> type)
@@ -124,19 +110,14 @@ public class Client implements IClient {
         return headers;
     }
 
-    public int getCurrentUserId() {
-        return currentUserId;
-    }
-
-    public void setCurrentUserId(int id) {
-        this.currentUserId = id;
+    public User getUser() {
+        return currentUser;
     }
 
     public boolean login(String username, String password) {
         try {
             List<PacketHeader> headers = createHeaders("username", username, "password", password);
-            User user = sendLoginPacketRequest(headers);
-            this.currentUserId = user.getId();
+            currentUser = sendLoginPacketRequest(headers);
             return true;
         } catch (Exception e) {
             System.out.println("Login failed: " + e.getMessage());
@@ -148,9 +129,8 @@ public class Client implements IClient {
     public User createUser(String username, String password) {
         try {
             List<PacketHeader> headers = createHeaders("username", username, "password", password);
-            User user = sendObjectPacketRequest("/users/create", headers, User.class);
-            this.currentUserId = user.getId();
-            return user;
+            currentUser = sendObjectPacketRequest("/users/create", headers, User.class);
+            return currentUser;
         } catch (Exception e) {
             System.out.println("User creation failed: " + e.getMessage());
             showError(e.getMessage());
@@ -176,7 +156,7 @@ public class Client implements IClient {
 
     public boolean buyListing(int listingId) {
         try {
-            sendObjectPacketRequest("listings/" + listingId + "/buy", null, User.class);
+            currentUser = sendObjectPacketRequest("listings/" + listingId + "/buy", null, User.class);
             return true;
         } catch (Exception e) {
             System.out.println("Purchase failed: " + e.getMessage());
@@ -191,7 +171,8 @@ public class Client implements IClient {
                     "attribute", "balance",
                     "attributeVal", String.valueOf(newBalance)
             );
-            sendObjectPacketRequest("/users/" + currentUserId + "/edit", headers, User.class);
+            sendObjectPacketRequest("/users/" + currentUser.getId() + "/edit", headers, User.class);
+            currentUser.setBalance(newBalance);
             return true;
         } catch (Exception e) {
             System.out.println("Balance update failed: " + e.getMessage());
@@ -202,9 +183,9 @@ public class Client implements IClient {
 
     public boolean deleteUser() {
         try {
-            sendSuccessPacketRequest("/users/" + currentUserId + "/delete", null);
-            this.currentUserId = -1;
-            this.sessionToken = "";
+            sendSuccessPacketRequest("/users/" + currentUser.getId() + "/delete", null);
+            currentUser = null;
+            sessionToken = "";
             return true;
         } catch (Exception e) {
             System.out.println("Account deletion failed: " + e.getMessage());
