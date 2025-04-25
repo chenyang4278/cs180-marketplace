@@ -139,15 +139,15 @@ public class Client implements IClient {
         }
     }
 
-    public boolean createUser(String username, String password) {
+    public User createUser(String username, String password) {
         try {
             List<PacketHeader> headers = createHeaders("username", username, "password", password);
             User user = sendObjectPacketRequest("/users/create", headers, User.class);
             this.currentUserId = user.getId();
-            return true;
+            return user;
         } catch (Exception e) {
             System.out.println("User creation failed: " + e.getMessage());
-            return false;
+            return null;
         }
     }
 
@@ -317,6 +317,15 @@ public class Client implements IClient {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public List<User> getInboxUsers() {
+        try {
+            return sendObjectListPacketRequest("/messages/users", new ArrayList<>(), User.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 

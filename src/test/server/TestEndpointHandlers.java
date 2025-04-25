@@ -679,6 +679,7 @@ public class TestEndpointHandlers {
         clearDb();
         ImageDownloadHandler handler = new ImageDownloadHandler();
 
+        new File("static").mkdir();
         new File("static/hash").createNewFile();
 
         Packet packet = new Packet();
@@ -689,5 +690,33 @@ public class TestEndpointHandlers {
         resp = handler.handle(packet, new String[] { "hash" });
         TestUtility.assertNotErrorPacket(resp);
         assertEquals("hash", resp.getHeader("Download-Hash").getValues().get(0));
+    }
+
+    @Test
+    public void testGetInboxUsersHandler() throws DatabaseWriteException {
+        clearDb();
+        getSession();
+        GetInboxUsersHandler handler = new GetInboxUsersHandler();
+        DatabaseWrapper db = DatabaseWrapper.get();
+
+        User user1 = new User("user1", "pass");
+        User user2 = new User("user2", "pass");
+        db.save(user1);
+        db.save(user2);
+
+        Message msg1 = new Message(sessionInfo.user.getId(), user1.getId(), "message");
+        Message msg2 = new Message(user2.getId(), sessionInfo.user.getId(), "message");
+        db.save(msg1);
+        db.save(msg2);
+
+        Packet packet = sessionInfo.makePacket();
+        Packet resp = handler.handle(packet, null);
+        TestUtility.assertNotErrorPacket(resp);
+
+        ObjectListPacket<User> userList = (ObjectListPacket<User>) resp;
+        assertEquals(2, userList.getObjList().size());
+        for (User user : userList.getObjList()) {
+            assertTrue(user.getId() == user1.getId() || user.getId() == user2.getId());
+        }
     }
 }
