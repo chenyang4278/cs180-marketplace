@@ -328,7 +328,7 @@ public class TestClient {
 
     @Test
     public void testGetInboxUsers() throws IOException, DatabaseWriteException {
-        Client client = new Client("localhost", 8080);
+        Client client = new Client("localhost", 8080, false);
         User me = client.createUser("user1", "pass");
         User user2 = client.createUser("user2", "pass");
         User user3 = client.createUser("user3", "pass");
