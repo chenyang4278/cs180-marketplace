@@ -19,6 +19,8 @@ import java.util.*;
  */
 public class MessageScreen extends Screen implements IMessageScreen {
 
+    private JPanel topPanel;
+    private JButton recipientButton;
     private JTextField recipientField;
     private JPanel chatLog;
     private JPanel messagesContainer;
@@ -37,7 +39,11 @@ public class MessageScreen extends Screen implements IMessageScreen {
         recipientField = new JTextField();
         recipientField.setPreferredSize(new Dimension(0, 40));
         recipientField.setBorder(BorderFactory.createTitledBorder("To:"));
-        recipientField.addActionListener(e -> {
+        recipientField.setOpaque(false);
+
+        recipientButton = new JButton("Open Chat");
+        recipientButton.setPreferredSize(new Dimension(150, 40));
+        recipientButton.addActionListener(e -> {
             if (!recipientField.getText().trim().isEmpty()) {
                 java.util.List<User> user = getClient().searchUsersByUsername(recipientField.getText(), false);
 
@@ -61,7 +67,13 @@ public class MessageScreen extends Screen implements IMessageScreen {
                 recipient = null;
             }
         });
-        add(recipientField, BorderLayout.NORTH);
+
+        topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+        topPanel.add(recipientButton);
+        topPanel.add(recipientField);
+        topPanel.add(Box.createHorizontalGlue());
+        add(topPanel, BorderLayout.NORTH);
         
         // adds the chat log in the middle, below recipient field
         chatLog = new JPanel(new BorderLayout());
