@@ -34,19 +34,20 @@ public class GetUsersFromAttributeHandler extends PacketHandler implements IGetU
             return new ErrorPacket("Not logged in");
         }
 
-        String[] data = packet.getHeaderValues("attribute", "attributeVal");
+        String[] data = packet.getHeaderValues("attribute", "attributeVal", "leniency");
         if (data == null) {
             return new ErrorPacket("Invalid packet headers!");
         }
 
         String attribute = data[0];
         String attributeVal = data[1];
+        boolean leniency = data[2].equals("true");
 
         if (attribute.equals("password")) {
             return new ErrorPacket("Cannot obtain user from password");
         }
 
-        ArrayList<User> users = (ArrayList<User>) db.filterByColumn(User.class, attribute, attributeVal, true);
+        ArrayList<User> users = (ArrayList<User>) db.filterByColumn(User.class, attribute, attributeVal, leniency);
         for (User u : users) {
             u.setPassword(null);
         }

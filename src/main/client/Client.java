@@ -238,6 +238,32 @@ public class Client implements IClient {
         }
     }
 
+    public List<User> searchUsersByUsername(String username, boolean leniency) {
+        String len = leniency ? "true" : "false";
+        try {
+            List<PacketHeader> headers = createHeaders(
+                    "attribute", "username",
+                    "attributeVal", username,
+                    "leniency", len
+            );
+            return sendObjectListPacketRequest("/users/attribute", headers, User.class);
+        } catch (Exception e) {
+            System.out.println("Search failed: " + e.getMessage());
+            showError(e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public User searchUserById(int id) {
+        try {
+            return sendObjectPacketRequest("/users/" + id, null, User.class);
+        } catch (Exception e) {
+            System.out.println("Search failed: " + e.getMessage());
+            showError(e.getMessage());
+            return null;
+        }
+    }
+
     public boolean sendMessage(int toId, String body) {
         try {
             List<PacketHeader> headers = createHeaders(
