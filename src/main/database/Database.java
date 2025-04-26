@@ -102,16 +102,17 @@ public class Database implements IDatabase {
     private String readBackslashes(String s) {
         String ans = "";
         for (int i = 0; i < s.length(); i++) {
-            if (i+2 < s.length() && s.substring(i,i+2).equals("\\\\")) {
+            if (i+2 <= s.length() && s.substring(i,i+2).equals("\\\\")) {
                 ans += "\\";
                 i++;
-            } else if (i+2 < s.length() && s.substring(i,i+2).equals("\\n")) {
+            } else if (i+2 <= s.length() && s.substring(i,i+2).equals("\\n")) {
                 ans += "\n";
                 i++;
             } else {
                 ans += s.charAt(i);
             }
         }
+
         return ans;
     }
 

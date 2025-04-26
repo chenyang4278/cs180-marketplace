@@ -34,7 +34,7 @@ public class TestBaseDatabase {
         String[] user5 = {"ka2rma", "pass2word123", "821.21", "12"};
         String[] user6 = {"ka2rma", "pass2word123", "821.21", "12"};
         String[] user7 = {"ka\"2\"rma\",\"", "passw2ord123", "7821.21", "12"};
-        String[] user8 = {"k\\\na\"2\"r\nma\",\"", "p\\ass\nw2or\\nd123", "7821.21", "12"};
+        String[] user8 = {"k\\\na\"2\"r\nma\\\n\",\"", "p\\ass\nw2or\\nd123\n", "7821.21", "12"};
 
         userDb.write(user1);
         userDb.write(user2);
@@ -62,8 +62,8 @@ public class TestBaseDatabase {
                 userDb.get("username", "k A\"2\"r Ma\",\"  ", true).get(1));
         assertArrayEquals(new String[]{"ka\"2\"rma\",\"", "password123", "821.21", "12"},
                 userDb.get("password", "Pa sswo rD123\n", true).get(0));
-        assertArrayEquals(new String[]{"k\\\na\"2\"r\nma\",\"", "p\\ass\nw2or\\nd123", "7821.21", "12"},
-                userDb.get("password", "p\\ass\nw2or\\nd123", false).get(0));
+        assertArrayEquals(new String[]{"k\\\na\"2\"r\nma\\\n\",\"", "p\\ass\nw2or\\nd123\n", "7821.21", "12"},
+                userDb.get("password", "p\\ass\nw2or\\nd123\n", false).get(0));
 
         Database userDbDne = new Database("userDbDne.csv", headers);
         Exception exception = assertThrows(DatabaseNotFoundException.class, () -> {
