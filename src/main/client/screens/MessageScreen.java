@@ -47,9 +47,9 @@ public class MessageScreen extends Screen implements IMessageScreen {
                 java.util.List<User> user = getClient().searchUsersByUsername(recipientField.getText(), false);
 
                 if (user.size() == 0) {
-                    chatLog.removeAll();
-                    chatLog.revalidate();
-                    chatLog.repaint();
+                    messagesContainer.removeAll();
+                    messagesContainer.revalidate();
+                    messagesContainer.repaint();
                     recipient = null;
                 } else if (user.size() > 1) {
                     JOptionPane.showMessageDialog(null,
@@ -60,9 +60,9 @@ public class MessageScreen extends Screen implements IMessageScreen {
                     displayChatLog(recipient);
                 }
             } else {
-                chatLog.removeAll();
-                chatLog.revalidate();
-                chatLog.repaint();
+                messagesContainer.removeAll();
+                messagesContainer.revalidate();
+                messagesContainer.repaint();
                 recipient = null;
             }
         });
