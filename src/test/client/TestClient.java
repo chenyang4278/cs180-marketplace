@@ -61,8 +61,7 @@ public class TestClient {
     public void testClientInitialization() throws IOException {
         
         Client client = new Client("localhost", 8080, false);
-        client.setCurrentUserId(100);
-        assertEquals(100, client.getCurrentUserId());
+        assertNull(client.getUser());
 
         client.close();
     }

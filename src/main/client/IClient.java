@@ -4,6 +4,7 @@ import data.Listing;
 import data.User;
 import data.Message;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -20,10 +21,6 @@ public interface IClient {
     User getUser();
 
     void close() throws IOException;
-
-    int getCurrentUserId();
-
-    void setCurrentUserId(int id);
 
     boolean login(String username, String password);
 
@@ -46,4 +43,10 @@ public interface IClient {
     List<Message> getMessagesWithUser(int otherUserId);
 
     List<User> getInboxUsers();
+
+    String uploadImage(File file);
+
+    File downloadImage(String hash);
+
+    boolean isLoggedIn();
 }

@@ -1,5 +1,6 @@
 package client;
 
+import client.screens.AccountScreen;
 import client.screens.HomeScreen;
 
 import javax.swing.*;

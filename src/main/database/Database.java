@@ -16,9 +16,7 @@ public class Database implements IDatabase {
     private String[] headers;
     private static final Object GATE = new Object();
 
-
     /* Planned format (headers) for databases:
-     *
      * User:
      * username,password,balance,rating
      *
@@ -49,7 +47,11 @@ public class Database implements IDatabase {
         for (int i = 0; i < values.length; i++) {
             String line = values[i];
             for (int j = 0; j < line.length(); j++) {
-                if (line.charAt(j) == '"') {
+                if (line.charAt(j) == '\n') {
+                    toWrite += "\\n";
+                } else if (line.charAt(j) == '\\') {
+                    toWrite += "\\\\";
+                } else if (line.charAt(j) == '"') {
                     toWrite += "\"\"";
                 } else {
                     toWrite += line.charAt(j);
@@ -77,11 +79,10 @@ public class Database implements IDatabase {
                     inQuotes = true;
                     quoteStart = i + 1;
                 } else if (chr == ',') {
-                    row[rowI] = line.substring(quoteStart, i - 1)
+                    row[rowI] = readBackslashes(line.substring(quoteStart, i - 1))
                             .replaceAll("\"\"", "\"");
                     rowI++;
                 }
-
                 continue;
             }
 
@@ -93,10 +94,25 @@ public class Database implements IDatabase {
                 }
             }
         }
-        row[rowI] = line.substring(quoteStart, line.length() - 1)
+        row[rowI] =  readBackslashes(line.substring(quoteStart, line.length() - 1))
                 .replaceAll("\"\"", "\"");
-
         return row;
+    }
+
+    private String readBackslashes(String s) {
+        String ans = "";
+        for (int i = 0; i < s.length(); i++) {
+            if (i+2 < s.length() && s.substring(i,i+2).equals("\\\\")) {
+                ans += "\\";
+                i++;
+            } else if (i+2 < s.length() && s.substring(i,i+2).equals("\\n")) {
+                ans += "\n";
+                i++;
+            } else {
+                ans += s.charAt(i);
+            }
+        }
+        return ans;
     }
 
     //Writes (appends) an array of string values to file.
