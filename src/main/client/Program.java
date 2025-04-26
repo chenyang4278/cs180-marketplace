@@ -10,6 +10,21 @@ public class Program implements IProgram {
     private static ClientGUI gui;
     private static Client client;
 
+
+    /*
+    User accounts (Users are both Buyers and Sellers) - DONE
+    New user account creation - DONE
+    Password protected login - DONE
+    Account deletion
+    Item listing creation
+    Item listing deletion
+    Item search - ALMOST DONE
+    Users can message an item's Seller - Sellers can respond to messages they receive.
+    Payment processing
+    User balance tracking
+    Extra credit opportunity – Add support to upload and display item pictures.
+     */
+
     public static void main(String[] args) throws IOException {
         client = new Client("localhost", 8080, true);
 
