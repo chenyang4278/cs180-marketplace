@@ -23,7 +23,7 @@ import javax.swing.JTextArea;
 * @version 4/26/25
 */
 public class MessageBubble extends JPanel implements IMessageBubble {
-  
+
     private boolean alignRight;
     private JTextArea textArea;
     private String text;

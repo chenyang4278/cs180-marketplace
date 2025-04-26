@@ -1,16 +1,11 @@
 package client.screens;
 
-import client.Client;
 import data.Message;
 import data.User;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
-import java.io.IOException;
 import java.util.*;
-
-import java.text.SimpleDateFormat;
 
 /**
  * MessageScreen
