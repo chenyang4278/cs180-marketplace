@@ -9,17 +9,20 @@ import java.awt.event.ActionListener;
 public class Header extends JPanel implements IHeader {
     private final JButton loginBtn;
     private final JButton accountBtn;
+    private final JButton messageBtn;
 
     public Header() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
         JButton homeBtn = createLinkButton("Home", "home");
         JButton listingBtn = createLinkButton("Listings", "listings");
+        messageBtn = createLinkButton("Message", "message");
         loginBtn = createLinkButton("Login", "login");
         accountBtn = createLinkButton("Account", "account");
 
         add(homeBtn);
         add(listingBtn);
+        add(messageBtn);
         add(Box.createHorizontalGlue());
         add(loginBtn);
         add(accountBtn);
@@ -28,9 +31,11 @@ public class Header extends JPanel implements IHeader {
     public void refresh() {
         Client client = Program.getClient();
         if (client.isLoggedIn()) {
+            messageBtn.setVisible(true); 
             loginBtn.setVisible(false);
             accountBtn.setVisible(true);
         } else {
+            messageBtn.setVisible(false);
             loginBtn.setVisible(true);
             accountBtn.setVisible(false);
         }
@@ -49,6 +54,7 @@ public class Header extends JPanel implements IHeader {
             Screen screen = switch (e.getActionCommand()) {
                 case "home": yield new HomeScreen();
                 case "listings": yield new ListingsScreen();
+                case "message": yield new MessageScreen();
                 case "account": yield new AccountScreen();
                 case "login": yield new LoginScreen();
                 default: throw new RuntimeException(

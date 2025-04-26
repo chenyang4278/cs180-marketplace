@@ -253,6 +253,36 @@ public class TestClient {
     }
 
     @Test
+    public void testSearchUser() throws IOException {
+
+        Client c1 = new Client("localhost", 8080, false);
+
+        c1.createUser("ian", "pass");
+        c1.createUser("test1", "p");
+        c1.createUser("test2", "p");
+        c1.createUser("TEST1", "p");
+
+        c1.login("ian", "pass");
+
+        List<User> users = c1.searchUsersByUsername("test1", true);
+        assertEquals(2, users.size());
+
+        users = c1.searchUsersByUsername("test1", false);
+        assertEquals(1, users.size());
+
+        User u = c1.searchUserById(c1.searchUsersByUsername("test2", false).get(0).getId());
+        assertTrue(u.getUsername().equals("test2"));
+        
+        c1.deleteUser();
+        c1.login("test1", "p");
+        c1.deleteUser();
+        c1.login("test2", "p");
+        c1.deleteUser();
+        c1.login("TEST1", "p");
+        c1.deleteUser();
+    }
+
+    @Test
     public void testMessaging() throws IOException {
 
         Client c1 = new Client("localhost", 8080, false);

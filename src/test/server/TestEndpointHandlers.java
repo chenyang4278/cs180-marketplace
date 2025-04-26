@@ -562,7 +562,8 @@ public class TestEndpointHandlers {
             new User("karma2", "1234a"),
             new User("karma3", "12312214"),
             new User("karma4", "1234"),
-            new User("karma5", "1234")
+            new User("karma5", "1234"),
+            new User("ian", "pw")
         };
         users[3].setBalance(50.0);
         users[4].setBalance(50.0);
@@ -573,6 +574,7 @@ public class TestEndpointHandlers {
         Packet packet = sessionInfo.makePacket();
         packet.addHeader("attribute", "username");
         packet.addHeader("attributeVal", "k  Arma");
+        packet.addHeader("leniency", "true");
 
         ObjectListPacket<User> resp = (ObjectListPacket<User>) handler.handle(packet, null);
         assertEquals(1, resp.getObjList().size());
@@ -582,6 +584,7 @@ public class TestEndpointHandlers {
         packet = sessionInfo.makePacket();
         packet.addHeader("attribute", "password");
         packet.addHeader("attributeVal", "1awd234");
+        packet.addHeader("leniency", "true");
 
         Packet err = handler.handle(packet, null);
         TestUtility.assertErrorPacket(err);
@@ -589,6 +592,7 @@ public class TestEndpointHandlers {
         packet = sessionInfo.makePacket();
         packet.addHeader("attribute", "balance");
         packet.addHeader("attributeVal", "50.0");
+        packet.addHeader("leniency", "true");
 
         resp = (ObjectListPacket<User>) handler.handle(packet, null);
         assertEquals(2, resp.getObjList().size());
@@ -598,9 +602,20 @@ public class TestEndpointHandlers {
         packet = sessionInfo.makePacket();
         packet.addHeader("attribute", "balance");
         packet.addHeader("attributeVal", "200.0");
+        packet.addHeader("leniency", "true");
 
         resp = (ObjectListPacket<User>) handler.handle(packet, null);
         assertEquals(0, resp.getObjList().size());
+
+        
+        packet = sessionInfo.makePacket();
+        packet.addHeader("attribute", "username");
+        packet.addHeader("attributeVal", "Ian");
+        packet.addHeader("leniency", "false");
+
+        resp = (ObjectListPacket<User>) handler.handle(packet, null);
+        assertEquals(0, resp.getObjList().size());
+        
     }
 
     @Test
