@@ -44,7 +44,7 @@ public class ViewListingPopup extends JFrame {
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         // Try to load image if available
-        if (listing.getImageHash() != null && !listing.getImageHash().isEmpty()) {
+        /*if (listing.getImageHash() != null && !listing.getImageHash().isEmpty()) {
             try {
                 byte[] imgBytes = Program.getClient().downloadImage(listing.getImageHash());
                 BufferedImage img = ImageIO.read(new ByteArrayInputStream(imgBytes));
@@ -59,6 +59,8 @@ public class ViewListingPopup extends JFrame {
                 System.out.println("Image load failed: " + e.getMessage());
             }
         }
+
+         */
 
         panel.add(descScroll);
 
