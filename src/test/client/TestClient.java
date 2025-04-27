@@ -139,7 +139,7 @@ public class TestClient {
         seller.createUser("ian", "pass");
         seller.login("ian", "pass");
         
-        Listing item = seller.createListing("apple", "red, crunchy", 5, "null");
+        Listing item = seller.createListing("apple", "red, crunchy", "5", "null");
 
         Client buyer = new Client("localhost", 8080, false);
         buyer.createUser("buyeruser", "password");
@@ -202,7 +202,7 @@ public class TestClient {
         c.createUser("seller", "password");
         c.login("seller", "password");
 
-        Listing item = c.createListing("necklace", "pearl", 100, "null");
+        Listing item = c.createListing("necklace", "pearl", "100", "null");
         int listingid = item.getId();
         c.deleteListing(listingid);
 
@@ -227,8 +227,8 @@ public class TestClient {
         Client seller = new Client("localhost", 8080, false);
         seller.createUser("seller", "pass");
         seller.login("seller", "pass");
-        Listing item1 = seller.createListing("item1", "description1", 10, "null");
-        Listing item2 = seller.createListing("item2", "description2", 12, "null");
+        Listing item1 = seller.createListing("item1", "description1", "10", "null");
+        Listing item2 = seller.createListing("item2", "description2", "12", "null");
         
         List<Listing> list = seller.searchListingsByAttribute("image", "null");
         assertEquals(2, list.size());
