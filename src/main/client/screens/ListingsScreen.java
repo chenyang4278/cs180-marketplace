@@ -1,6 +1,7 @@
 package client.screens;
 
 import client.Client;
+import client.Program;
 import data.Listing;
 
 import javax.swing.*;
@@ -11,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.awt.event.*;
 
 public class ListingsScreen extends Screen implements IListingsScreen {
 
@@ -79,9 +81,69 @@ public class ListingsScreen extends Screen implements IListingsScreen {
 
             jpOuter.add(jpInner);
             listingGrid.add(jpOuter);
-            repaint();
+
+            jpInner.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    jpInner.setBackground(Color.LIGHT_GRAY);
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    jpInner.setBackground(null);
+                }
+
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    showListingOptions(list);
+                }
+            });
         }
         listingGrid.revalidate();
         listingGrid.repaint();
+    }
+
+    private void showListingOptions(Listing listing) {
+        JPopupMenu popup = new JPopupMenu();
+
+        JMenuItem viewItem = new JMenuItem("View Listing");
+        viewItem.addActionListener(e -> {
+            ViewListingPopup popupWindow = new ViewListingPopup(listing);
+            popupWindow.setVisible(true);
+        });
+        popup.add(viewItem);
+
+        if (listing.getSellerId() == Program.getClient().getUser().getId()) {
+            JMenuItem deleteItem = new JMenuItem("Delete Listing");
+            deleteItem.addActionListener(e -> {
+                boolean success = Program.getClient().deleteListing(listing.getId());
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Listing deleted.");
+                    Client client = getClient();
+                    ArrayList<Listing> listings = (ArrayList<Listing>) client.searchListingsByAttribute(searchTag, searchField.getText());
+                    addListingsToGrid(listings);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to delete listing.");
+                }
+            });
+            popup.add(deleteItem);
+        } else {
+            JMenuItem buyItem = new JMenuItem("Buy Now");
+            buyItem.addActionListener(e -> {
+                boolean success = Program.getClient().buyListing(listing.getId());
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Purchase successful.");
+                    Client client = getClient();
+                    ArrayList<Listing> listings = (ArrayList<Listing>) client.searchListingsByAttribute(searchTag, searchField.getText());
+                    addListingsToGrid(listings);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Purchase failed.");
+                }
+            });
+            popup.add(buyItem);
+        }
+
+        popup.show(this, MouseInfo.getPointerInfo().getLocation().x - getLocationOnScreen().x,
+                MouseInfo.getPointerInfo().getLocation().y - getLocationOnScreen().y);
     }
 }
