@@ -14,6 +14,17 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.awt.event.*;
 
+/**
+ * ListingsScreen
+ *
+ * think of desc
+ *
+ * @author Chen Yang, 24
+ *
+ * @version 4/27/25
+ *
+ */
+
 public class ListingsScreen extends Screen implements IListingsScreen {
 
     private String searchTag;

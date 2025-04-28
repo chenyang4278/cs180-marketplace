@@ -9,6 +9,17 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import javax.imageio.ImageIO;
 
+/**
+ * ViewListingPopup
+ *
+ * popup after clicking view listing
+ *
+ * @author Chen Yang, 24
+ *
+ * @version 4/27/25
+ *
+ */
+
 public class ViewListingPopup extends JFrame {
 
     public ViewListingPopup(Listing listing) {
