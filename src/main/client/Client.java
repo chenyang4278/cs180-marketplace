@@ -344,7 +344,7 @@ public class Client implements IClient {
             return null;
         } catch (Exception e) {
             e.printStackTrace();
-            showError(e.getMessage());
+            //showError(e.getMessage());
             return null;
         }
     }

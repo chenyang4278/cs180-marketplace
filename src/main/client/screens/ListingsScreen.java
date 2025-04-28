@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.awt.event.*;
 
@@ -30,8 +31,10 @@ public class ListingsScreen extends Screen implements IListingsScreen {
     private String searchTag;
     private JTextField searchField;
     private JPanel listingGrid;
+    private ArrayList<File> images;
 
     public ListingsScreen() {
+        images = new ArrayList<>();
         searchTag = "sellerName";
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(getSearchBar());
@@ -75,20 +78,38 @@ public class ListingsScreen extends Screen implements IListingsScreen {
     }
 
 
-    //TODO: unfinished
+    //TODO: Can make this method MUCH more efficient
     private void addListingsToGrid(ArrayList<Listing> l) {
         listingGrid.removeAll();
-        System.out.println(l.size());
+        for (File f : images) {
+            f.delete();
+        }
+        images.clear();
         for (Listing list : l) {
             JPanel jpOuter = new JPanel();
             JPanel jpInner = new JPanel();
-
             Border b = BorderFactory.createLineBorder(Color.BLACK, 1, true);
-            jpInner.setPreferredSize(new Dimension(200, 200));
-            jpInner.setMaximumSize(new Dimension(200, 200));
+            jpInner.setPreferredSize(new Dimension(250, 250));
+            jpInner.setMaximumSize(new Dimension(250, 250));
             jpInner.setBorder(b);
             jpInner.setLayout(new BoxLayout(jpInner, BoxLayout.Y_AXIS));
-            jpInner.add(new JLabel(list.getTitle()));
+            JLabel title = new JLabel(list.getTitle());
+            title.setAlignmentX(Component.CENTER_ALIGNMENT);
+            jpInner.add(Box.createVerticalStrut(15));
+            jpInner.add(title);
+            jpInner.add(Box.createVerticalStrut(15));
+
+            File imgFile = getClient().downloadImage(list.getImage());
+            if (imgFile != null) {
+                images.add(imgFile);
+                ImageIcon img = new ImageIcon(imgFile.getAbsolutePath());
+                Image scaled = img.getImage().getScaledInstance(190,
+                        190,  java.awt.Image.SCALE_SMOOTH);
+                ImageIcon resizedImg = new ImageIcon(scaled);
+                JLabel imageLabel = new JLabel(resizedImg);
+                imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                jpInner.add(imageLabel);
+            }
 
             jpOuter.add(jpInner);
             listingGrid.add(jpOuter);
@@ -133,8 +154,6 @@ public class ListingsScreen extends Screen implements IListingsScreen {
                     Client client = getClient();
                     ArrayList<Listing> listings = (ArrayList<Listing>) client.searchListingsByAttribute(searchTag, searchField.getText());
                     addListingsToGrid(listings);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Failed to delete listing.");
                 }
             });
             popup.add(deleteItem);
@@ -147,8 +166,6 @@ public class ListingsScreen extends Screen implements IListingsScreen {
                     Client client = getClient();
                     ArrayList<Listing> listings = (ArrayList<Listing>) client.searchListingsByAttribute(searchTag, searchField.getText());
                     addListingsToGrid(listings);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Purchase failed.");
                 }
             });
             popup.add(buyItem);
