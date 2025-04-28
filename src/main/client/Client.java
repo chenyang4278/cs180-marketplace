@@ -143,12 +143,12 @@ public class Client implements IClient {
         }
     }
 
-    public Listing createListing(String title, String description, double price, String image) {
+    public Listing createListing(String title, String description, String price, String image) {
         try {
             List<PacketHeader> headers = createHeaders(
                     "title", title,
                     "description", description,
-                    "price", String.valueOf(price),
+                    "price", price,
                     "image", image
             );
             return sendObjectPacketRequest("/listings/create", headers, Listing.class);

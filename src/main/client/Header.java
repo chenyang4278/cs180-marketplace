@@ -10,18 +10,21 @@ public class Header extends JPanel implements IHeader {
     private final JButton loginBtn;
     private final JButton accountBtn;
     private final JButton messageBtn;
+    private final JButton createListingBtn;
 
     public Header() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
         JButton homeBtn = createLinkButton("Home", "home");
         JButton listingBtn = createLinkButton("Listings", "listings");
+        createListingBtn = createLinkButton("Create Listing", "listingCreate");
         messageBtn = createLinkButton("Message", "message");
         loginBtn = createLinkButton("Login", "login");
         accountBtn = createLinkButton("Account", "account");
 
         add(homeBtn);
         add(listingBtn);
+        add(createListingBtn);
         add(messageBtn);
         add(Box.createHorizontalGlue());
         add(loginBtn);
@@ -34,10 +37,12 @@ public class Header extends JPanel implements IHeader {
             messageBtn.setVisible(true); 
             loginBtn.setVisible(false);
             accountBtn.setVisible(true);
+            createListingBtn.setVisible(true);
         } else {
             messageBtn.setVisible(false);
             loginBtn.setVisible(true);
             accountBtn.setVisible(false);
+            createListingBtn.setVisible(false);
         }
     }
 
@@ -54,6 +59,7 @@ public class Header extends JPanel implements IHeader {
             Screen screen = switch (e.getActionCommand()) {
                 case "home": yield new HomeScreen();
                 case "listings": yield new ListingsScreen();
+                case "listingCreate": yield new CreateListingScreen();
                 case "message": yield new MessageScreen();
                 case "account": yield new AccountScreen();
                 case "login": yield new LoginScreen();

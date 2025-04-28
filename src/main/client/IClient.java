@@ -26,7 +26,7 @@ public interface IClient {
 
     User createUser(String username, String password);
 
-    Listing createListing(String title, String description, double price, String image);
+    Listing createListing(String title, String description, String price, String image);
 
     boolean buyListing(int listingId);
 
