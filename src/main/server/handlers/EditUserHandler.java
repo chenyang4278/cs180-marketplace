@@ -56,6 +56,17 @@ public class EditUserHandler extends PacketHandler implements IEditUserHandler {
             }
         }
 
+        if (attribute.equals("balance")) {
+            try {
+                double d = Double.parseDouble(attributeVal);
+                if (d < 0) {
+                    return new ErrorPacket("Invalid input balance!");
+                }
+            } catch (NumberFormatException e) {
+                return new ErrorPacket("Invalid input balance!");
+            }
+        }
+
         if (attribute.equals("password")) {
             attributeVal = HandlerUtil.hashPassword(attributeVal);
         }

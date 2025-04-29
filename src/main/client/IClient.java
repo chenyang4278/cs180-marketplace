@@ -30,7 +30,7 @@ public interface IClient {
 
     boolean buyListing(int listingId);
 
-    boolean setUserBalance(double newBalance);
+    boolean setUserBalance(String newBalance);
 
     boolean deleteUser();
 

@@ -122,7 +122,7 @@ public class TestEndpointHandlers {
         // test not enough balance
         packet = sessionInfo.makePacket();
         ErrorPacket e2 = (ErrorPacket) handler.handle(packet, new String[]{"" + listing2.getId()});
-        assertEquals("User does not have enough balance to buy this item!", e2.getMessage());
+        assertEquals("You do not have enough balance to buy this item!", e2.getMessage());
 
         packet = sessionInfo.makePacket();
         ErrorPacket e3 = (ErrorPacket) handler.handle(packet, new String[]{"invalid id"});
@@ -328,7 +328,7 @@ public class TestEndpointHandlers {
         // try to delete user that does not exist
         ErrorPacket e = (ErrorPacket) handler.handle(packet, args);
         // will cause login to fail if user is deleted.
-        assertEquals("Not logged in", e.getMessage());
+        assertEquals("You are not logged in!", e.getMessage());
     }
 
     @Test
