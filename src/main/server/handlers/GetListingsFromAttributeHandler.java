@@ -32,7 +32,7 @@ public class GetListingsFromAttributeHandler extends PacketHandler implements IG
     public Packet handle(Packet packet, String[] args) {
         User user = getSessionUser(packet);
         if (user == null) {
-            return new ErrorPacket("Not logged in");
+            return new ErrorPacket("You are not logged in!");
         }
 
         String[] data = packet.getHeaderValues("attribute", "attributeVal");

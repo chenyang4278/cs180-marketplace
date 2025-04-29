@@ -86,50 +86,52 @@ public class ListingsScreen extends Screen implements IListingsScreen {
         }
         images.clear();
         for (Listing list : l) {
-            JPanel jpOuter = new JPanel();
-            JPanel jpInner = new JPanel();
-            Border b = BorderFactory.createLineBorder(Color.BLACK, 1, true);
-            jpInner.setPreferredSize(new Dimension(250, 250));
-            jpInner.setMaximumSize(new Dimension(250, 250));
-            jpInner.setBorder(b);
-            jpInner.setLayout(new BoxLayout(jpInner, BoxLayout.Y_AXIS));
-            JLabel title = new JLabel(list.getTitle());
-            title.setAlignmentX(Component.CENTER_ALIGNMENT);
-            jpInner.add(Box.createVerticalStrut(15));
-            jpInner.add(title);
-            jpInner.add(Box.createVerticalStrut(15));
+            if (searchTag.equals("sold") || !list.isSold()) {
+                JPanel jpOuter = new JPanel();
+                JPanel jpInner = new JPanel();
+                Border b = BorderFactory.createLineBorder(Color.BLACK, 1, true);
+                jpInner.setPreferredSize(new Dimension(250, 250));
+                jpInner.setMaximumSize(new Dimension(250, 250));
+                jpInner.setBorder(b);
+                jpInner.setLayout(new BoxLayout(jpInner, BoxLayout.Y_AXIS));
+                JLabel title = new JLabel(list.getTitle());
+                title.setAlignmentX(Component.CENTER_ALIGNMENT);
+                jpInner.add(Box.createVerticalStrut(15));
+                jpInner.add(title);
+                jpInner.add(Box.createVerticalStrut(15));
 
-            File imgFile = getClient().downloadImage(list.getImage());
-            if (imgFile != null) {
-                images.add(imgFile);
-                ImageIcon img = new ImageIcon(imgFile.getAbsolutePath());
-                Image scaled = img.getImage().getScaledInstance(190,
-                        190,  java.awt.Image.SCALE_SMOOTH);
-                ImageIcon resizedImg = new ImageIcon(scaled);
-                JLabel imageLabel = new JLabel(resizedImg);
-                imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                jpInner.add(imageLabel);
+                File imgFile = getClient().downloadImage(list.getImage());
+                if (imgFile != null) {
+                    images.add(imgFile);
+                    ImageIcon img = new ImageIcon(imgFile.getAbsolutePath());
+                    Image scaled = img.getImage().getScaledInstance(190,
+                            190, java.awt.Image.SCALE_SMOOTH);
+                    ImageIcon resizedImg = new ImageIcon(scaled);
+                    JLabel imageLabel = new JLabel(resizedImg);
+                    imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    jpInner.add(imageLabel);
+                }
+
+                jpOuter.add(jpInner);
+                listingGrid.add(jpOuter);
+
+                jpInner.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        jpInner.setBackground(Color.LIGHT_GRAY);
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        jpInner.setBackground(null);
+                    }
+
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        showListingOptions(list);
+                    }
+                });
             }
-
-            jpOuter.add(jpInner);
-            listingGrid.add(jpOuter);
-
-            jpInner.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    jpInner.setBackground(Color.LIGHT_GRAY);
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    jpInner.setBackground(null);
-                }
-
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    showListingOptions(list);
-                }
-            });
         }
         listingGrid.revalidate();
         listingGrid.repaint();
@@ -163,6 +165,8 @@ public class ListingsScreen extends Screen implements IListingsScreen {
                 boolean success = Program.getClient().buyListing(listing.getId());
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Purchase successful.");
+
+                    //reupdate listing grid
                     Client client = getClient();
                     ArrayList<Listing> listings = (ArrayList<Listing>) client.searchListingsByAttribute(searchTag, searchField.getText());
                     addListingsToGrid(listings);

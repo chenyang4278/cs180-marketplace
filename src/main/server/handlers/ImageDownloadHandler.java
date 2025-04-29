@@ -24,7 +24,7 @@ public class ImageDownloadHandler extends PacketHandler implements IImageDownloa
     public Packet handle(Packet packet, String[] args) {
         File file = new File("static/" + args[0]);
         if (!file.isFile()) {
-            return new ErrorPacket("File not found");
+            return new ErrorPacket("File not found!");
         }
 
         SuccessPacket resp = new SuccessPacket();

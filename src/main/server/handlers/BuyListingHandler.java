@@ -29,7 +29,7 @@ public class BuyListingHandler extends PacketHandler implements IBuyListingHandl
     public Packet handle(Packet packet, String[] args) {
         User user = getSessionUser(packet);
         if (user == null) {
-            return new ErrorPacket("Not logged in");
+            return new ErrorPacket("You are not logged in!");
         }
 
         try {
@@ -40,7 +40,7 @@ public class BuyListingHandler extends PacketHandler implements IBuyListingHandl
             }
 
             if (user.getBalance() < listing.getPrice() + 1e-9) {
-                return new ErrorPacket("User does not have enough balance to buy this item!");
+                return new ErrorPacket("You do not have enough balance to buy this item!");
             }
 
             user.setBalance(user.getBalance() - listing.getPrice());

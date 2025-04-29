@@ -26,7 +26,7 @@ public class LoginHandler extends PacketHandler implements ILoginHandler {
     public Packet handle(Packet packet, String[] args) {
         String[] data = packet.getHeaderValues("username", "password");
         if (data == null) {
-            return new ErrorPacket("Invalid username or password");
+            return new ErrorPacket("Invalid username or password!");
         }
 
         String username = data[0];
@@ -36,14 +36,14 @@ public class LoginHandler extends PacketHandler implements ILoginHandler {
         ArrayList<User> users = new ArrayList<>(db.filterByColumn(User.class,
                 "username", username, false));
         if (users.isEmpty()) {
-            return new ErrorPacket("Invalid username or password");
+            return new ErrorPacket("Invalid username or password!");
         }
 
         User user = users.get(0);
 
         // check if password matches
         if (!HandlerUtil.hashPassword(password).equals(user.getPassword())) {
-            return new ErrorPacket("Invalid username or password");
+            return new ErrorPacket("Invalid username or password!");
         }
 
         // save session and return new session token
@@ -68,7 +68,7 @@ public class LoginHandler extends PacketHandler implements ILoginHandler {
             resp.addHeader("Session-Token", session.getToken());
             return resp;
         } catch (DatabaseWriteException e) {
-            return new ErrorPacket("Server error, failed to login");
+            return new ErrorPacket("Server error, failed to login!");
         }
     }
 }

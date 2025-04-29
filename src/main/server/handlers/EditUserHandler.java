@@ -32,7 +32,7 @@ public class EditUserHandler extends PacketHandler implements IEditUserHandler {
     public Packet handle(Packet packet, String[] args) {
         User user = getSessionUser(packet);
         if (user == null) {
-            return new ErrorPacket("Not logged in");
+            return new ErrorPacket("You are not logged in!");
         }
 
         String[] data = packet.getHeaderValues("attribute", "attributeVal");
@@ -44,7 +44,7 @@ public class EditUserHandler extends PacketHandler implements IEditUserHandler {
         String attributeVal = data[1];
 
         if (attribute.equals("id")) {
-            return new ErrorPacket("Cannot edit id");
+            return new ErrorPacket("You cannot edit an id!");
         }
 
         if (attribute.equals("username")) {
@@ -64,7 +64,7 @@ public class EditUserHandler extends PacketHandler implements IEditUserHandler {
             int id = Integer.parseInt(args[0]);
             User userToUpdate = db.getById(User.class, id);
             if (userToUpdate.getId() != user.getId()) {
-                return new ErrorPacket("No permission to edit another user");
+                return new ErrorPacket("You don't have permission to edit another user!");
             }
 
             db.setById(User.class, id, attribute, attributeVal);

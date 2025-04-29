@@ -54,11 +54,21 @@ public class MessageScreen extends Screen implements IMessageScreen {
                     recipient = null;
                 } else if (user.size() > 1) {
                     JOptionPane.showMessageDialog(null,
-                    "Something has gone wrong. Duplicate user exists.", "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                            "Something has gone wrong. Duplicate user exists.", "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 } else {
                     recipient = user.get(0);
-                    displayChatLog(recipient);
+                    if (recipient.getId() == getClient().getUser().getId()) {
+                        messagesContainer.removeAll();
+                        messagesContainer.revalidate();
+                        messagesContainer.repaint();
+                        recipient = null;
+                        JOptionPane.showMessageDialog(null,
+                                "You cannot message yourself!", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        displayChatLog(recipient);
+                    }
                 }
             } else {
                 messagesContainer.removeAll();

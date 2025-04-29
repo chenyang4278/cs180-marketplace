@@ -27,13 +27,13 @@ public class DeleteListingHandler extends PacketHandler implements IDeleteListin
     public Packet handle(Packet packet, String[] args) {
         User user = getSessionUser(packet);
         if (user == null) {
-            return new ErrorPacket("Not logged in");
+            return new ErrorPacket("You are not logged in!");
         }
 
         try {
             Listing listing = db.getById(Listing.class, Integer.parseInt(args[0]));
             if (listing.getSellerId() != user.getId()) {
-                return new ErrorPacket("Cannot delete another user's listing");
+                return new ErrorPacket("You cannot delete another user's listing");
             }
             db.delete(listing);
             return new SuccessPacket();
