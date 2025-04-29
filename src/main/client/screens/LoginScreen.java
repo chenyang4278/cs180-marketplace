@@ -7,6 +7,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * LoginScreen Class. A class used to show gui for creating a user or logging in an existing user.
+ *
+ * @author Karma Luitel, lab L24
+ * @version 4/29/25
+ */
 public class LoginScreen extends Screen implements ILoginScreen {
 
     //note for myself later, use this link for boxlayout info: https://docs.oracle.com/javase/tutorial/uiswing/layout/box.html

@@ -11,6 +11,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+/**
+ * CreateListingScreen Class. A class used to show gui for creating a listing.
+ *
+ * @author Karma Luitel, lab L24
+ * @version 4/29/25
+ */
 public class CreateListingScreen extends Screen implements ICreateListingScreen {
 
     JTextField titleField;
