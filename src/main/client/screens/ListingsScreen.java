@@ -18,12 +18,11 @@ import java.awt.event.*;
 /**
  * ListingsScreen
  *
- * think of desc
+ * Displays listings in a grid with search, view, delete, and buy functionality.
+ * Images are shown if available. Includes a refresh button.
  *
  * @author Chen Yang, 24
- *
  * @version 4/27/25
- *
  */
 
 public class ListingsScreen extends Screen implements IListingsScreen {
@@ -32,6 +31,7 @@ public class ListingsScreen extends Screen implements IListingsScreen {
     private JTextField searchField;
     private JPanel listingGrid;
     private ArrayList<File> images;
+    private JLabel noResultsLabel;
 
     public ListingsScreen() {
         images = new ArrayList<>();
@@ -41,6 +41,10 @@ public class ListingsScreen extends Screen implements IListingsScreen {
         listingGrid = new JPanel();
         listingGrid.setLayout(new GridLayout(0, 5, 10, 10));
         add(listingGrid);
+
+        noResultsLabel = new JLabel("No listings found.", SwingConstants.CENTER);
+        noResultsLabel.setFont(new Font("SansSerif", Font.ITALIC, 14));
+        noResultsLabel.setForeground(Color.GRAY);
     }
 
     private JPanel getSearchBar() {
@@ -62,19 +66,21 @@ public class ListingsScreen extends Screen implements IListingsScreen {
         searchField = new JTextField(10);
         searchBar.add(searchField);
         JButton searchBtn = new JButton("Search");
-        searchBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Client client = getClient();
-                ArrayList<Listing> listings = (ArrayList<Listing>) client.searchListingsByAttribute(searchTag, searchField.getText());
-                addListingsToGrid(listings);
-            }
-        });
-
+        searchBtn.addActionListener(e -> refreshGrid());
         searchBar.add(searchBtn);
-        searchBar.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        JButton refreshBtn = new JButton("Refresh");
+        refreshBtn.addActionListener(e -> refreshGrid());
+        searchBar.add(refreshBtn);
+
+        searchBar.setAlignmentX(Component.CENTER_ALIGNMENT);
         return searchBar;
+    }
+
+    private void refreshGrid() {
+        Client client = getClient();
+        ArrayList<Listing> listings = (ArrayList<Listing>) client.searchListingsByAttribute(searchTag, searchField.getText());
+        addListingsToGrid(listings);
     }
 
 
@@ -85,8 +91,11 @@ public class ListingsScreen extends Screen implements IListingsScreen {
             f.delete();
         }
         images.clear();
+        boolean found = false;
+
         for (Listing list : l) {
             if (searchTag.equals("sold") || !list.isSold()) {
+                found = true;
                 JPanel jpOuter = new JPanel();
                 JPanel jpInner = new JPanel();
                 Border b = BorderFactory.createLineBorder(Color.BLACK, 1, true);
@@ -94,21 +103,25 @@ public class ListingsScreen extends Screen implements IListingsScreen {
                 jpInner.setMaximumSize(new Dimension(250, 250));
                 jpInner.setBorder(b);
                 jpInner.setLayout(new BoxLayout(jpInner, BoxLayout.Y_AXIS));
+
                 JLabel title = new JLabel(list.getTitle());
                 title.setAlignmentX(Component.CENTER_ALIGNMENT);
-                jpInner.add(Box.createVerticalStrut(15));
+                jpInner.add(Box.createVerticalStrut(10));
                 jpInner.add(title);
-                jpInner.add(Box.createVerticalStrut(15));
+
+                JLabel price = new JLabel("$" + list.getPrice());
+                price.setAlignmentX(Component.CENTER_ALIGNMENT);
+                jpInner.add(Box.createVerticalStrut(5));
+                jpInner.add(price);
 
                 File imgFile = getClient().downloadImage(list.getImage());
-                if (imgFile != null) {
+                if (imgFile != null && imgFile.exists()) {
                     images.add(imgFile);
                     ImageIcon img = new ImageIcon(imgFile.getAbsolutePath());
-                    Image scaled = img.getImage().getScaledInstance(190,
-                            190, java.awt.Image.SCALE_SMOOTH);
-                    ImageIcon resizedImg = new ImageIcon(scaled);
-                    JLabel imageLabel = new JLabel(resizedImg);
+                    Image scaled = img.getImage().getScaledInstance(190, 190, Image.SCALE_SMOOTH);
+                    JLabel imageLabel = new JLabel(new ImageIcon(scaled));
                     imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    jpInner.add(Box.createVerticalStrut(5));
                     jpInner.add(imageLabel);
                 }
 
@@ -133,6 +146,10 @@ public class ListingsScreen extends Screen implements IListingsScreen {
                 });
             }
         }
+        if (!found) {
+            listingGrid.setLayout(new BorderLayout());
+            listingGrid.add(noResultsLabel, BorderLayout.CENTER);
+        }
         listingGrid.revalidate();
         listingGrid.repaint();
     }
@@ -153,9 +170,9 @@ public class ListingsScreen extends Screen implements IListingsScreen {
                 boolean success = Program.getClient().deleteListing(listing.getId());
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Listing deleted.");
-                    Client client = getClient();
-                    ArrayList<Listing> listings = (ArrayList<Listing>) client.searchListingsByAttribute(searchTag, searchField.getText());
-                    addListingsToGrid(listings);
+                    refreshGrid();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to delete listing.");
                 }
             });
             popup.add(deleteItem);
@@ -165,11 +182,9 @@ public class ListingsScreen extends Screen implements IListingsScreen {
                 boolean success = Program.getClient().buyListing(listing.getId());
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Purchase successful.");
-
-                    //reupdate listing grid
-                    Client client = getClient();
-                    ArrayList<Listing> listings = (ArrayList<Listing>) client.searchListingsByAttribute(searchTag, searchField.getText());
-                    addListingsToGrid(listings);
+                    refreshGrid();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Purchase failed.");
                 }
             });
             popup.add(buyItem);
@@ -179,3 +194,4 @@ public class ListingsScreen extends Screen implements IListingsScreen {
                 MouseInfo.getPointerInfo().getLocation().y - getLocationOnScreen().y);
     }
 }
+

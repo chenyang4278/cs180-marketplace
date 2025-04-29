@@ -5,26 +5,21 @@ import data.Listing;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import javax.imageio.ImageIO;
+import java.io.File;
 
 /**
  * ViewListingPopup
  *
- * popup after clicking view listing
+ * Displays a listing with title, price, description, and image (if available).
  *
- * @author Chen Yang, 24
- *
+ * @author Chen
  * @version 4/27/25
- *
  */
-
 public class ViewListingPopup extends JFrame {
 
     public ViewListingPopup(Listing listing) {
         setTitle("Listing Details");
-        setSize(400, 500);
+        setSize(400, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -54,24 +49,15 @@ public class ViewListingPopup extends JFrame {
         panel.add(priceLabel);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        // Try to load image if available
-        /*if (listing.getImageHash() != null && !listing.getImageHash().isEmpty()) {
-            try {
-                byte[] imgBytes = Program.getClient().downloadImage(listing.getImageHash());
-                BufferedImage img = ImageIO.read(new ByteArrayInputStream(imgBytes));
-                if (img != null) {
-                    ImageIcon icon = new ImageIcon(img.getScaledInstance(300, 200, Image.SCALE_SMOOTH));
-                    JLabel imageLabel = new JLabel(icon);
-                    imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                    panel.add(imageLabel);
-                    panel.add(Box.createRigidArea(new Dimension(0, 10)));
-                }
-            } catch (Exception e) {
-                System.out.println("Image load failed: " + e.getMessage());
-            }
+        File imgFile = Program.getClient().downloadImage(listing.getImage());
+        if (imgFile != null && imgFile.exists()) {
+            ImageIcon img = new ImageIcon(imgFile.getAbsolutePath());
+            Image scaled = img.getImage().getScaledInstance(300, 200, Image.SCALE_SMOOTH);
+            JLabel imageLabel = new JLabel(new ImageIcon(scaled));
+            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panel.add(imageLabel);
+            panel.add(Box.createRigidArea(new Dimension(0, 10)));
         }
-
-         */
 
         panel.add(descScroll);
 
