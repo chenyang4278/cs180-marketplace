@@ -171,9 +171,7 @@ public class ListingsScreen extends Screen implements IListingsScreen {
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Listing deleted.");
                     refreshGrid();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Failed to delete listing.");
-                }
+                } //dont need to account for failure since handler error will be displayed.
             });
             popup.add(deleteItem);
         } else {
@@ -183,9 +181,7 @@ public class ListingsScreen extends Screen implements IListingsScreen {
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Purchase successful.");
                     refreshGrid();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Purchase failed.");
-                }
+                } //dont need to account for failure since handler error will be displayed.
             });
             popup.add(buyItem);
         }
