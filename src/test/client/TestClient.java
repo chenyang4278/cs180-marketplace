@@ -124,7 +124,7 @@ public class TestClient {
         c.createUser("user", "pass");
         c.login("user", "pass");
 
-        c.setUserBalance(1000);
+        c.setUserBalance("" + 1000);
         assertEquals(1000, c.getUser().getBalance(), 0.01);
 
         c.deleteUser();
@@ -145,11 +145,11 @@ public class TestClient {
         buyer.createUser("buyeruser", "password");
         buyer.login("buyeruser", "password");
         
-        buyer.setUserBalance(3);
+        buyer.setUserBalance("" + 3);
         // should be false since balance 
         assertFalse(buyer.buyListing(item.getId()));
 
-        buyer.setUserBalance(10);
+        buyer.setUserBalance("" + 10);
         // now balance is sufficient, should return true
         assertTrue(buyer.buyListing(item.getId()));
 
@@ -160,7 +160,7 @@ public class TestClient {
         otherbuyer.createUser("buyer2", "pw");
         otherbuyer.login("buyer2", "pw");
 
-        otherbuyer.setUserBalance(100000);
+        otherbuyer.setUserBalance("" + 100000);
         // once item is sold, nobody else should be able to purchase
         assertFalse(otherbuyer.buyListing(item.getId()));
         assertEquals(100000, otherbuyer.getUser().getBalance(), 0.01);
@@ -209,7 +209,7 @@ public class TestClient {
         Client c2 = new Client("localhost", 8080, false);
         c2.createUser("buyer", "pass");
         c2.login("buyer", "pass");
-        c2.setUserBalance(100000);
+        c2.setUserBalance("" + 100000);
         assertFalse(c2.buyListing(listingid));
 
         c.deleteUser();
