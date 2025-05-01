@@ -32,7 +32,7 @@ public class Program implements IProgram {
         SwingUtilities.invokeLater(() -> {
             gui = new ClientGUI();
             gui.setScreen(new HomeScreen());
-            Program.getGUI().setScreen(new ListingsScreen());
+            //Program.getGUI().setScreen(new ListingsScreen());
         });
     }
 
