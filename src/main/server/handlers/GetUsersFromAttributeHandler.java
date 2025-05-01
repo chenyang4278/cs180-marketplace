@@ -31,7 +31,7 @@ public class GetUsersFromAttributeHandler extends PacketHandler implements IGetU
     public Packet handle(Packet packet, String[] args) {
         User user = getSessionUser(packet);
         if (user == null) {
-            return new ErrorPacket("Not logged in");
+            return new ErrorPacket("You are not logged in!");
         }
 
         String[] data = packet.getHeaderValues("attribute", "attributeVal", "leniency");
@@ -44,7 +44,7 @@ public class GetUsersFromAttributeHandler extends PacketHandler implements IGetU
         boolean leniency = data[2].equals("true");
 
         if (attribute.equals("password")) {
-            return new ErrorPacket("Cannot obtain user from password");
+            return new ErrorPacket("You cannot obtain an user from a password!");
         }
 
         ArrayList<User> users = (ArrayList<User>) db.filterByColumn(User.class, attribute, attributeVal, leniency);

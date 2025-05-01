@@ -34,7 +34,7 @@ public class GetMessagesBetweenUsersHandler extends PacketHandler implements IGe
     public Packet handle(Packet packet, String[] args) {
         User user = getSessionUser(packet);
         if (user == null) {
-            return new ErrorPacket("Not logged in");
+            return new ErrorPacket("You are not logged in!");
         }
 
         String[] data = packet.getHeaderValues("otherUserId");
@@ -45,7 +45,7 @@ public class GetMessagesBetweenUsersHandler extends PacketHandler implements IGe
         try {
             int otherUserId = Integer.parseInt(data[0]);
             if (otherUserId == user.getId()) {
-                return new ErrorPacket("No messages between you and yourself");
+                return new ErrorPacket("You cannot have messages with yourself!");
             }
 
             List<Message> sentMessages = db.filterByColumn(

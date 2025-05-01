@@ -35,12 +35,25 @@ public class AccountScreen extends Screen implements IAccountScreen {
         logoutBtn.addActionListener(new LogoutAction());
         JButton deleteAccountBtn = new JButton("Delete account");
         deleteAccountBtn.addActionListener(new DeleteAccountAction());
+        JButton setBalBtn = new JButton("Set balance (for testing):");
+
+        JTextField balField = new JTextField(10);
+        setBalBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (getClient().setUserBalance(balField.getText())) {
+                    balanceLabel.setText("Balance: $" + getClient().getUser().getBalance());
+                }
+            }
+        });
 
         topPanel.add(userLabel);
         topPanel.add(balanceLabel);
 
         centerPanel.add(logoutBtn);
         centerPanel.add(deleteAccountBtn);
+        centerPanel.add(setBalBtn);
+        centerPanel.add(balField);
 
         add(topPanel, BorderLayout.NORTH);
         add(centerPanel, BorderLayout.CENTER);

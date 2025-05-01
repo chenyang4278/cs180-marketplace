@@ -170,14 +170,13 @@ public class Client implements IClient {
         }
     }
 
-    public boolean setUserBalance(double newBalance) {
+    public boolean setUserBalance(String newBalance) {
         try {
             List<PacketHeader> headers = createHeaders(
                     "attribute", "balance",
-                    "attributeVal", String.valueOf(newBalance)
+                    "attributeVal", newBalance
             );
-            sendObjectPacketRequest("/users/" + currentUser.getId() + "/edit", headers, User.class);
-            currentUser.setBalance(newBalance);
+            currentUser = sendObjectPacketRequest("/users/" + currentUser.getId() + "/edit", headers, User.class);
             return true;
         } catch (Exception e) {
             System.out.println("Balance update failed: " + e.getMessage());

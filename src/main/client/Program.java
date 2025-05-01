@@ -2,6 +2,7 @@ package client;
 
 import client.screens.AccountScreen;
 import client.screens.HomeScreen;
+import client.screens.ListingsScreen;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -31,6 +32,7 @@ public class Program implements IProgram {
         SwingUtilities.invokeLater(() -> {
             gui = new ClientGUI();
             gui.setScreen(new HomeScreen());
+            Program.getGUI().setScreen(new ListingsScreen());
         });
     }
 

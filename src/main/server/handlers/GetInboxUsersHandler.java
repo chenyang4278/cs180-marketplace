@@ -45,7 +45,7 @@ public class GetInboxUsersHandler extends PacketHandler implements IGetInboxUser
     public Packet handle(Packet packet, String[] args) {
         User user = getSessionUser(packet);
         if (user == null) {
-            return new ErrorPacket("Not logged in");
+            return new ErrorPacket("You are not logged in!");
         }
 
         List<Message> messagesToMe = db.filterByColumn(

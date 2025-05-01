@@ -33,7 +33,7 @@ public class EditListingHandler extends PacketHandler implements IEditListingHan
     public Packet handle(Packet packet, String[] args) {
         User user = getSessionUser(packet);
         if (user == null) {
-            return new ErrorPacket("Not logged in");
+            return new ErrorPacket("You are not logged in!");
         }
 
         String[] data = packet.getHeaderValues("attribute", "attributeVal");
@@ -45,7 +45,7 @@ public class EditListingHandler extends PacketHandler implements IEditListingHan
         String attributeVal = data[1];
 
         if (attribute.equals("id")) {
-            return new ErrorPacket("Cannot edit id");
+            return new ErrorPacket("You cannot edit an id!");
         }
 
         if (attribute.equals("price")) {
@@ -64,7 +64,7 @@ public class EditListingHandler extends PacketHandler implements IEditListingHan
             int id = Integer.parseInt(args[0]);
             Listing listing = db.getById(Listing.class, id);
             if (listing.getSellerId() != user.getId()) {
-                return new ErrorPacket("Cannot edit another user's listing");
+                return new ErrorPacket("You cannot edit another user's listing!");
             }
 
             db.setById(Listing.class, id, attribute, attributeVal);

@@ -4,6 +4,9 @@ import client.screens.Screen;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.Stack;
 
 public class ClientGUI implements IClientGUI {
@@ -13,7 +16,7 @@ public class ClientGUI implements IClientGUI {
     private final Stack<Screen> screenHistory = new Stack<>();
 
     public ClientGUI() {
-        frame = new JFrame("Title");  // todo
+        frame = new JFrame("Shop Client");  // todo
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setMinimumSize(new Dimension(600, 400));
         frame.setSize(800, 600);
@@ -23,7 +26,21 @@ public class ClientGUI implements IClientGUI {
 
         frame.add(header = new Header(), BorderLayout.NORTH);
         frame.add(scrollPane, BorderLayout.CENTER);
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                //Deleting tmp directory
+                File dir = new File("tmp/");
+                for (File f : dir.listFiles()) {
+                    f.delete();
+                }
+                dir.delete();
+            }
+        });
         frame.setVisible(true);
+
+
     }
 
     public void setScreen(Screen screen) {

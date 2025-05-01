@@ -22,13 +22,13 @@ public class CreateListingScreen extends Screen implements ICreateListingScreen 
     JTextField titleField;
     JTextArea descField;
     JTextField priceField;
-    String imageHash;
+    File selImage;
     Component parent;
     JLabel imageLabel;
 
 
     public CreateListingScreen() {
-        imageHash = "null";
+        selImage = null;
         parent = this;
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -87,15 +87,9 @@ public class CreateListingScreen extends Screen implements ICreateListingScreen 
                 });
                 int opt = jf.showOpenDialog(parent);
                 if (opt == JFileChooser.APPROVE_OPTION) {
-                    File f = jf.getSelectedFile();
+                    selImage = jf.getSelectedFile();
+                    imageLabel.setText(selImage.getName());
                     Client c = getClient();
-                    imageHash = c.uploadImage(f);
-                    if (imageHash != null) {
-                        imageLabel.setText(f.getName());
-                    } else {
-                        imageHash = "null";
-                    }
-
                 }
             }
         });
@@ -107,6 +101,10 @@ public class CreateListingScreen extends Screen implements ICreateListingScreen 
                 String description = descField.getText();
                 String price = priceField.getText();
                 Client c = getClient();
+                String imageHash = "null";
+                if (selImage != null) {
+                    imageHash = c.uploadImage(selImage);
+                }
                 Listing l = c.createListing(title, description, price, imageHash);
                 if (l != null) {
                     JOptionPane.showMessageDialog(parent, "Listing created successfully!",

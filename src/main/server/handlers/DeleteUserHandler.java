@@ -26,14 +26,14 @@ public class DeleteUserHandler extends PacketHandler implements IDeleteUserHandl
     public Packet handle(Packet packet, String[] args) {
         User user = getSessionUser(packet);
         if (user == null) {
-            return new ErrorPacket("Not logged in");
+            return new ErrorPacket("You are not logged in!");
         }
 
         try {
             User userToDelete = db.getById(User.class, Integer.parseInt(args[0]));
             // may allow admins to delete in the future
             if (userToDelete.getId() != user.getId()) {
-                return new ErrorPacket("No permission to delete another user");
+                return new ErrorPacket("You do not have permission to delete another user!");
             }
 
             db.delete(userToDelete);
