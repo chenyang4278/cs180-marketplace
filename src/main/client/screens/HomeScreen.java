@@ -9,7 +9,7 @@ public class HomeScreen extends Screen implements IHomeScreen {
     public HomeScreen() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        JLabel title = new JLabel("Title");
+        JLabel title = new JLabel("Shop Client");
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         title.setFont(Styles.TITLE_FONT);
         JLabel description = new JLabel("A place for buying and selling anything");
