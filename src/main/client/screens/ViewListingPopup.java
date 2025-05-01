@@ -49,14 +49,16 @@ public class ViewListingPopup extends JFrame {
         panel.add(priceLabel);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        File imgFile = Program.getClient().downloadImage(listing.getImage());
-        if (imgFile != null && imgFile.exists()) {
-            ImageIcon img = new ImageIcon(imgFile.getAbsolutePath());
-            Image scaled = img.getImage().getScaledInstance(300, 200, Image.SCALE_SMOOTH);
-            JLabel imageLabel = new JLabel(new ImageIcon(scaled));
-            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            panel.add(imageLabel);
-            panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        if (!listing.getImage().equals("null")) {
+            File imgFile = Program.getClient().downloadImage(listing.getImage());
+            if (imgFile != null && imgFile.exists()) {
+                ImageIcon img = new ImageIcon(imgFile.getAbsolutePath());
+                Image scaled = img.getImage().getScaledInstance(300, 200, Image.SCALE_SMOOTH);
+                JLabel imageLabel = new JLabel(new ImageIcon(scaled));
+                imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                panel.add(imageLabel);
+                panel.add(Box.createRigidArea(new Dimension(0, 10)));
+            }
         }
 
         panel.add(descScroll);

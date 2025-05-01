@@ -95,7 +95,10 @@ public class CreateListingScreen extends Screen implements ICreateListingScreen 
                 String description = descField.getText();
                 String price = priceField.getText();
                 Client c = getClient();
-                String imageHash = c.uploadImage(selImage);
+                String imageHash = "null";
+                if (selImage != null) {
+                    imageHash = c.uploadImage(selImage);
+                }
                 Listing l = c.createListing(title, description, price, imageHash);
                 if (l != null) {
                     JOptionPane.showMessageDialog(parent, "Listing created successfully!",

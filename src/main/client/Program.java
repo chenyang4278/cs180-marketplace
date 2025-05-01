@@ -31,9 +31,8 @@ public class Program implements IProgram {
 
         SwingUtilities.invokeLater(() -> {
             gui = new ClientGUI();
-            //gui.setScreen(new HomeScreen()); remember to add back later when pushign
+            gui.setScreen(new HomeScreen());
             Program.getGUI().setScreen(new ListingsScreen());
-
         });
     }
 

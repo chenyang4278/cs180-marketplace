@@ -114,15 +114,17 @@ public class ListingsScreen extends Screen implements IListingsScreen {
                 jpInner.add(Box.createVerticalStrut(5));
                 jpInner.add(price);
 
-                File imgFile = getClient().downloadImage(list.getImage());
-                if (imgFile != null && imgFile.exists()) {
-                    images.add(imgFile);
-                    ImageIcon img = new ImageIcon(imgFile.getAbsolutePath());
-                    Image scaled = img.getImage().getScaledInstance(190, 190, Image.SCALE_SMOOTH);
-                    JLabel imageLabel = new JLabel(new ImageIcon(scaled));
-                    imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                    jpInner.add(Box.createVerticalStrut(5));
-                    jpInner.add(imageLabel);
+                if (!list.getImage().equals("null")) {
+                    File imgFile = getClient().downloadImage(list.getImage());
+                    if (imgFile != null && imgFile.exists()) {
+                        images.add(imgFile);
+                        ImageIcon img = new ImageIcon(imgFile.getAbsolutePath());
+                        Image scaled = img.getImage().getScaledInstance(190, 190, Image.SCALE_SMOOTH);
+                        JLabel imageLabel = new JLabel(new ImageIcon(scaled));
+                        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        jpInner.add(Box.createVerticalStrut(5));
+                        jpInner.add(imageLabel);
+                    }
                 }
 
                 jpOuter.add(jpInner);

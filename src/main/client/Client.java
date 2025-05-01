@@ -176,8 +176,7 @@ public class Client implements IClient {
                     "attribute", "balance",
                     "attributeVal", newBalance
             );
-            sendObjectPacketRequest("/users/" + currentUser.getId() + "/edit", headers, User.class);
-            currentUser = searchUserById(currentUser.getId());
+            currentUser = sendObjectPacketRequest("/users/" + currentUser.getId() + "/edit", headers, User.class);
             return true;
         } catch (Exception e) {
             System.out.println("Balance update failed: " + e.getMessage());
@@ -344,7 +343,7 @@ public class Client implements IClient {
             return null;
         } catch (Exception e) {
             e.printStackTrace();
-            //showError(e.getMessage());
+            showError(e.getMessage());
             return null;
         }
     }
