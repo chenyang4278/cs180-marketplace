@@ -58,17 +58,18 @@ Presentation Brightspace submission:
 - Ayden Cline
 - A introduction to the program, showing its title and a short description of the program.
 ### ListingsScreen.java
-- Chen Yang
+- The ListingsScreen is the main page where users can browse, search, and interact with listings in a grid layout. Users can filter listings by different tags like seller name or price and type in a search query. Each listing shows the title, price, and image if available. Clicking on a listing brings up a small menu that lets users either view more details, buy the item, or delete it if they’re the owner. It also includes refresh and search buttons to update the listings.
 ### ViewListingPopup.java
-- Chen Yang
+- The ViewListingPopup is a pop-up window that shows the full details of a listing. It includes the title, price, description, and an image if there is one. The layout is simple and scrollable so users can read longer descriptions easily. This window opens when a user clicks “View Listing” on the main screen. Both classes work together to help users explore and interact with the marketplace in a clean and easy way.
 ### LoginScreen.java
 - Karma Luitel
 - Screen used to create an account or login. GUI includes input field elements for username and password, and has ability to switch between login or create account modes. Works with several methods in `Client.java` to talk to the server to create accounts or login an user.
 ### MessageScreen.java
 - Ian Ogden
+- MessageScreen displays messages that a user has receieved and allows the user to type and send messages to other users. Any other user who has sent or received messages with the client user is displayed on a sidebar, so that the user can easily access message threads with previous contacts. The screen also allows the user to search up users by their username and create a new message thread.
 ### MessageBubble.java
 - Ian Ogden
-
+- MessageBubble is a small panel used to encapsulate each message. Each MessageBubble stores information about the message and handles left/right alignment, color coding, and size of the messages as they appear in the MessageScreen.
 
 
 
