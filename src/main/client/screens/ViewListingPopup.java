@@ -15,7 +15,7 @@ import java.io.File;
  * @author Chen
  * @version 4/27/25
  */
-public class ViewListingPopup extends JFrame {
+public class ViewListingPopup extends JFrame implements IViewListingPopup {
 
     public ViewListingPopup(Listing listing) {
         setTitle("Listing Details");
