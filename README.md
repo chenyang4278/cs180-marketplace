@@ -66,9 +66,10 @@ Presentation Brightspace submission:
 - Screen used to create an account or login. GUI includes input field elements for username and password, and has ability to switch between login or create account modes. Works with several methods in `Client.java` to talk to the server to create accounts or login an user.
 ### MessageScreen.java
 - Ian Ogden
+- MessageScreen displays messages that a user has receieved and allows the user to type and send messages to other users. Any other user who has sent or received messages with the client user is displayed on a sidebar, so that the user can easily access message threads with previous contacts. The screen also allows the user to search up users by their username and create a new message thread.
 ### MessageBubble.java
 - Ian Ogden
-
+- MessageBubble is a small panel used to encapsulate each message. Each MessageBubble stores information about the message and handles left/right alignment, color coding, and size of the messages as they appear in the MessageScreen.
 
 
 
