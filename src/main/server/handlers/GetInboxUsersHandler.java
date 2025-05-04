@@ -11,6 +11,13 @@ import server.PacketHandler;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * GetInboxUsersHandler
+ * Gets a list of users in an users inbox.
+ *
+ * @author Ayden Cline
+ * @version 4/25/25
+ */
 public class GetInboxUsersHandler extends PacketHandler implements IGetInboxUsersHandler {
     public GetInboxUsersHandler() {
         super("/messages/users");

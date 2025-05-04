@@ -9,7 +9,7 @@ For now our project is a  set of Database and User/Listing/Message object classe
 ### Phase 2
 The `client` package needs to be compiled alongside the `packet` and `data` packages. The `server` package needs to compiled alongside the `database`, `packet`, and `data` packages. Run test cases to see how the classes function. For testing IO functionality, refer to `Server.java`, `ClientHandler.java`, and `Client.java`. These classes are our main Network IO classes. The project can optionally be compiled and tested using Maven.
 ### Phase 3
-The `client` package needs to be compiled alongside the `packet` and `data` packages. The `server` package needs to compiled alongside the `database`, `packet`, and `data` packages. Test our project by first running `Server.java` in package `server`, then running `Program.java` in package `client`.
+The `client` package needs to be compiled alongside the `packet` and `data` packages. The `server` package needs to compiled alongside the `database`, `packet`, and `data` packages. Test our project by first running `Server.java` in package `server`, then running `Program.java` in package `client`. Make sure to clear old files before running testcases.
 
 
 
@@ -66,7 +66,7 @@ Presentation Brightspace submission:
 - Screen used to create an account or login. GUI includes input field elements for username and password, and has ability to switch between login or create account modes. Works with several methods in `Client.java` to talk to the server to create accounts or login an user.
 ### MessageScreen.java
 - Ian Ogden
-- MessageScreen displays messages that a user has receieved and allows the user to type and send messages to other users. Any other user who has sent or received messages with the client user is displayed on a sidebar, so that the user can easily access message threads with previous contacts. The screen also allows the user to search up users by their username and create a new message thread.
+- MessageScreen displays messages that a user has receieved and allows the user to type and send messages to other users. Any other user who has sent or received messages with the client user is displayed on a sidebar, so that the user can easily access message threads with previous contacts. The screen also allows the user to search up users by their username and create a new message thread. Remember to press "Open Chat" before trying to send a message to a user.
 ### MessageBubble.java
 - Ian Ogden
 - MessageBubble is a small panel used to encapsulate each message. Each MessageBubble stores information about the message and handles left/right alignment, color coding, and size of the messages as they appear in the MessageScreen.
@@ -208,6 +208,10 @@ Presentation Brightspace submission:
 - This class extends `PacketHandler` and handles logging in a user.
 - The client gives a username and password, and the handler checks whether they match what's in the database. If so, a new `Session` object is created, deleting any old ones associated with the user, and the session token is returned so the client's login can persist.
 - The handler is tested to ensure it correctly returns a session token and error packets where valid.
+### GetInboxUserHandlers.java
+- Ayden Cline
+- This class extends `PacketHandler` and handles getting a list of users in a users inbox.
+- The handler is tested to ensure it correctly returns a valid and accurate list of users.
 ### ImageUploadHandler
 - Ayden Cline
 - This class extends `PacketHandler` and handles image uploading.

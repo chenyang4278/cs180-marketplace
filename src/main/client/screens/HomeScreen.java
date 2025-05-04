@@ -5,6 +5,14 @@ import client.Styles;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * HomeScreen
+ *
+ * Home screen of our gui.
+ *
+ * @author Ayden Cline
+ * @version 4/20/25
+ */
 public class HomeScreen extends Screen implements IHomeScreen {
     public HomeScreen() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

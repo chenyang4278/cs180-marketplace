@@ -6,6 +6,14 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Header
+ *
+ * Serves as the top menu bar for our program.
+ *
+ * @author Ayden Cline
+ * @version 4/20/25
+ */
 public class Header extends JPanel implements IHeader {
     private final JButton loginBtn;
     private final JButton accountBtn;
@@ -53,6 +61,14 @@ public class Header extends JPanel implements IHeader {
         return button;
     }
 
+    /**
+     * LinkAction
+     *
+     * Private ActionListener class for switching screens.
+     *
+     * @author Ayden Cline
+     * @version 4/20/25
+     */
     private static class LinkAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {

@@ -9,6 +9,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * AccountScreen
+ *
+ * Account screen of our gui.
+ *
+ * @author Ayden Cline
+ * @version 4/20/25
+ */
 public class AccountScreen extends Screen implements IAccountScreen {
     public AccountScreen() {
         Client client = getClient();
@@ -59,6 +67,14 @@ public class AccountScreen extends Screen implements IAccountScreen {
         add(centerPanel, BorderLayout.CENTER);
     }
 
+    /**
+     * LogoutAction
+     *
+     * Private class listener for logout.
+     *
+     * @author Ayden Cline
+     * @version 4/20/25
+     */
     private class LogoutAction implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             getClient().logout();
@@ -66,6 +82,14 @@ public class AccountScreen extends Screen implements IAccountScreen {
         }
     }
 
+    /**
+     * DeleteAccountAction
+     *
+     * Private class listener for delete.
+     *
+     * @author Ayden Cline
+     * @version 4/20/25
+     */
     private class DeleteAccountAction implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             if (getClient().deleteUser()) {

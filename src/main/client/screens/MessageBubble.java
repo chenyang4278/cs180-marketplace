@@ -69,7 +69,7 @@ public class MessageBubble extends JPanel implements IMessageBubble {
         FontMetrics fm = getFontMetrics(textArea.getFont());
         int textWidth = fm.stringWidth(text);
         int width = Math.min(textWidth + 41, 400);
-        return new Dimension(width, textArea.getPreferredSize().height+1);
+        return new Dimension(width, textArea.getPreferredSize().height + 1);
     }
 
 }

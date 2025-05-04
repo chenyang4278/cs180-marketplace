@@ -15,7 +15,6 @@ import java.awt.event.ActionListener;
  */
 public class LoginScreen extends Screen implements ILoginScreen {
 
-    //note for myself later, use this link for boxlayout info: https://docs.oracle.com/javase/tutorial/uiswing/layout/box.html
     private boolean loginMode;
     private JLabel title;
     private JButton switchButton;

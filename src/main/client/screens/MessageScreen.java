@@ -150,7 +150,7 @@ public class MessageScreen extends Screen implements IMessageScreen {
         Collections.reverse(chats);
         for (Message each : chats) {
             addMessage(each.getMessage(), 
-            getClient().searchUserById(each.getSenderId()).getUsername().equals(getClient().getUser().getUsername()));
+                getClient().searchUserById(each.getSenderId()).getUsername().equals(getClient().getUser().getUsername()));
         }
 
         SwingUtilities.invokeLater(() -> {
@@ -173,12 +173,20 @@ public class MessageScreen extends Screen implements IMessageScreen {
 
     }
 
+    /**
+     * UserMessageButton
+     * <p>
+     * Private class for handling the user message button.
+     *
+     * @author Ian Ogden
+     * @version 4/24/25
+     */
     private class UserMessageButton extends JButton {
 
         public UserMessageButton(User user) {
             super(user.getUsername());
             if (getFontMetrics(getFont()).stringWidth(user.getUsername()) > 130) {
-                setText(user.getUsername().substring(0,10) + "...");
+                setText(user.getUsername().substring(0, 10) + "...");
             }
             this.setAlignmentX(Component.CENTER_ALIGNMENT);
             this.setMaximumSize(new Dimension(150, 40));

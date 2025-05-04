@@ -1,5 +1,4 @@
 package client.screens;
-import data.Listing;
 /**
  * IViewListingPopup
  *

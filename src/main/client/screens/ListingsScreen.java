@@ -79,12 +79,11 @@ public class ListingsScreen extends Screen implements IListingsScreen {
 
     private void refreshGrid() {
         Client client = getClient();
-        ArrayList<Listing> listings = (ArrayList<Listing>) client.searchListingsByAttribute(searchTag, searchField.getText());
+        ArrayList<Listing> listings = (ArrayList<Listing>) client.searchListingsByAttribute(searchTag,
+            searchField.getText());
         addListingsToGrid(listings);
     }
 
-
-    //TODO: Can make this method MUCH more efficient
     private void addListingsToGrid(ArrayList<Listing> l) {
         listingGrid.removeAll();
         for (File f : images) {

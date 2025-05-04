@@ -9,6 +9,14 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Stack;
 
+/**
+ * ClientGUI
+ *
+ * Serves various windows for our client GUI.
+ *
+ * @author Ayden Cline
+ * @version 4/20/25
+ */
 public class ClientGUI implements IClientGUI {
     private final JFrame frame;
     private final JScrollPane scrollPane;
@@ -16,13 +24,14 @@ public class ClientGUI implements IClientGUI {
     private final Stack<Screen> screenHistory = new Stack<>();
 
     public ClientGUI() {
-        frame = new JFrame("Shop Client");  // todo
+        frame = new JFrame("Shop Client");
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setMinimumSize(new Dimension(600, 400));
         frame.setSize(800, 600);
 
         scrollPane = new JScrollPane();
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        JScrollBar jsb = scrollPane.getVerticalScrollBar();
+        jsb.setUnitIncrement(16);
 
         frame.add(header = new Header(), BorderLayout.NORTH);
         frame.add(scrollPane, BorderLayout.CENTER);

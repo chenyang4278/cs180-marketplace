@@ -121,7 +121,8 @@ public class TestDatabaseWrapper {
             assert table.getCount() == 0;
         }
 
-        List<TestingClass> lTables2 = DatabaseWrapper.get().filterByColumn(TestingClass.class, "count", " \n 0  ", true);
+        List<TestingClass> lTables2 = DatabaseWrapper.get().filterByColumn(TestingClass.class,
+            "count", " \n 0  ", true);
         for (TestingClass table : lTables2) {
             assert table.getCount() == 0;
         }
