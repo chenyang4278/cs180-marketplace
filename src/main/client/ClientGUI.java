@@ -32,8 +32,8 @@ public class ClientGUI implements IClientGUI {
         scrollPane = new JScrollPane();
         JScrollBar jsb = scrollPane.getVerticalScrollBar();
         jsb.setUnitIncrement(16);
-
-        frame.add(header = new Header(), BorderLayout.NORTH);
+        header = new Header();
+        frame.add(header, BorderLayout.NORTH);
         frame.add(scrollPane, BorderLayout.CENTER);
 
         frame.addWindowListener(new WindowAdapter() {
