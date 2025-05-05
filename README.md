@@ -19,9 +19,9 @@ Vocareum submission: Ayden Cline
 ### Phase 2
 Vocareum submission: Karma Luitel
 ### Phase 3
-Vocareum submission:
-Report Brightspace submission:
-Presentation Brightspace submission:
+Vocareum submission: Karma Luitel
+Report Brightspace submission: Karma Luitel
+Presentation Brightspace submission: Karma Luitel
 
 
 
