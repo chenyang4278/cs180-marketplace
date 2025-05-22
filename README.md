@@ -1,16 +1,6 @@
 # CS180 Team Project
 - L24 Team 1: Chen Yang, Karma Luitel, Ian Ogden, Ayden Cline
 
-
-
-## Compilation
-### Phase 1
-For now our project is a  set of Database and User/Listing/Message object classes, providing functionality for reading, writing, updating, and deleting object classes from a csv file database. Just compile every class and run test cases to see how the classes function.
-### Phase 2
-The `client` package needs to be compiled alongside the `packet` and `data` packages. The `server` package needs to compiled alongside the `database`, `packet`, and `data` packages. Run test cases to see how the classes function. For testing IO functionality, refer to `Server.java`, `ClientHandler.java`, and `Client.java`. These classes are our main Network IO classes. The project can optionally be compiled and tested using Maven.
-### Phase 3
-The `client` package needs to be compiled alongside the `packet` and `data` packages. The `server` package needs to compiled alongside the `database`, `packet`, and `data` packages. Test our project by first running `Server.java` in package `server`, then running `Program.java` in package `client`. Make sure to clear old files before running testcases.
-
 ## Client
 ### Client.java
 - Client is a class that handles communication between the frontend and the backend. It opens a socket connection to the server and sends/receives serialized packets. It does not store any local user or listing data; all data is retrieved through network calls to the server. Client only stores the user’s ID and session token after logging in. When user information is needed, the class calls the `/user/:id` endpoint to retrieve the most up-to-date user object. This ensures the user data is always fresh and consistent with the database. Client implements the IClient interface. IClient defines all required methods like login, user creation, listing creation, search, messaging, and data deletion. By implementing this interface, Client ensures consistency and makes testing or mocking easier. All packets are sent through three generic methods: sendObjectPacketRequest, sendObjectListPacketRequest, and sendSuccessPacketRequest. These methods construct a Packet, attach the session token, send the packet over the socket, and parse the appropriate type of response from the server. Each action such as creating a user, buying a listing, sending a message, has a specific method that builds the required headers, sends the request to the corresponding route, and returns either an object, a list, or a success result. Message retrieval calls the server twice — once for messages sent and once for messages received, then combines the results to return a complete conversation. The Client class also includes a static method called createHeaders. This utility is used to build a list of PacketHeader objects from alternating key-value Strings, to reduce repeated boilerplate when preparing requests. Overall, this class provides a clean and consistent API for interacting with the server. It is ready to be integrated with a frontend and supports full account, listing, and message functionality.
