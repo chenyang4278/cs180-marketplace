@@ -1,5 +1,4 @@
-# CS180 Team Project
-- L24 Team 1: Chen Yang, Karma Luitel, Ian Ogden, Ayden Cline
+# CS180 Marketplace
 
 ## Client
 ### Client.java
